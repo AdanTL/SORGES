@@ -21,18 +21,20 @@ MapWidget::MapWidget(QWidget *parent) :
 
     //decirle al graphicsview de la interfaz de usuario que su escena es esta
     ui->mapView->setScene(&mapScene);
-/*
-    std::cout << convertToRadians(38,0,0)<< std::endl;
-    std::cout << convertToRadians(-14,0,0)<< std::endl;
-    std::cout << convertToRadians(34,0,0)<< std::endl;
-    std::cout << convertToRadians(-3,0,0)<< std::endl;
-    std::cout << convertToRadians(36,10,46)<< std::endl;
-    std::cout << convertToRadians(-5,-24,-43)<< std::endl;
+
+    //prueba coordenadas salida por consola
+    std::cout << convertToDecimalDegrees(38,0,0)<< std::endl;
+    std::cout << convertToDecimalDegrees(-14,0,0)<< std::endl;
+    std::cout << convertToDecimalDegrees(34,0,0)<< std::endl;
+    std::cout << convertToDecimalDegrees(-3,0,0)<< std::endl;
+    std::cout << convertToDecimalDegrees(36,10,46)<< std::endl;
+    std::cout << convertToDecimalDegrees(-5,-24,-43)<< std::endl;
     long double x,y;
     coordinatesToPixels(x,y,38,0,0,-14,0,0,-34,0,0,-3,0,0,36,10,46,-5,24,43);
     std::cout << x << ' ' << y << std::endl;
 
-    paintCircles();*/
+    //pintado ejemplo
+    paintCircles();
 }
 
 MapWidget::~MapWidget()
@@ -48,22 +50,15 @@ long double MapWidget::convertToDecimalDegrees(long double degrees, long double 
     return degrees + (minutes/60) + (seconds/3600);
 }
 
-long double MapWidget::convertToRadians(long double degrees, long double minutes, long double seconds){
-    long double decimal = convertToDecimalDegrees (degrees,minutes,seconds);
-    //formula: radian = degree * (PI/180)
-    //M_PIl es PI de math.h con precisión long double
-    return decimal * M_PIl / 180;
-}
-
 /*
 pixelX: variable por referencia para rellenarla con el pixel del eje x
 pixelY: variable por referencia para rellenarla con el pixel del eje y
 
-minLat: minima latitud (radianes) en el eje Y (correspondencia con pixel Y=0)
-minLon: minima longitud (radianes) en el eje X (correspondencia con pixel X=0)
+minLat: minima latitud en el eje Y (correspondencia con pixel Y=0)
+minLon: minima longitud en el eje X (correspondencia con pixel X=0)
 
-targetLat: coordenada (radianes) que queremos pintar en el eje Y.
-targetLon: coordenada (radianes) que queremos pintar en el eje X.
+targetLat: coordenada que queremos pintar en el eje Y.
+targetLon: coordenada que queremos pintar en el eje X.
 
 Cálculo de pixeles donde pintar las coordenadas:
 
@@ -80,12 +75,12 @@ void MapWidget::coordinatesToPixels(long double &pixelX,long double &pixelY,
                                     long double degreesTargetLat,long double minutesTargetLat,long double secondsTargetLat,
                                     long double degreesTargetLon, long double minutesTargetLon,long double secondsTargetLon)
 {
-    long double minLon = convertToRadians(degreesMinLon, minutesMinLon, secondsMinLon);
-    long double minLat = convertToRadians(degreesMinLat, minutesMinLat, secondsMinLat);
-    long double maxLon = convertToRadians(degreesMaxLon, minutesMaxLon, secondsMaxLon);
-    long double maxLat = convertToRadians(degreesMaxLat, minutesMaxLat, secondsMaxLat);
-    long double targetLon = convertToRadians(degreesTargetLon, minutesTargetLon, secondsTargetLon);
-    long double targetLat = convertToRadians(degreesTargetLat, minutesTargetLat, secondsTargetLat);
+    long double minLon = convertToDecimalDegrees(degreesMinLon, minutesMinLon, secondsMinLon);
+    long double minLat = convertToDecimalDegrees(degreesMinLat, minutesMinLat, secondsMinLat);
+    long double maxLon = convertToDecimalDegrees(degreesMaxLon, minutesMaxLon, secondsMaxLon);
+    long double maxLat = convertToDecimalDegrees(degreesMaxLat, minutesMaxLat, secondsMaxLat);
+    long double targetLon = convertToDecimalDegrees(degreesTargetLon, minutesTargetLon, secondsTargetLon);
+    long double targetLat = convertToDecimalDegrees(degreesTargetLat, minutesTargetLat, secondsTargetLat);
     long double maxXpixel = mapScene.width();
     long double maxYpixel = mapScene.height();
     long double minXpixel = 0;
@@ -120,7 +115,7 @@ void MapWidget::paintCircles(){
     //hay que definir de dónde va a venir cada dato.
 
     //definir el centro del círculo: coordenadas del origen/evento (temporalmente puesto en el centro de la imagen)
-    QPoint centro(mapScene.width()/2, mapScene.height ()/2);
+    QPoint center(mapScene.width()/2, mapScene.height ()/2);
 
     //definir radio del círculo
     float radius = calculateRadius();
@@ -129,7 +124,7 @@ void MapWidget::paintCircles(){
     QRect rect(0,0,2*radius,2*radius);
 
     //ESTO ES CLAVE: mover el rectágulo contenedor de manera que el centro del circulo sea el deseado
-    rect.moveCenter(centro);
+    rect.moveCenter(center);
 
     //pintar el circulo sobre la escena que contiene el mapa
     mapScene.addEllipse (rect);

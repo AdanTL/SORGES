@@ -33,7 +33,6 @@ private:
                              long double degreesMaxLon, long double minutesMaxLon,long double secondsMaxLon,
                              long double degreesTargetLat,long double minutesTargetLat,long double secondsTargetLat,
                              long double degreesTargetLon, long double minutesTargetLon,long double secondsTargetLon);
-    long double convertToRadians(long double degrees, long double minutes, long double seconds);
     long double convertToDecimalDegrees(long double degrees, long double minutes, long double seconds);
 };
 
