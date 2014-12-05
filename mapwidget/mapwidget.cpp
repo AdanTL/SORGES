@@ -23,18 +23,32 @@ MapWidget::MapWidget(QWidget *parent) :
     ui->mapView->setScene(&mapScene);
 
     //prueba coordenadas salida por consola
+    //esquinas
     std::cout << convertToDecimalDegrees(38,0,0)<< std::endl;
     std::cout << convertToDecimalDegrees(-14,0,0)<< std::endl;
     std::cout << convertToDecimalDegrees(34,0,0)<< std::endl;
     std::cout << convertToDecimalDegrees(-3,0,0)<< std::endl;
-    std::cout << convertToDecimalDegrees(36,10,46)<< std::endl;
-    std::cout << convertToDecimalDegrees(-5,-24,-43)<< std::endl;
-    long double x,y;
-    coordinatesToPixels(x,y,38,0,0,-14,0,0,-34,0,0,-3,0,0,36,10,46,-5,24,43);
-    std::cout << x << ' ' << y << std::endl;
 
-    //pintado ejemplo
-    paintCircles();
+    //cabo san vicente 36°59'39.61" (36.994336) y -8°-56'-9.60" (-8.936) -> por google maps
+    std::cout << convertToDecimalDegrees(36,59,39.61)<< std::endl;
+    std::cout << convertToDecimalDegrees(-8,-56,-9.6)<< std::endl;
+    long double x,y;
+    coordinatesToPixels(x,y,38,0,0,-14,0,0,34,0,0,-3,0,0,36,59,39.61,-8,-56,-9.6);
+    std::cout << x << ' ' << y << std::endl;
+    //pintado ejemplo coordenadas (linea desde cabo san vicente hasta esquina izquierda arriba)
+    mapScene.addLine (x,y,0,0); //SE VA POCOS PIXELES HACIA LA DERECHA (OK ALTURA)
+
+    //punta gibraltar 36° 6'34.01" (36.109447) -5°20'43.59" (-5.345442) -> por google maps
+    std::cout << convertToDecimalDegrees(36,6,34.01)<< std::endl;
+    std::cout << convertToDecimalDegrees(-5,-20,-43.59)<< std::endl;
+    long double x2,y2;
+    coordinatesToPixels(x2,y2,38,0,0,-14,0,0,34,0,0,-3,0,0,36,6,34.01,-5,-20,-43.59);
+    std::cout << x2 << ' ' << y2 << std::endl;
+    //pintado ejemplo coordenadas (linea desde gibraltar hasta derecha abajo
+    mapScene.addLine (x2,y2,1050,390); //SE VA MUCHOS!!! PIXELES A LA DERECHA (UN PELIN HACIA ABAJO ALTURA)
+
+    //pintado ejemplo circulo
+    //paintCircles();
 }
 
 MapWidget::~MapWidget()
