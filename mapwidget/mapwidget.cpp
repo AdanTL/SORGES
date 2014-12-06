@@ -36,16 +36,25 @@ MapWidget::MapWidget(QWidget *parent) :
     coordinatesToPixels(x,y,38,0,0,-14,0,0,34,0,0,-3,0,0,36,59,39.61,-8,-56,-9.6);
     std::cout << x << ' ' << y << std::endl;
     //pintado ejemplo coordenadas (linea desde cabo san vicente hasta esquina izquierda arriba)
-    mapScene.addLine (x,y,0,0); //SE VA POCOS PIXELES HACIA LA DERECHA (OK ALTURA)
+    mapScene.addLine (x,y,0,0);
 
-    //punta gibraltar 36° 6'34.01" (36.109447) -5°20'43.59" (-5.345442) -> por google maps
+    //punta gibraltar 36° 6'34.01" (36.109447) -5°-20'-43.59" (-5.345442) -> por google maps
     std::cout << convertToDecimalDegrees(36,6,34.01)<< std::endl;
     std::cout << convertToDecimalDegrees(-5,-20,-43.59)<< std::endl;
     long double x2,y2;
     coordinatesToPixels(x2,y2,38,0,0,-14,0,0,34,0,0,-3,0,0,36,6,34.01,-5,-20,-43.59);
     std::cout << x2 << ' ' << y2 << std::endl;
     //pintado ejemplo coordenadas (linea desde gibraltar hasta derecha abajo
-    mapScene.addLine (x2,y2,1050,390); //SE VA MUCHOS!!! PIXELES A LA DERECHA (UN PELIN HACIA ABAJO ALTURA)
+    mapScene.addLine (x2,y2,mapScene.width (),mapScene.height ());
+
+    //Punta san felipe Cádiz 36°32'16.12"  -6°-18'-1.20" -> por google maps
+    std::cout << convertToDecimalDegrees(36,32,16.12)<< std::endl;
+    std::cout << convertToDecimalDegrees(-6,-18,-1.20)<< std::endl;
+    long double x3,y3;
+    coordinatesToPixels(x3,y3,38,0,0,-14,0,0,34,0,0,-3,0,0,36,32,16.12,-6,-18,-1.20);
+    std::cout << x3 << ' ' << y3 << std::endl;
+    //pintado ejemplo coordenadas (linea desde cadiz hasta izquierda abajo
+    mapScene.addLine (x3,y3,0,mapScene.height ());
 
     //pintado ejemplo circulo
     //paintCircles();
