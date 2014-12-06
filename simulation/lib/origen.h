@@ -24,14 +24,8 @@ class Origen{
 
 };
 
-Origen::Origen(const std::string& Id, const std::tm&  Time, long double Lat, long double Lon, double Magn, const std::set<Station>& Stas){
-    origenID = Id;
-    origenTime = Time;
-    latitud = Lat;
-    longitud = Lon;
-    magnitud = Magn;
-    stations= Stas;
-}
+Origen::Origen(const std::string& Id, const std::tm&  Time, long double Lat, long double Lon, double Magn, const std::set<Station>& Stas):
+    origenID(Id),origenTime(Time),latitud(Lat),longitud(Lon),magnitud(Magn),stations(Stas){}
 
 bool operator < (const Origen& op1, const Origen& op2){
     return op1.origenID<op2.origenID;
