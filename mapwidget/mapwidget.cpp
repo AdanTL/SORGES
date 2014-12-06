@@ -22,6 +22,14 @@ MapWidget::MapWidget(QWidget *parent) :
     //decirle al graphicsview de la interfaz de usuario que su escena es esta
     ui->mapView->setScene(&mapScene);
 
+    //pintado ejemplo circulo
+    //paintCircles();
+
+    //prueba de precision de coordenadas-pixel
+    testPixelPrecision();
+}
+
+void MapWidget::testPixelPrecision(){
     //prueba coordenadas salida por consola
     //esquinas
     std::cout << convertToDecimalDegrees(38,0,0)<< std::endl;
@@ -55,9 +63,6 @@ MapWidget::MapWidget(QWidget *parent) :
     std::cout << x3 << ' ' << y3 << std::endl;
     //pintado ejemplo coordenadas (linea desde cadiz hasta izquierda abajo
     mapScene.addLine (x3,y3,0,mapScene.height ());
-
-    //pintado ejemplo circulo
-    //paintCircles();
 }
 
 MapWidget::~MapWidget()

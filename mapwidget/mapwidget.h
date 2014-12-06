@@ -34,6 +34,7 @@ private:
                              long double degreesTargetLat,long double minutesTargetLat,long double secondsTargetLat,
                              long double degreesTargetLon, long double minutesTargetLon,long double secondsTargetLon);
     long double convertToDecimalDegrees(long double degrees, long double minutes, long double seconds);
+    void testPixelPrecision();
 };
 
 #endif // MAPWIDGET_H
