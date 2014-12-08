@@ -13,9 +13,14 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        mapwidget.cpp
+        mapwidget.cpp \
+    origin.cpp \
+    station.cpp
 
-HEADERS  += mapwidget.h
+HEADERS  += mapwidget.h \
+    origin.h \
+    station.h \
+    mapdefinition.h
 
 FORMS    += mapwidget.ui
 
