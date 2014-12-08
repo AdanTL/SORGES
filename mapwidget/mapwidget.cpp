@@ -180,6 +180,11 @@ void MapWidget::paintCircles(){
     //definir el centro del círculo: coordenadas del origen/evento
     //pasar las coordenadas almacenadas en el atributo currentOrigin a pixeles
     //y despues pasarselas al constructor de center
+    /*
+    long double x,y;
+    coordinatesToPixels(x,y,currentOrigin.getLatitude(),currentOrigin.getLongitude());
+    QPoint center(x,y);
+    */
     //--temporalmente definido el centro en el centro de la imagen
     QPoint center(mapScene.width()/2, mapScene.height ()/2);
 
