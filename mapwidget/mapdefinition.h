@@ -18,5 +18,10 @@
 /*longitud en la esquina inferior derecha (máxima)*/
 #define MAP_MAX_LONGITUDE -3
 
+/*longitud en metros del eje latitudinal*/
+#define MAP_METRES_LATITUDE 445210
+
+/*longitud en metros del eje longitudinal*/
+#define MAP_METRES_LONGITUDE 1014520
 
 #endif // MAPDEFINITION_H

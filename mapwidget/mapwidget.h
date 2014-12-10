@@ -22,7 +22,7 @@ public:
     void paintOrigin(const Origin& origin);
     void paintStations(const std::set<Station>& stations);
     void paintCircles();
-
+    void MapWidget::paintCircles(const long double& x, const long double& y, const long double& radius, int transparence = 0 , int red = 256, int green = 256, int blue = 256);
 private:
     Ui::MapWidget *ui;
     QImage mapImage;
@@ -45,6 +45,7 @@ private:
                                         long double seconds);
 
     void testPixelPrecision();
+    void testOrigen();
 };
 
 #endif // MAPWIDGET_H

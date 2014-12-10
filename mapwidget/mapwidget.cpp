@@ -1,4 +1,7 @@
 #include <math.h>
+#include <ctime>
+#include <sstream>
+#include <iomanip>
 #include <iostream>
 #include "mapwidget.h"
 #include "mapdefinition.h"
@@ -27,7 +30,10 @@ MapWidget::MapWidget(QWidget *parent) :
     //paintCircles();
 
     //prueba de precision de coordenadas-pixel
-    testPixelPrecision();
+    //testPixelPrecision();
+
+    //prueba de colocación origen en el mapa.
+    testOrigen();
 }
 
 MapWidget::~MapWidget()
@@ -74,6 +80,34 @@ void MapWidget::testPixelPrecision(){
     mapScene.addLine (x3,y3,0,mapScene.height ());
 }
 
+/*
+ * Funcion privada para probar la colocacion de un Origen en la imagen
+ */
+void MapWidget::testOrigen(){
+    std::set<Station> mystations;
+    mystations.insert(Station("0x0000", "0x0001", 36.00204023875479, -10.2456402219765, 0));
+    mystations.insert(Station("0x0001", "0x0001", 37.00204023875479, -12.2456402219765, 1));
+    mystations.insert(Station("0x0002", "0x0002", 33.00204023875479, -5.2456402219765, 2));
+    mystations.insert(Station("0x0003", "0x0003", 30.00204023875479, -8.2456402219765, 3));
+
+    // getting time from system (best to test it):
+    time_t rawtime;
+    struct tm * timeinfo;
+    time (&rawtime);
+    timeinfo = localtime (&rawtime);
+
+    //System time - 3.
+    timeinfo->tm_sec -= 3;
+
+    // getting time from string:
+    //struct std::tm tm;
+    //std::istringstream ss("2014-12-10 13:54:00");
+    //ss >> std::get_time(&tm, "%Y-%m-%d %H:%M:%S");
+
+    //Punta san felipe Cádiz 36°32'16.12"  -6°-18'-1.20" -> por google maps
+    Origin myOrigin("0x0001b",*timeinfo, convertToDecimalDegrees(36,32,16.12), convertToDecimalDegrees(-6,-18,-1.20), 3.54, mystations);
+    paintOrigin(myOrigin);
+}
 
 
 /**COORDENADAS->PIXELES**/
@@ -131,6 +165,8 @@ void MapWidget::coordinatesToPixels(long double &pixelX,long double &pixelY,
 /**ESTACIONES**/
 void MapWidget::paintStations(const std::set<Station> &stations){
     this->stations = stations;
+    //for(std::set<Station>::iterator it=origin.stations.begin(); it!=origin.stations.end(); ++it)
+        //os << *it;
 
     //completar método para pintar las estaciones
     //hay que pintar triangulo en posicion (latitud y longitud a pixeles)
@@ -139,12 +175,16 @@ void MapWidget::paintStations(const std::set<Station> &stations){
 
 /**ORIGEN**/
 void MapWidget::paintOrigin(const Origin &origin){
-    this->currentOrigin = origin;
+    long double coordX, coordY;
 
-    //completar método para pintar el origen
-    //hay que pintar el epicentro (latitud y longitud a pixeles)
-    //hay que cambiar el color a las estaciones
-    //¿¿hay que pintar el primer círculo??
+    this->currentOrigin = origin;
+    coordinatesToPixels(coordX,coordY,currentOrigin.getLatitude(),currentOrigin.getLongitude());
+    //pintamos las estaciones con su nuevo color
+    paintStations(currentOrigin.getStations());
+    // pintamos el primer circulo con gris (cambiable en paintCircles) opacidad 200/256.
+    paintCircles(coordX, coordY, calculateRadius(),100, 0, 0, 128);
+    //pintamos el epicentro (latitud y longitud a pixeles)
+    paintCircles(coordX, coordY, 2, 255, 128, 0, 0);
 }
 
 
@@ -156,18 +196,26 @@ void MapWidget::paintOrigin(const Origin &origin){
  * la diferencia de tiempo habrá que medirla dependiendo de las unidades de la velocidad
  */
 float MapWidget::calculateRadius(){
-    //double speed = ; //¿DE DONDE VA A VENIR LA VELOCIDAD DE PROPAGACION y en qué unidades?
+    double speed = 3000; //velocidad de propagacion Onda S: 3000m/s aproximadamente.
+    long double radius;
+    long int difSeconds=0;
+    time_t rawtime;
+    struct tm * timeinfo;
 
-    //tiempo actual: ¿como se coge la hora del sistema con std::tm?
+    // Getting the system time and the origin time diference (only h/m/s).
+    time (&rawtime);
+    timeinfo = localtime (&rawtime);
+    std::cout << timeinfo->tm_hour << " -- " <<  timeinfo->tm_min << " -- " <<  timeinfo->tm_sec << " -- " << std::endl;
+    difSeconds += timeinfo->tm_sec - currentOrigin.getOriginTime().tm_sec;
+    difSeconds += (timeinfo->tm_min - currentOrigin.getOriginTime().tm_min)*60;
+    difSeconds += (timeinfo->tm_hour - currentOrigin.getOriginTime().tm_hour)*3600;
 
-    //tiempo origen: cogerlo del objeto origen actual del mapa
-    //originTime = currentOrigin.getOriginTime();
+    // getting the radius in meters.
+    radius = difSeconds * speed;
 
-    //OJO con las unidades de diferencia de tiempo y velocidad
-    //radius = (currentTime - originTime) * speed;
+    // Calculate the numbers of pixels to "Radius meters".
+    return (radius*mapScene.width())/MAP_METRES_LONGITUDE;
 
-    //return temporal
-    return 10;
 }
 
 /**funcion que pinta un circulo de expansion
@@ -189,7 +237,7 @@ void MapWidget::paintCircles(){
     QPoint center(mapScene.width()/2, mapScene.height ()/2);
 
     //definir radio del círculo
-    float radius = calculateRadius();
+    float radius = 10;
 
     //rectágulo que va a contener la elipse,
     //coordenada superior 0,0 y tamaño 2*radio tanto alto como ancho
@@ -200,4 +248,30 @@ void MapWidget::paintCircles(){
 
     //pintar el circulo sobre la escena que contiene el mapa
     mapScene.addEllipse (rect);
+}
+
+
+void MapWidget::paintCircles(const long double& x, const long double& y, const long double& radius, int transparence, int red, int green, int blue){
+
+    //definir el centro del círculo: coordenadas del origen/evento
+    //pasar las coordenadas almacenadas en el atributo currentOrigin a pixeles
+    //y despues pasarselas al constructor de center
+    /*
+    long double x,y;
+    coordinatesToPixels(x,y,currentOrigin.getLatitude(),currentOrigin.getLongitude());
+    QPoint center(x,y);
+    */
+    //--temporalmente definido el centro en el centro de la imagen
+    QPoint center(x, y);
+
+    //rectágulo que va a contener la elipse,
+    //coordenada superior 0,0 y tamaño 2*radio tanto alto como ancho
+    QRect rect(0,0,2*radius,2*radius);
+
+
+    //ESTO ES CLAVE: mover el rectágulo contenedor de manera que el centro del circulo sea el deseado
+    rect.moveCenter(center);
+
+    //pintar el circulo sobre la escena que contiene el mapa
+    mapScene.addEllipse (rect,QPen(),QBrush(QColor(red,green,blue,transparence)));
 }
