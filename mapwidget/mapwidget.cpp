@@ -179,11 +179,26 @@ void MapWidget::paintOrigin(const Origin &origin){
 
     this->currentOrigin = origin;
     coordinatesToPixels(coordX,coordY,currentOrigin.getLatitude(),currentOrigin.getLongitude());
+
     //pintamos las estaciones con su nuevo color
+    //UTILIZAR OTRA FUNCION QUE SEA ESPECIFICA DE PINTAR EL COLOR
+    //YA QUE paintStation() VA A SER PARA PINTAR LAS ESTACIONES INICIALES
+    //por ejemplo: changeStationsColors()
+    //O BIEN HACERLO AQUÍ DIRECTAMENTE PORQUE ES UN FOREACH EN REALIDAD
     paintStations(currentOrigin.getStations());
+
     // pintamos el primer circulo con gris (cambiable en paintCircles) opacidad 200/256.
+    //NO HARÍA FALTA PASARLE PARÁMETROS A LA FUNCIÓN
+    //COGERÍA EL EPICENTRO DE currentOrigin
+    //LOS ATRIBUTOS DE OPACIDAD Y TAL SE PUEDEN DEFINIR EN EL MAPDEFINITION
     paintCircles(coordX, coordY, calculateRadius(),100, 0, 0, 128);
+
     //pintamos el epicentro (latitud y longitud a pixeles)
+    // HACER FUNCION ESPECIFICA DE PINTAR EL EPICENTRO
+    // SEA UN CIRCULO U OTRA FIGURA
+    // NO UTILIZAR LA MISMA QUE PARA PINTAR LOS CIRCULOS CONCENTRICOS
+    // por ejemplo: paintEpicenter()
+    // O BIEN HACERLO AQUÍ DIRECTAMENTE
     paintCircles(coordX, coordY, 2, 255, 128, 0, 0);
 }
 
