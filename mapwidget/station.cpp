@@ -14,7 +14,7 @@ Station::Station(const std::string& id, const std::string& netId, long double la
  * escala de colores: correspondencias codigo -> color hexadecimal
  *-1 negro, 0 verde, 1 amarillo, 2 naranja, 3 rojo
  */
-std::map<int, const char*> initColorScale(){
+std::map<int, const char*> initOnSiteAlert(){
     std::map<int, const char*> scale;
     scale[-1] = "#000000";
     scale[0] = "#33FF00";
@@ -24,7 +24,7 @@ std::map<int, const char*> initColorScale(){
     return scale;
 }
 /**atributo estático (de clase) con la escala de colores*/
-std::map<int,const char*> Station::colorScale = initColorScale();
+std::map<int,const char*> Station::onSiteAlert = initOnSiteAlert();
 
 
 /**Getters and setters*/
@@ -74,8 +74,8 @@ void Station::setColor(int value)
     color = value;
 }
 
-const char* Station::getCurrentColorScale(){
-    return colorScale[this->color];
+const char* Station::getCurrentOnSiteAlert(){
+    return onSiteAlert[this->color];
 }
 
 
