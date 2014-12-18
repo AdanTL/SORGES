@@ -10,7 +10,7 @@ class Station{
             long double longitude = 0, int color = -1);
 
    	//escala de colores: correspondencias numero->color hexadecimal
-   	static std::map<int,const char*> colorScale;
+    static std::map<int,const char*> onSiteAlert;
 
     //getters and setters
     std::string getStationID() const;
@@ -27,7 +27,7 @@ class Station{
 
     int getColor() const;
     void setColor(int value);
-    const char* getCurrentColorScale();
+    const char* getCurrentOnSiteAlert();
 
     //operators
     friend bool operator < (const Station& station1, const Station& station2);
