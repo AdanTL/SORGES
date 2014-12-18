@@ -1,10 +1,10 @@
 #include<iostream>
 #include "origin.h"
 
-Origin::Origin(const std::string& id, const std::tm& time, long double latitude, 
+Origin::Origin(const std::string& id, const std::tm& time, long double latitude,
     	   	   long double longitude, double magnitude, const std::set<Station>& stations):
-   			   originID(id),
-   			   originTime(time),
+               originID(id),
+               originTime(time),
    			   latitude(latitude),
    			   longitude(longitude),
    			   magnitude(magnitude),

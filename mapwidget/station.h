@@ -31,6 +31,11 @@ class Station{
 
     //operators
     friend bool operator < (const Station& station1, const Station& station2);
+
+    bool operator == (const Station& station){
+        return stationID == station.stationID;
+    }
+
     friend std::ostream& operator << (std::ostream& os, const Station& station);
 
 private:

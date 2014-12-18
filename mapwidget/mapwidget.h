@@ -20,7 +20,7 @@ public:
     explicit MapWidget(QWidget *parent = 0);
     ~MapWidget();
     void paintOrigin(const Origin& origin);
-    void paintStations(const std::set<Station>& stations);
+    void paintStations(const std::set<Station>& c_stations);
     void paintCircles();
     void paintCircles(const long double& x, const long double& y, const long double& radius, int transparence = 0 , int red = 256, int green = 256, int blue = 256);
 private:
@@ -44,6 +44,8 @@ private:
                                         long double minutes,
                                         long double seconds);
 
+    void changeStationsColors(const std::set<Station>& c_stations);
+    void drawStation(const Station& c_stations);
     void testPixelPrecision();
     void testOrigen();
 };

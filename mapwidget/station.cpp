@@ -85,6 +85,7 @@ bool operator < (const Station& station1, const Station& station2){
     return station1.stationID < station2.stationID;
 }
 
+
 std::ostream& operator << (std::ostream& os, const Station& station){
     os << "Station ID: " << station.stationID ;
     os << "\nStation Network ID: " << station.networkID << "\nLatitude: ";

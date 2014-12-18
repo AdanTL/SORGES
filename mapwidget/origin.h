@@ -8,7 +8,7 @@
 class Origin{
 
     public:
-    Origin(const std::string& id ="", const std::tm& time = std::tm(), long double latitude = 0,
+    Origin(const std::string& id = "", const std::tm& time = std::tm(), long double latitude = 0,
            long double longitude = 0, double magnitude = 0,
            const std::set<Station>& stations = std::set<Station>());
     

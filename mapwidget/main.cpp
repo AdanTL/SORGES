@@ -21,7 +21,7 @@ void recibirEstaciones(std::set<Station>& estaciones){
 }
 void recibirOrigen(Origin& origen,const std::set<Station>& estacionesActuales){
     //el tiempo se sacará del fichero, a fuego simulado
-    struct std::tm tm;
+    struct std::tm timeinfo = std::tm();
     std::istringstream ss("2014-07-02 12:34:20.5");
     //OJO QUE GET_TIME ES DE C++11 Y NO FUNCIONA AHORA MISMO
     //ss >> std::get_time(&tm, "%Y-%m-%d %H:%M:%S");
@@ -60,7 +60,7 @@ void recibirOrigen(Origin& origen,const std::set<Station>& estacionesActuales){
         estacionesOrigen.insert(station);
     }
 
-    origen = Origin("0x0001b",tm,36.5479,-9.2456,3.54, estacionesOrigen);
+    //origen = Origin("0x0001b",timeinfo,36.5479,-9.2456,3.54, estacionesOrigen);
 }
 
 int main(int argc, char *argv[])
@@ -74,8 +74,8 @@ int main(int argc, char *argv[])
     recibirEstaciones(stations);
 
     //simular llegada de origen
-    Origin origin;
-    recibirOrigen(origin,stations);
+    //Origin origin;
+    //recibirOrigen(origin,stations);
 
     return a.exec();
 }
