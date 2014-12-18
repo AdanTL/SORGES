@@ -92,12 +92,12 @@ void MapWidget::testOrigen(){
 
     // getting time from system (best to test it):
     time_t rawtime;
-    struct tm * timeinfo;
+    struct std::tm timeinfo;
     time (&rawtime);
-    timeinfo = localtime (&rawtime);
+    timeinfo = std::tm(*localtime (&rawtime));
 
     //System time - 3.
-    timeinfo->tm_sec -= 3;
+    timeinfo.tm_sec -= 13;
 
     // getting time from string:
     //struct std::tm tm;
@@ -105,7 +105,7 @@ void MapWidget::testOrigen(){
     //ss >> std::get_time(&tm, "%Y-%m-%d %H:%M:%S");
 
     //Punta san felipe Cádiz 36°32'16.12"  -6°-18'-1.20" -> por google maps
-    Origin myOrigin("0x0001b",*timeinfo, convertToDecimalDegrees(36,32,16.12), convertToDecimalDegrees(-6,-18,-1.20), 3.54, mystations);
+    Origin myOrigin("0x0001b",timeinfo, convertToDecimalDegrees(36,32,16.12), convertToDecimalDegrees(-6,-18,-1.20), 3.54, mystations);
     paintOrigin(myOrigin);
 }
 
@@ -163,43 +163,63 @@ void MapWidget::coordinatesToPixels(long double &pixelX,long double &pixelY,
 
 
 /**ESTACIONES**/
-void MapWidget::paintStations(const std::set<Station> &stations){
+void MapWidget::paintStations(const std::set<Station>& stations){
     this->stations = stations;
-    //for(std::set<Station>::iterator it=origin.stations.begin(); it!=origin.stations.end(); ++it)
-        //os << *it;
+    for(std::set<Station>::iterator it=stations.begin(); it!=stations.end(); ++it)
+        drawStation(*it);
 
-    //completar método para pintar las estaciones
-    //hay que pintar triangulo en posicion (latitud y longitud a pixeles)
-    //hay que pintarlas con el color negro inicialmente
+}
+
+
+void MapWidget::drawStation(const Station& station){
+    long double coordX, coordY;
+    coordinatesToPixels(coordX,coordY,station.getLatitude(),station.getLongitude());
+    QPolygonF Triangle;
+    Triangle.append(QPoint(0,0));
+    Triangle.append(QPoint(0,10));
+    Triangle.append(QPoint(20,20));
+    //Triangle;
+     QGraphicsPolygonItem* pTriangleItem = mapScene.addPolygon(Triangle);
+
+    /*QPoint center(coordX, coordY);
+
+    //rectágulo que va a contener la elipse,
+    //coordenada superior 0,0 y tamaño 2*radio tanto alto como ancho
+    QRect rect(0,0,20,40);
+
+
+    //ESTO ES CLAVE: mover el rectágulo contenedor de manera que el centro del circulo sea el deseado
+    rect.moveCenter(center);
+
+    //pintar el circulo sobre la escena que contiene el mapa
+    mapScene.addEllipse (rect,QPen(),QBrush(QColor(red,green,blue,transparence)));
+    //*/
 }
 
 /**ORIGEN**/
 void MapWidget::paintOrigin(const Origin &origin){
     long double coordX, coordY;
-
     this->currentOrigin = origin;
+    long double radius = calculateRadius();
+
     coordinatesToPixels(coordX,coordY,currentOrigin.getLatitude(),currentOrigin.getLongitude());
 
     //pintamos las estaciones con su nuevo color
-    //UTILIZAR OTRA FUNCION QUE SEA ESPECIFICA DE PINTAR EL COLOR
-    //YA QUE paintStation() VA A SER PARA PINTAR LAS ESTACIONES INICIALES
-    //por ejemplo: changeStationsColors()
-    //O BIEN HACERLO AQUÍ DIRECTAMENTE PORQUE ES UN FOREACH EN REALIDAD
-    paintStations(currentOrigin.getStations());
+    changeStationsColors(currentOrigin.getStations());
 
-    // pintamos el primer circulo con gris (cambiable en paintCircles) opacidad 200/256.
-    //NO HARÍA FALTA PASARLE PARÁMETROS A LA FUNCIÓN
-    //COGERÍA EL EPICENTRO DE currentOrigin
-    //LOS ATRIBUTOS DE OPACIDAD Y TAL SE PUEDEN DEFINIR EN EL MAPDEFINITION
-    paintCircles(coordX, coordY, calculateRadius(),100, 0, 0, 128);
+    QPoint center(coordX, coordY);
 
-    //pintamos el epicentro (latitud y longitud a pixeles)
-    // HACER FUNCION ESPECIFICA DE PINTAR EL EPICENTRO
-    // SEA UN CIRCULO U OTRA FIGURA
-    // NO UTILIZAR LA MISMA QUE PARA PINTAR LOS CIRCULOS CONCENTRICOS
-    // por ejemplo: paintEpicenter()
-    // O BIEN HACERLO AQUÍ DIRECTAMENTE
-    paintCircles(coordX, coordY, 2, 255, 128, 0, 0);
+    // pintamos el primer circulo de expansion.
+    QRect rect(0,0,2*radius,2*radius);
+    rect.moveCenter(center);
+    mapScene.addEllipse (rect,QPen(),QBrush(QColor(R_EPICENTER_FIRST_CIRCLE,G_EPICENTER_FIRST_CIRCLE,B_EPICENTER_FIRST_CIRCLE,T_EPICENTER_FIRST_CIRCLE)));
+
+    // pintamos el epicentro.
+    QRect rect2(0,0,2*RADIUS_EPICENTER,2*RADIUS_EPICENTER);
+    rect2.moveCenter(center);
+    mapScene.addEllipse (rect2,QPen(),QBrush(QColor( R_EPICENTER, G_EPICENTER, B_EPICENTER, T_EPICENTER)));
+
+
 }
 
 
@@ -211,27 +231,35 @@ void MapWidget::paintOrigin(const Origin &origin){
  * la diferencia de tiempo habrá que medirla dependiendo de las unidades de la velocidad
  */
 float MapWidget::calculateRadius(){
-    double speed = 3000; //velocidad de propagacion Onda S: 3000m/s aproximadamente.
     long double radius;
     long int difSeconds=0;
     time_t rawtime;
-    struct tm * timeinfo;
+    struct std::tm * timeinfo;
 
     // Getting the system time and the origin time diference (only h/m/s).
     time (&rawtime);
     timeinfo = localtime (&rawtime);
-    std::cout << timeinfo->tm_hour << " -- " <<  timeinfo->tm_min << " -- " <<  timeinfo->tm_sec << " -- " << std::endl;
-    difSeconds += timeinfo->tm_sec - currentOrigin.getOriginTime().tm_sec;
-    difSeconds += (timeinfo->tm_min - currentOrigin.getOriginTime().tm_min)*60;
-    difSeconds += (timeinfo->tm_hour - currentOrigin.getOriginTime().tm_hour)*3600;
+    std::cout <<  currentOrigin.getOriginTime().tm_hour << " -- " <<  timeinfo->tm_min - currentOrigin.getOriginTime().tm_min << " -- " <<  timeinfo->tm_sec - currentOrigin.getOriginTime().tm_sec << " -- " << std::endl;
+    difSeconds = timeinfo->tm_sec - currentOrigin.getOriginTime().tm_sec;
+    //difSeconds += (timeinfo->tm_min - currentOrigin.getOriginTime().tm_min)*60;
+    //difSeconds += (timeinfo->tm_hour - currentOrigin.getOriginTime().tm_hour)*3600;
 
     // getting the radius in meters.
-    radius = difSeconds * speed;
+    radius = difSeconds * SPEED_EXPANSION;
 
     // Calculate the numbers of pixels to "Radius meters".
-    return (radius*mapScene.width())/MAP_METRES_LONGITUDE;
+    std::cout << currentOrigin.getOriginTime().tm_sec << std::endl;
+    return (radius/MAP_METRES_LONGITUDE)*mapScene.width();
 
 }
+
+void MapWidget::changeStationsColors(const std::set<Station> &c_stations){
+    paintStations(c_stations);
+    for(std::set<Station>::iterator it=c_stations.begin(); it!=c_stations.end(); ++it){
+      //stations.find((*it).getStationID())->setColor(2);
+    }
+}
+
 
 /**funcion que pinta un circulo de expansion
  * centro en epicentro
