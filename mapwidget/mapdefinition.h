@@ -49,4 +49,10 @@
 /*Valor de transparencia del color en el primer circulo de expansion*/
 #define T_EPICENTER_FIRST_CIRCLE 128
 
+
+/*Tamaño en el eje X del triangulo de la estacion (finalmente este valor es x2)*/
+#define STATION_SIZE_X 5
+/*Tamaño en el eje X del triangulo de la estacion (finalmente este valor es x2)*/
+#define STATION_SIZE_Y 10
+
 #endif // MAPDEFINITION_H

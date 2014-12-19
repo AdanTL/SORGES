@@ -48,6 +48,7 @@ private:
     void drawStation(const Station& c_stations);
     void testPixelPrecision();
     void testOrigen();
+    void testStation();
 };
 
 #endif // MAPWIDGET_H

@@ -33,7 +33,7 @@ MapWidget::MapWidget(QWidget *parent) :
     //testPixelPrecision();
 
     //prueba de colocación origen en el mapa.
-    testOrigen();
+    testStation();
 }
 
 MapWidget::~MapWidget()
@@ -85,10 +85,10 @@ void MapWidget::testPixelPrecision(){
  */
 void MapWidget::testOrigen(){
     std::set<Station> mystations;
-    mystations.insert(Station("0x0000", "0x0001", 36.00204023875479, -10.2456402219765, 0));
-    mystations.insert(Station("0x0001", "0x0001", 37.00204023875479, -12.2456402219765, 1));
-    mystations.insert(Station("0x0002", "0x0002", 33.00204023875479, -5.2456402219765, 2));
-    mystations.insert(Station("0x0003", "0x0003", 30.00204023875479, -8.2456402219765, 3));
+    mystations.insert(Station("0x0000", "0x0001", 37.00204023875479, -10.2456402219765, 0));
+    mystations.insert(Station("0x0001", "0x0001", 34.00204023875479, -6.2456402219765, 1));
+    mystations.insert(Station("0x0002", "0x0002", 36.00204023875479, -4.2456402219765, 2));
+    mystations.insert(Station("0x0003", "0x0003", 35.00204023875479, -8.2456402219765, 3));
 
     // getting time from system (best to test it):
     time_t rawtime;
@@ -107,6 +107,20 @@ void MapWidget::testOrigen(){
     //Punta san felipe Cádiz 36°32'16.12"  -6°-18'-1.20" -> por google maps
     Origin myOrigin("0x0001b",timeinfo, convertToDecimalDegrees(36,32,16.12), convertToDecimalDegrees(-6,-18,-1.20), 3.54, mystations);
     paintOrigin(myOrigin);
+}
+
+/*
+ * Funcion privada para probar la colocacion de estaciones en la imagen
+ */
+void MapWidget::testStation(){
+    std::set<Station> mystations;
+    mystations.insert(Station("0x0000", "0x0001", convertToDecimalDegrees(36,59,39.61), convertToDecimalDegrees(-8,-56,-9.6), -1));
+    mystations.insert(Station("0x0001", "0x0002", convertToDecimalDegrees(36,32,16.12), convertToDecimalDegrees(-6,-18,-1.20), 0));
+    mystations.insert(Station("0x0002", "0x0003", convertToDecimalDegrees(36,32,16.12), convertToDecimalDegrees(-7,-18,-1.20), 1));
+    mystations.insert(Station("0x0003", "0x0004", convertToDecimalDegrees(36,40,17.19), convertToDecimalDegrees(-4,-13,-1.10), 2));
+    mystations.insert(Station("0x0004", "0x0005", convertToDecimalDegrees(35,36,12.12), convertToDecimalDegrees(-7,-4,-1.22), 3));
+
+    paintStations(mystations);
 }
 
 
@@ -175,25 +189,10 @@ void MapWidget::drawStation(const Station& station){
     long double coordX, coordY;
     coordinatesToPixels(coordX,coordY,station.getLatitude(),station.getLongitude());
     QPolygonF Triangle;
-    Triangle.append(QPoint(0,0));
-    Triangle.append(QPoint(0,10));
-    Triangle.append(QPoint(20,20));
-    //Triangle;
-     QGraphicsPolygonItem* pTriangleItem = mapScene.addPolygon(Triangle);
-
-    /*QPoint center(coordX, coordY);
-
-    //rectágulo que va a contener la elipse,
-    //coordenada superior 0,0 y tamaño 2*radio tanto alto como ancho
-    QRect rect(0,0,20,40);
-
-
-    //ESTO ES CLAVE: mover el rectágulo contenedor de manera que el centro del circulo sea el deseado
-    rect.moveCenter(center);
-
-    //pintar el circulo sobre la escena que contiene el mapa
-    mapScene.addEllipse (rect,QPen(),QBrush(QColor(red,green,blue,transparence)));
-    //*/
+    Triangle.append(QPoint(coordX,coordY));
+    Triangle.append(QPoint(coordX+STATION_SIZE_X,coordY-STATION_SIZE_Y));
+    Triangle.append(QPoint(coordX-STATION_SIZE_X,coordY-STATION_SIZE_Y));
+    QGraphicsPolygonItem* pTriangleItem = mapScene.addPolygon(Triangle,QPen(),QBrush(Station::onSiteAlert[station.getColor()]));
 }
 
 /**ORIGEN**/
