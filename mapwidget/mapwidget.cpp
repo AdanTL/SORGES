@@ -205,7 +205,7 @@ void MapWidget::paintOrigin(const Origin &origin){
     coordinatesToPixels(coordX,coordY,currentOrigin.getLatitude(),currentOrigin.getLongitude());
 
     //pintamos las estaciones con su nuevo color
-    changeStationsColors(currentOrigin.getStations());
+    //changeStationsColors(currentOrigin.getStations());
 
     QPoint center(coordX, coordY);
 
@@ -218,8 +218,6 @@ void MapWidget::paintOrigin(const Origin &origin){
     QRect rect2(0,0,2*RADIUS_EPICENTER,2*RADIUS_EPICENTER);
     rect2.moveCenter(center);
     mapScene.addEllipse (rect2,QPen(),QBrush(QColor( R_EPICENTER, G_EPICENTER, B_EPICENTER, T_EPICENTER)));
-
-
 }
 
 
