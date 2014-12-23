@@ -119,8 +119,12 @@ void MapWidget::testStation(){
     mystations.insert(Station("0x0002", "0x0003", convertToDecimalDegrees(36,32,16.12), convertToDecimalDegrees(-7,-18,-1.20), 1));
     mystations.insert(Station("0x0003", "0x0004", convertToDecimalDegrees(36,40,17.19), convertToDecimalDegrees(-4,-13,-1.10), 2));
     mystations.insert(Station("0x0004", "0x0005", convertToDecimalDegrees(35,36,12.12), convertToDecimalDegrees(-7,-4,-1.22), 3));
-
     paintStations(mystations);
+
+    //changing one colour:
+    std::set<Station> testChangeStationsColor;
+    testChangeStationsColor.insert(Station("0x0000", "0x0001", convertToDecimalDegrees(36,59,39.61), convertToDecimalDegrees(-8,-56,-9.6), 0));
+    changeStationsColors(testChangeStationsColor);
 }
 
 
@@ -253,7 +257,9 @@ float MapWidget::calculateRadius(){
 void MapWidget::changeStationsColors(const std::set<Station> &c_stations){
     paintStations(c_stations);
     for(std::set<Station>::iterator it=c_stations.begin(); it!=c_stations.end(); ++it){
-      //stations.find((*it).getStationID())->setColor(2);
+        stations.erase(stations.find(*it));
+        stations.insert(*it);
+        //drawStation(*it);
     }
 }
 
