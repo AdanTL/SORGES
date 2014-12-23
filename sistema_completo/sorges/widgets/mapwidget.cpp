@@ -32,8 +32,11 @@ MapWidget::MapWidget(QWidget *parent) :
     //prueba de precision de coordenadas-pixel
     //testPixelPrecision();
 
-    //prueba de colocación origen en el mapa.
+    //prueba de colocación staciones en el mapa.
     testStation();
+
+    //prueba de colocación origen en el mapa.
+    testOrigen();
 }
 
 MapWidget::~MapWidget()
@@ -199,6 +202,17 @@ void MapWidget::drawStation(const Station& station){
     QGraphicsPolygonItem* pTriangleItem = mapScene.addPolygon(Triangle,QPen(),QBrush(Station::onSiteAlert[station.getColor()]));
 }
 
+void MapWidget::changeStationsColors(const std::set<Station> &c_stations){
+    paintStations(c_stations);
+    for(std::set<Station>::iterator it=c_stations.begin(); it!=c_stations.end(); ++it){
+        stations.erase(stations.find(*it));
+        stations.insert(*it);
+        //drawStation(*it);
+    }
+}
+
+
+
 /**ORIGEN**/
 void MapWidget::paintOrigin(const Origin &origin){
     long double coordX, coordY;
@@ -208,7 +222,7 @@ void MapWidget::paintOrigin(const Origin &origin){
     coordinatesToPixels(coordX,coordY,currentOrigin.getLatitude(),currentOrigin.getLongitude());
 
     //pintamos las estaciones con su nuevo color
-    //changeStationsColors(currentOrigin.getStations());
+    changeStationsColors(currentOrigin.getStations());
 
     QPoint center(coordX, coordY);
 
@@ -254,15 +268,6 @@ float MapWidget::calculateRadius(){
 
 }
 
-void MapWidget::changeStationsColors(const std::set<Station> &c_stations){
-    paintStations(c_stations);
-    for(std::set<Station>::iterator it=c_stations.begin(); it!=c_stations.end(); ++it){
-        stations.erase(stations.find(*it));
-        stations.insert(*it);
-        //drawStation(*it);
-    }
-}
-
 
 /**funcion que pinta un circulo de expansion
  * centro en epicentro
@@ -294,30 +299,4 @@ void MapWidget::paintCircles(){
 
     //pintar el circulo sobre la escena que contiene el mapa
     mapScene.addEllipse (rect);
-}
-
-
-void MapWidget::paintCircles(const long double& x, const long double& y, const long double& radius, int transparence, int red, int green, int blue){
-
-    //definir el centro del círculo: coordenadas del origen/evento
-    //pasar las coordenadas almacenadas en el atributo currentOrigin a pixeles
-    //y despues pasarselas al constructor de center
-    /*
-    long double x,y;
-    coordinatesToPixels(x,y,currentOrigin.getLatitude(),currentOrigin.getLongitude());
-    QPoint center(x,y);
-    */
-    //--temporalmente definido el centro en el centro de la imagen
-    QPoint center(x, y);
-
-    //rectágulo que va a contener la elipse,
-    //coordenada superior 0,0 y tamaño 2*radio tanto alto como ancho
-    QRect rect(0,0,2*radius,2*radius);
-
-
-    //ESTO ES CLAVE: mover el rectágulo contenedor de manera que el centro del circulo sea el deseado
-    rect.moveCenter(center);
-
-    //pintar el circulo sobre la escena que contiene el mapa
-    mapScene.addEllipse (rect,QPen(),QBrush(QColor(red,green,blue,transparence)));
 }
