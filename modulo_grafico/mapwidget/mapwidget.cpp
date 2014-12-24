@@ -254,7 +254,6 @@ float MapWidget::calculateRadius(){
 }
 
 void MapWidget::changeStationsColors(const std::set<Station> &c_stations){
-    paintStations(c_stations);
     for(std::set<Station>::iterator it=c_stations.begin(); it!=c_stations.end(); ++it){
         stations.erase(stations.find(*it));
         stations.insert(*it);
