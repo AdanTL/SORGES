@@ -8,11 +8,12 @@
 class Origin{
 
     public:
-    Origin(const std::string& id = "", const std::tm& time = std::tm(), long double latitude = 0,
-           long double longitude = 0, double magnitude = 0,
+    Origin(const std::string& id = "", const std::tm& time = std::tm(),
+           long double latitude = 0, long double longitude = 0,
+           double magnitude = 0,
            const std::set<Station>& stations = std::set<Station>());
     
-    //getters and setters
+    /**GETTERS AND SETTERS**/
     std::string getOriginID() const;
     void setOriginID(const std::string &value);
 
@@ -31,8 +32,9 @@ class Origin{
     std::set<Station> getStations() const;
     void setStations(const std::set<Station> &value);
 
-    //operators
+    /**OPERATORS**/
     friend bool operator < (const Origin& origin1, const Origin& origin2);
+    friend bool operator == (const Origin& origin1, const Origin& origin2);
     friend std::ostream& operator << (std::ostream& os, const Origin& origin);
 
 private:

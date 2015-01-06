@@ -19,9 +19,12 @@ class MapWidget : public QWidget
 public:
     explicit MapWidget(QWidget *parent = 0);
     ~MapWidget();
+
+public slots:
     void paintOrigin(const Origin& origin);
-    void paintStations(const std::set<Station>& c_stations);
+    void paintStations(const std::set<Station>& stationsList);
     void paintCircles();
+
 private:
     Ui::MapWidget *ui;
     QImage mapImage;
@@ -29,8 +32,12 @@ private:
     std::set<Station> stations;
     Origin currentOrigin;
 
+    /**PRIVATE FUNCTIONS**/
+
+    /*EXPANSION CIRCLES RADIUS*/
     float calculateRadius();
 
+    /*CONVERSIONS OF COORDINATES*/
     void coordinatesToPixels(long double &pixelX, long double &pixelY,
                              long double degreesTargetLat, long double minutesTargetLat,
                              long double secondsTargetLat, long double degreesTargetLon,
@@ -43,8 +50,11 @@ private:
                                         long double minutes,
                                         long double seconds);
 
-    void changeStationsColors(const std::set<Station>& c_stations);
-    void drawStation(const Station& c_stations);
+    /*STATION FUNCTIONS*/
+    void changeStationsColors(const std::set<Station>& changedStations);
+    void drawStation(const Station &c_stations);
+
+    /*TESTS*/
     void testPixelPrecision();
     void testOrigen();
     void testStation();

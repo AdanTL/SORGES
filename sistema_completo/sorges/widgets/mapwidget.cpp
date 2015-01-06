@@ -10,21 +10,23 @@
 MapWidget::MapWidget(QWidget *parent) :
     QWidget(parent), ui(new Ui::MapWidget), mapScene(new QGraphicsScene(this))
 {
-    //indicar la interfaz de usuario del widget
+    //Setup for the user interface.
     ui->setupUi(this);
 
-    //cargar la imagen en el atributo QImage (imagen ya añadida como recurso)
+    //Image load from resource
     mapImage.load(MAP_IMAGE_PATH);
-
-    //convertir a tipo pixmap para poder añadirla a la escena gráfica
+    //add image to scene
     QPixmap mapPixmap = QPixmap::fromImage(mapImage);
     mapScene.addPixmap(mapPixmap);
-
-    //ajustar el rectángulo contenedor de la escena al tamaño exacto de la imagen
+    //and fit rectangle to image limits
     mapScene.setSceneRect(mapPixmap.rect());
 
-    //decirle al graphicsview de la interfaz de usuario que su escena es esta
+    //User interface contains the GraphicsView named mapView (see the ui form)
     ui->mapView->setScene(&mapScene);
+
+
+    /******tests******/
+    /***borrar de aqui antes de entrega de codigo**/
 
     //pintado ejemplo circulo
     //paintCircles();
@@ -37,6 +39,8 @@ MapWidget::MapWidget(QWidget *parent) :
 
     //prueba de colocación origen en el mapa.
     testOrigen();
+
+    /*****tests********/
 }
 
 MapWidget::~MapWidget()
@@ -44,113 +48,39 @@ MapWidget::~MapWidget()
     delete ui;
 }
 
-/*
- * Funcion privada para probar la precision de la conversion de coordenadas a pixeles de la imagen
- */
-void MapWidget::testPixelPrecision(){
-    //prueba coordenadas salida por consola
-    //esquinas
-    std::cout << convertToDecimalDegrees(38,0,0)<< std::endl;
-    std::cout << convertToDecimalDegrees(-14,0,0)<< std::endl;
-    std::cout << convertToDecimalDegrees(34,0,0)<< std::endl;
-    std::cout << convertToDecimalDegrees(-3,0,0)<< std::endl;
+/**CONVERTER FUNCTIONS FROM COORDINATES TO PIXELS**/
 
-    //cabo san vicente 36°59'39.61" (36.994336) y -8°-56'-9.60" (-8.936) -> por google maps
-    std::cout << convertToDecimalDegrees(36,59,39.61)<< std::endl;
-    std::cout << convertToDecimalDegrees(-8,-56,-9.6)<< std::endl;
-    long double x,y;
-    coordinatesToPixels(x,y,36.994336,-8.936);
-    std::cout << x << ' ' << y << std::endl;
-    //pintado ejemplo coordenadas (linea desde cabo san vicente hasta esquina izquierda arriba)
-    mapScene.addLine (x,y,0,0);
+/**Converter from degrees-minutes-seconds to decimal degrees*/
+long double MapWidget::convertToDecimalDegrees(long double degrees,
+                                               long double minutes,
+                                               long double seconds)
+{
 
-    //punta gibraltar 36° 6'34.01" (36.109447) -5°-20'-43.59" (-5.345442) -> por google maps
-    std::cout << convertToDecimalDegrees(36,6,34.01)<< std::endl;
-    std::cout << convertToDecimalDegrees(-5,-20,-43.59)<< std::endl;
-    long double x2,y2;
-    coordinatesToPixels(x2,y2,36.109447,-5.345442);
-    std::cout << x2 << ' ' << y2 << std::endl;
-    //pintado ejemplo coordenadas (linea desde gibraltar hasta derecha abajo
-    mapScene.addLine (x2,y2,mapScene.width (),mapScene.height ());
-
-    //Punta san felipe Cádiz 36°32'16.12"  -6°-18'-1.20" -> por google maps
-    std::cout << convertToDecimalDegrees(36,32,16.12)<< std::endl;
-    std::cout << convertToDecimalDegrees(-6,-18,-1.20)<< std::endl;
-    long double x3,y3;
-    coordinatesToPixels(x3,y3,36,32,16.12,-6,-18,-1.20);
-    std::cout << x3 << ' ' << y3 << std::endl;
-    //pintado ejemplo coordenadas (linea desde cadiz hasta izquierda abajo
-    mapScene.addLine (x3,y3,0,mapScene.height ());
-}
-
-/*
- * Funcion privada para probar la colocacion de un Origen en la imagen
- */
-void MapWidget::testOrigen(){
-    std::set<Station> mystations;
-    mystations.insert(Station("0x0000", "0x0001", 37.00204023875479, -10.2456402219765, 0));
-    mystations.insert(Station("0x0001", "0x0001", 34.00204023875479, -6.2456402219765, 1));
-    mystations.insert(Station("0x0002", "0x0002", 36.00204023875479, -4.2456402219765, 2));
-    mystations.insert(Station("0x0003", "0x0003", 35.00204023875479, -8.2456402219765, 3));
-
-    // getting time from system (best to test it):
-    time_t rawtime;
-    struct std::tm timeinfo;
-    time (&rawtime);
-    timeinfo = std::tm(*localtime (&rawtime));
-
-    //System time - 3.
-    timeinfo.tm_sec -= 13;
-
-    // getting time from string:
-    //struct std::tm tm;
-    //std::istringstream ss("2014-12-10 13:54:00");
-    //ss >> std::get_time(&tm, "%Y-%m-%d %H:%M:%S");
-
-    //Punta san felipe Cádiz 36°32'16.12"  -6°-18'-1.20" -> por google maps
-    Origin myOrigin("0x0001b",timeinfo, convertToDecimalDegrees(36,32,16.12), convertToDecimalDegrees(-6,-18,-1.20), 3.54, mystations);
-    paintOrigin(myOrigin);
-}
-
-/*
- * Funcion privada para probar la colocacion de estaciones en la imagen
- */
-void MapWidget::testStation(){
-    std::set<Station> mystations;
-    mystations.insert(Station("0x0000", "0x0001", convertToDecimalDegrees(36,59,39.61), convertToDecimalDegrees(-8,-56,-9.6), -1));
-    mystations.insert(Station("0x0001", "0x0002", convertToDecimalDegrees(36,32,16.12), convertToDecimalDegrees(-6,-18,-1.20), 0));
-    mystations.insert(Station("0x0002", "0x0003", convertToDecimalDegrees(36,32,16.12), convertToDecimalDegrees(-7,-18,-1.20), 1));
-    mystations.insert(Station("0x0003", "0x0004", convertToDecimalDegrees(36,40,17.19), convertToDecimalDegrees(-4,-13,-1.10), 2));
-    mystations.insert(Station("0x0004", "0x0005", convertToDecimalDegrees(35,36,12.12), convertToDecimalDegrees(-7,-4,-1.22), 3));
-    paintStations(mystations);
-
-    //changing one colour:
-    std::set<Station> testChangeStationsColor;
-    testChangeStationsColor.insert(Station("0x0000", "0x0001", convertToDecimalDegrees(36,59,39.61), convertToDecimalDegrees(-8,-56,-9.6), 0));
-    changeStationsColors(testChangeStationsColor);
-}
-
-
-/**COORDENADAS->PIXELES**/
-
-/**funcion que convierte grados minutos y segundos a grados en decima*/
-long double MapWidget::convertToDecimalDegrees(long double degrees, long double minutes, long double seconds){
     return degrees + (minutes/60) + (seconds/3600);
 }
 
-/*funcion que interpola y transforma las cooordenadas geográficas que se le indiquen a pixeles de la imagen
- *--version recibiendo las coordenadas en grados minutos y segundos
+/*
+ * Interpolation function which transform received coordinates to map image pixels
+ * (version receiving degrees-minutes-seconds
 */
 void MapWidget::coordinatesToPixels(long double &pixelX,long double &pixelY,
-                                    long double degreesTargetLat,long double minutesTargetLat,long double secondsTargetLat,
-                                    long double degreesTargetLon, long double minutesTargetLon,long double secondsTargetLon)
+                                    long double degreesTargetLat,
+                                    long double minutesTargetLat,
+                                    long double secondsTargetLat,
+                                    long double degreesTargetLon,
+                                    long double minutesTargetLon,
+                                    long double secondsTargetLon)
 {
     long double minLon = MAP_MIN_LONGITUDE;
     long double minLat = MAP_MIN_LATITUDE;
     long double maxLon = MAP_MAX_LONGITUDE;
     long double maxLat = MAP_MAX_LATITUDE;
-    long double targetLon = convertToDecimalDegrees(degreesTargetLon, minutesTargetLon, secondsTargetLon);
-    long double targetLat = convertToDecimalDegrees(degreesTargetLat, minutesTargetLat, secondsTargetLat);
+    long double targetLon = convertToDecimalDegrees(degreesTargetLon,
+                                                    minutesTargetLon,
+                                                    secondsTargetLon);
+    long double targetLat = convertToDecimalDegrees(degreesTargetLat,
+                                                    minutesTargetLat,
+                                                    secondsTargetLat);
     long double maxXpixel = mapScene.width();
     long double maxYpixel = mapScene.height();
     long double minXpixel = 0;
@@ -160,8 +90,9 @@ void MapWidget::coordinatesToPixels(long double &pixelX,long double &pixelY,
     pixelY = ((targetLat - minLat) / (maxLat - minLat)) * (maxYpixel - minYpixel);
 }
 
-/*funcion que interpola y transforma las cooordenadas geográficas que se le indiquen a pixeles de la imagen
- *--version recibiendo las coordenadas ya en decimal
+/*
+ * Interpolation function which transform received coordinates to map image pixels
+ * (version receiving decimal degrees
 */
 void MapWidget::coordinatesToPixels(long double &pixelX,long double &pixelY,
                                     long double targetLat,long double targetLon)
@@ -181,71 +112,83 @@ void MapWidget::coordinatesToPixels(long double &pixelX,long double &pixelY,
 
 
 
+/**STATION FUNCTIONS**/
 
-
-/**ESTACIONES**/
-void MapWidget::paintStations(const std::set<Station>& stations){
-    this->stations = stations;
+void MapWidget::paintStations(const std::set<Station>& stationsList)
+{
+    this->stations = stationsList;
     for(std::set<Station>::iterator it=stations.begin(); it!=stations.end(); ++it)
         drawStation(*it);
-
 }
 
-
-void MapWidget::drawStation(const Station& station){
+void MapWidget::drawStation(const Station& station)
+{
     long double coordX, coordY;
     coordinatesToPixels(coordX,coordY,station.getLatitude(),station.getLongitude());
     QPolygonF Triangle;
     Triangle.append(QPoint(coordX,coordY));
     Triangle.append(QPoint(coordX+STATION_SIZE_X,coordY-STATION_SIZE_Y));
     Triangle.append(QPoint(coordX-STATION_SIZE_X,coordY-STATION_SIZE_Y));
-    QGraphicsPolygonItem* pTriangleItem = mapScene.addPolygon(Triangle,QPen(),QBrush(Station::onSiteAlert[station.getColor()]));
+    mapScene.addPolygon(Triangle,
+                        QPen(),
+                        QBrush(station.getCurrentOnSiteAlert()));
 }
 
-void MapWidget::changeStationsColors(const std::set<Station> &c_stations){
-    paintStations(c_stations);
-    for(std::set<Station>::iterator it=c_stations.begin(); it!=c_stations.end(); ++it){
+void MapWidget::changeStationsColors(const std::set<Station> &changedStations)
+{
+    for(std::set<Station>::iterator it=changedStations.begin();
+                                    it!=changedStations.end(); ++it)
+    {
         stations.erase(stations.find(*it));
         stations.insert(*it);
-        //drawStation(*it);
+        drawStation(*it);
     }
 }
 
 
 
-/**ORIGEN**/
+/**ORIGIN FUNCTIONS**/
+
 void MapWidget::paintOrigin(const Origin &origin){
-    long double coordX, coordY;
     this->currentOrigin = origin;
+
+    long double coordX, coordY;
     long double radius = calculateRadius();
 
-    coordinatesToPixels(coordX,coordY,currentOrigin.getLatitude(),currentOrigin.getLongitude());
-
-    //pintamos las estaciones con su nuevo color
-    changeStationsColors(currentOrigin.getStations());
-
+    coordinatesToPixels(coordX,coordY,currentOrigin.getLatitude(),
+                                      currentOrigin.getLongitude());
     QPoint center(coordX, coordY);
 
-    // pintamos el primer circulo de expansion.
+    //change the color of related stations
+    changeStationsColors(currentOrigin.getStations());
+
+    //First circle
     QRect rect(0,0,2*radius,2*radius);
     rect.moveCenter(center);
-    mapScene.addEllipse (rect,QPen(),QBrush(QColor(R_EPICENTER_FIRST_CIRCLE,G_EPICENTER_FIRST_CIRCLE,B_EPICENTER_FIRST_CIRCLE,T_EPICENTER_FIRST_CIRCLE)));
+    mapScene.addEllipse(rect,QPen(),
+                             QBrush(QColor(R_EPICENTER_FIRST_CIRCLE,
+                                           G_EPICENTER_FIRST_CIRCLE,
+                                           B_EPICENTER_FIRST_CIRCLE,
+                                           T_EPICENTER_FIRST_CIRCLE)));
 
-    // pintamos el epicentro.
+    //Epicenter mark (to be on top of the first circle)
     QRect rect2(0,0,2*RADIUS_EPICENTER,2*RADIUS_EPICENTER);
     rect2.moveCenter(center);
-    mapScene.addEllipse (rect2,QPen(),QBrush(QColor( R_EPICENTER, G_EPICENTER, B_EPICENTER, T_EPICENTER)));
+    mapScene.addEllipse (rect2,QPen(),QBrush(QColor( R_EPICENTER,
+                                                     G_EPICENTER,
+                                                     B_EPICENTER,
+                                                     T_EPICENTER)));
 }
 
 
 
-/**CIRCULOS CONCENTRICOS**/
+/**CONCENTRIC CIRCLES**/
 
-/**funcion que calcula el radio del círculo de expansion
- * fórmula-> radio = (tiempo actual - tiempo origen) * velocidad de propagacion de la onda
- * la diferencia de tiempo habrá que medirla dependiendo de las unidades de la velocidad
+/**
+ * Function for calculating the expansion circle radius every 5 seconds
  */
-float MapWidget::calculateRadius(){
+float MapWidget::calculateRadius()
+{
     long double radius;
     long int difSeconds=0;
     time_t rawtime;
@@ -254,13 +197,16 @@ float MapWidget::calculateRadius(){
     // Getting the system time and the origin time diference (only h/m/s).
     time (&rawtime);
     timeinfo = localtime (&rawtime);
-    std::cout <<  currentOrigin.getOriginTime().tm_hour << " -- " <<  timeinfo->tm_min - currentOrigin.getOriginTime().tm_min << " -- " <<  timeinfo->tm_sec - currentOrigin.getOriginTime().tm_sec << " -- " << std::endl;
+    std::cout <<  currentOrigin.getOriginTime().tm_hour << " -- " <<
+                  timeinfo->tm_min - currentOrigin.getOriginTime().tm_min <<
+                  " -- " <<  timeinfo->tm_sec - currentOrigin.getOriginTime().tm_sec
+                  << " -- " << std::endl;
     difSeconds = timeinfo->tm_sec - currentOrigin.getOriginTime().tm_sec;
     //difSeconds += (timeinfo->tm_min - currentOrigin.getOriginTime().tm_min)*60;
     //difSeconds += (timeinfo->tm_hour - currentOrigin.getOriginTime().tm_hour)*3600;
 
     // getting the radius in meters.
-    radius = difSeconds * EXPANSION_SPEED;
+    radius = difSeconds * PROPAGATION_SPEED;
 
     // Calculate the numbers of pixels to "Radius meters".
     std::cout << currentOrigin.getOriginTime().tm_sec << std::endl;
@@ -300,3 +246,108 @@ void MapWidget::paintCircles(){
     //pintar el circulo sobre la escena que contiene el mapa
     mapScene.addEllipse (rect);
 }
+
+
+/***************************************tests**********************************/
+
+/*
+ * Funcion privada para probar la precision de la conversion de coordenadas a
+ * pixeles de la imagen
+ */
+void MapWidget::testPixelPrecision(){
+    //prueba coordenadas salida por consola
+    //esquinas
+    std::cout << convertToDecimalDegrees(38,0,0)<< std::endl;
+    std::cout << convertToDecimalDegrees(-14,0,0)<< std::endl;
+    std::cout << convertToDecimalDegrees(34,0,0)<< std::endl;
+    std::cout << convertToDecimalDegrees(-3,0,0)<< std::endl;
+
+    //cabo san vicente 36°59'39.61" (36.994336) y -8°-56'-9.60" (-8.936)
+    std::cout << convertToDecimalDegrees(36,59,39.61)<< std::endl;
+    std::cout << convertToDecimalDegrees(-8,-56,-9.6)<< std::endl;
+    long double x,y;
+    coordinatesToPixels(x,y,36.994336,-8.936);
+    std::cout << x << ' ' << y << std::endl;
+    //pintado ejemplo coordenadas (linea desde cabo san vicente
+    //hasta esquina izquierda arriba)
+    mapScene.addLine (x,y,0,0);
+
+    //punta gibraltar 36° 6'34.01" (36.109447) -5°-20'-43.59" (-5.345442)
+    std::cout << convertToDecimalDegrees(36,6,34.01)<< std::endl;
+    std::cout << convertToDecimalDegrees(-5,-20,-43.59)<< std::endl;
+    long double x2,y2;
+    coordinatesToPixels(x2,y2,36.109447,-5.345442);
+    std::cout << x2 << ' ' << y2 << std::endl;
+    //pintado ejemplo coordenadas (linea desde gibraltar hasta derecha abajo
+    mapScene.addLine (x2,y2,mapScene.width (),mapScene.height ());
+
+    //Punta san felipe Cádiz 36°32'16.12"  -6°-18'-1.20" -> por google maps
+    std::cout << convertToDecimalDegrees(36,32,16.12)<< std::endl;
+    std::cout << convertToDecimalDegrees(-6,-18,-1.20)<< std::endl;
+    long double x3,y3;
+    coordinatesToPixels(x3,y3,36,32,16.12,-6,-18,-1.20);
+    std::cout << x3 << ' ' << y3 << std::endl;
+    //pintado ejemplo coordenadas (linea desde cadiz hasta izquierda abajo
+    mapScene.addLine (x3,y3,0,mapScene.height ());
+}
+
+/*
+ * Funcion privada para probar la colocacion de un Origen en la imagen
+ */
+void MapWidget::testOrigen(){
+    std::set<Station> mystations;
+    mystations.insert(
+                Station("0x0000", "0x0001", 37.00204023875479, -10.2456402219765,0));
+    mystations.insert(
+                Station("0x0001", "0x0001", 34.00204023875479, -6.2456402219765,1));
+    mystations.insert(
+                Station("0x0002", "0x0002", 36.00204023875479, -4.2456402219765,2));
+    mystations.insert(
+                Station("0x0003", "0x0003", 35.00204023875479, -8.2456402219765,3));
+
+    // getting time from system (best to test it):
+    time_t rawtime;
+    struct std::tm timeinfo;
+    time (&rawtime);
+    timeinfo = std::tm(*localtime (&rawtime));
+
+    //System time - 3.
+    timeinfo.tm_sec -= 13;
+
+    //Punta san felipe Cádiz 36°32'16.12"  -6°-18'-1.20" -> por google maps
+    Origin myOrigin("0x0001b",timeinfo, convertToDecimalDegrees(36,32,16.12),
+                    convertToDecimalDegrees(-6,-18,-1.20), 3.54, mystations);
+    paintOrigin(myOrigin);
+}
+
+/*
+ * Funcion privada para probar la colocacion de estaciones en la imagen
+ */
+void MapWidget::testStation(){
+    std::set<Station> mystations;
+    mystations.insert(Station("0x0000", "0x0001",
+                              convertToDecimalDegrees(36,59,39.61),
+                              convertToDecimalDegrees(-8,-56,-9.6), -1));
+    mystations.insert(Station("0x0001", "0x0002",
+                              convertToDecimalDegrees(36,32,16.12),
+                              convertToDecimalDegrees(-6,-18,-1.20), 0));
+    mystations.insert(Station("0x0002", "0x0003",
+                              convertToDecimalDegrees(36,32,16.12),
+                              convertToDecimalDegrees(-7,-18,-1.20), 1));
+    mystations.insert(Station("0x0003", "0x0004",
+                              convertToDecimalDegrees(36,40,17.19),
+                              convertToDecimalDegrees(-4,-13,-1.10), 2));
+    mystations.insert(Station("0x0004", "0x0005",
+                              convertToDecimalDegrees(35,36,12.12),
+                              convertToDecimalDegrees(-7,-4,-1.22), 3));
+    paintStations(mystations);
+
+    //changing one colour:
+    std::set<Station> testChangeStationsColor;
+    testChangeStationsColor.insert(Station("0x0000", "0x0001",
+                                           convertToDecimalDegrees(36,59,39.61),
+                                           convertToDecimalDegrees(-8,-56,-9.6), 0));
+    changeStationsColors(testChangeStationsColor);
+}
+
+/***************************************tests**********************************/

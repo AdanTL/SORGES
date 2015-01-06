@@ -1,76 +1,76 @@
 #ifndef MAPDEFINITION_H
 #define MAPDEFINITION_H
 
-/**path de la imagen del mapa**/
-    #define MAP_IMAGE_PATH ":/mapacortado.png"
+/**PATH TO THE IMAGE WITH THE MAP INTO RESOURCES**/
+    #define MAP_IMAGE_PATH ":/mapImage.png"
 /****/
 
 
-/**COORDENADAS**/
+/**COORDINATES**/
 
-    /*latitud en la esquina superior izquierda (pixel y=0)*/
+    /*Latitude at up left corner (pixel y=0)*/
     #define MAP_MIN_LATITUDE 38
 
-    /*longitud en la esquina superior izquierda (pixel x=0)*/
+    /*Longitude at up left corner (pixel x=0)*/
     #define MAP_MIN_LONGITUDE -14
 
-    /*latitud en la esquina inferior derecha (máxima)*/
+    /*Latitude at bottom right corner (pixel y = height of the image)*/
     #define MAP_MAX_LATITUDE 34
 
-    /*longitud en la esquina inferior derecha (máxima)*/
+    /*Longitude at bottom right corner (pixel x = width of the image)*/
     #define MAP_MAX_LONGITUDE -3
 
-    /*longitud en metros del eje latitudinal*/
+    /*Latitude Y-axis length in meters*/
     #define MAP_METRES_LATITUDE 445210
 
-    /*longitud en metros del eje longitudinal*/
+    /*Longitude X-axis length in meters*/
     #define MAP_METRES_LONGITUDE 1014520
 
 /****/
 
 
-/**VELOCIDAD PROPAGACION**/
+/**WAVE PROPAGATION SPEED**/
 
-    /*Velocidad media de onda S (m/s)*/
-    #define EXPANSION_SPEED 3600
+    /*Average velocity in m/s */
+    #define PROPAGATION_SPEED 3600
 
 /****/
 
 
-/**COLORES**/
+/**COLORS**/
 
-    /**EPICENTRO**/
-        /*Valor de rojo en el epicentro*/
+    /**EPICENTER**/
+        /*RGB red value for the epicenter mark*/
         #define R_EPICENTER 255
-        /*Valor verde en el epicentro*/
+        /*RGB green value for the epicenter mark*/
         #define G_EPICENTER 0
-        /*Valor azul en el epicentro*/
+        /*RGB blue value for the epicenter mark*/
         #define B_EPICENTER 0
-        /*Valor de transparencia del color en el epicentro*/
+        /*Color transparency for the epicenter mark*/
         #define T_EPICENTER 255
 
-    /**CIRCULOS EXPANSION**/
-        /*Valor de rojo en el primer circulo de expansion*/
+    /**EXPANSION CIRCLES**/
+        /*RGB red value for the first circle*/
         #define R_EPICENTER_FIRST_CIRCLE 50
-        /*Valor de verde en el primer circulo de expansion*/
+        /*RGB green value for the first circle*/
         #define G_EPICENTER_FIRST_CIRCLE 50
-        /*Valor de azul en el primer circulo de expasion*/
+        /*RGB blue value for the first circle*/
         #define B_EPICENTER_FIRST_CIRCLE 128
-        /*Valor de transparencia del color en el primer circulo de expansion*/
+        /*Color transparency for the first circle*/
         #define T_EPICENTER_FIRST_CIRCLE 128
 
 /****/
 
-/**TAMAÑOS**/
+/**SIZES**/
 
-    /**EPICENTRO**/
-        /*Valor de radio del epicentro*/
+    /**EPICENTER**/
+        /*Epicenter mark radius*/
         #define RADIUS_EPICENTER 2
 
-    /**ESTACIONES**/
-        /*Tamaño en el eje X del triangulo de la estacion (finalmente este valor es x2)*/
+    /**STATIONS**/
+        /*X-axis lenght for the station triangle*/
         #define STATION_SIZE_X 5
-        /*Tamaño en el eje Y del triangulo de la estacion (finalmente este valor es x2)*/
+        /*Y-axis lenght for the station triangle*/
         #define STATION_SIZE_Y 10
 
 /****/
