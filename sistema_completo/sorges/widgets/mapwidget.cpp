@@ -32,13 +32,13 @@ MapWidget::MapWidget(QWidget *parent) :
     //paintCircles();
 
     //prueba de precision de coordenadas-pixel
-    //testPixelPrecision();
+    testPixelPrecision();
 
     //prueba de colocación staciones en el mapa.
-    testStation();
+    //testStation();
 
     //prueba de colocación origen en el mapa.
-    testOrigen();
+    //testOrigen();
 
     /*****tests********/
 }
@@ -281,7 +281,7 @@ void MapWidget::testPixelPrecision(){
     //pintado ejemplo coordenadas (linea desde gibraltar hasta derecha abajo
     mapScene.addLine (x2,y2,mapScene.width (),mapScene.height ());
 
-    //Punta san felipe Cádiz 36°32'16.12"  -6°-18'-1.20" -> por google maps
+    //Punta san felipe Cádiz 36°32'16.12"  -6°-18'-1.20"
     std::cout << convertToDecimalDegrees(36,32,16.12)<< std::endl;
     std::cout << convertToDecimalDegrees(-6,-18,-1.20)<< std::endl;
     long double x3,y3;
@@ -289,6 +289,24 @@ void MapWidget::testPixelPrecision(){
     std::cout << x3 << ' ' << y3 << std::endl;
     //pintado ejemplo coordenadas (linea desde cadiz hasta izquierda abajo
     mapScene.addLine (x3,y3,0,mapScene.height ());
+
+    //Costa de Lisboa (referencia Plaza del Comercio) 38°42'22.00" -9°-8'-10"
+    std::cout << convertToDecimalDegrees(38,42,22)<< std::endl;
+    std::cout << convertToDecimalDegrees(-9,-8,-10)<< std::endl;
+    long double x4,y4;
+    coordinatesToPixels(x4,y4,38,42,22,-9,-8,-10);
+    std::cout << x4 << ' ' << y4 << std::endl;
+    //pintado ejemplo coordenadas (linea desde el punto hasta derecha arriba
+    mapScene.addLine (x4,y4,mapScene.width(),0);
+
+    //Cabo de Peniche (por encima de Lisboa) 39°21'30.87" -9°-24'-24.36"
+    std::cout << convertToDecimalDegrees(39,21,30.87)<< std::endl;
+    std::cout << convertToDecimalDegrees(-9,-24,-24.36)<< std::endl;
+    long double x5,y5;
+    coordinatesToPixels(x5,y5,39,21,30.87,-9,-24,-24.36);
+    std::cout << x5 << ' ' << y5 << std::endl;
+    //pintado ejemplo coordenadas (linea desde mitad del eje x al punto
+    mapScene.addLine (x5,y5,mapScene.width()/2,0);
 }
 
 /*

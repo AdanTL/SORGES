@@ -9,7 +9,7 @@
 /**COORDINATES**/
 
     /*Latitude at up left corner (pixel y=0)*/
-    #define MAP_MIN_LATITUDE 38
+    #define MAP_MIN_LATITUDE 40
 
     /*Longitude at up left corner (pixel x=0)*/
     #define MAP_MIN_LONGITUDE -14
@@ -21,7 +21,7 @@
     #define MAP_MAX_LONGITUDE -3
 
     /*Latitude Y-axis length in meters*/
-    #define MAP_METRES_LATITUDE 445210
+    #define MAP_METRES_LATITUDE 667200
 
     /*Longitude X-axis length in meters*/
     #define MAP_METRES_LONGITUDE 1014520
