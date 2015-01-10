@@ -3,22 +3,27 @@
 
 #include <ctime>
 #include <set>
+#include <qdate>
+#include <qtime>
 #include "station.h"
 
 class Origin{
 
     public:
-    Origin(const std::string& id = "", const std::tm& time = std::tm(),
-           long double latitude = 0, long double longitude = 0,
-           double magnitude = 0,
+    Origin(const std::string& id = "", const QDate& date = QDate(), 
+    	   const QTime& time = QTime(), long double latitude = 0,
+           long double longitude = 0, double magnitude = 0,
            const std::set<Station>& stations = std::set<Station>());
     
     /**GETTERS AND SETTERS**/
     std::string getOriginID() const;
     void setOriginID(const std::string &value);
 
-    std::tm getOriginTime() const;
-    void setOriginTime(const std::tm &value);
+    QTime getOriginTime() const;
+    void setOriginTime(const QTime &value);
+
+    QDate Origin::getOriginDate() const;
+    void Origin::setOriginDate(const QDate &value);
 
     long double getLatitude() const;
     void setLatitude(long double value);
@@ -39,7 +44,8 @@ class Origin{
 
 private:
     std::string originID;
-    struct std::tm originTime;
+    QDate originDate;
+    QTime originTime;
     long double latitude;
     long double longitude;
     double magnitude;

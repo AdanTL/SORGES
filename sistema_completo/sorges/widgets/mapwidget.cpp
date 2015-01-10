@@ -15,31 +15,32 @@ MapWidget::MapWidget(QWidget *parent) :
 
     //Image load from resource
     mapImage.load(MAP_IMAGE_PATH);
+
     //add image to scene
     QPixmap mapPixmap = QPixmap::fromImage(mapImage);
     mapScene.addPixmap(mapPixmap);
-    //and fit rectangle to image limits
+
+	//and fit rectangle to image limits
     mapScene.setSceneRect(mapPixmap.rect());
 
-    //User interface contains the GraphicsView named mapView (see the ui form)
+	//User interface contains the GraphicsView named mapView (see the ui form)
     ui->mapView->setScene(&mapScene);
 
-
-    /******tests******/
+	/******tests******/		
     /***borrar de aqui antes de entrega de codigo**/
-
+    
     //pintado ejemplo circulo
     //paintCircles();
 
     //prueba de precision de coordenadas-pixel
-    testPixelPrecision();
-
-    //prueba de colocación staciones en el mapa.
+    //testPixelPrecision();
+    
+    //prueba de colocación staciones en el mapa.		
     //testStation();
 
     //prueba de colocación origen en el mapa.
     //testOrigen();
-
+    
     /*****tests********/
 }
 
@@ -47,6 +48,7 @@ MapWidget::~MapWidget()
 {
     delete ui;
 }
+
 
 /**CONVERTER FUNCTIONS FROM COORDINATES TO PIXELS**/
 
@@ -190,26 +192,18 @@ void MapWidget::paintOrigin(const Origin &origin){
 float MapWidget::calculateRadius()
 {
     long double radius;
-    long int difSeconds=0;
-    time_t rawtime;
-    struct std::tm * timeinfo;
+    long int difSeconds;
+    QTime timeinfo = QTime::currentTime();
+    QDate dateinfo = QDate::currentDate();
 
     // Getting the system time and the origin time diference (only h/m/s).
-    time (&rawtime);
-    timeinfo = localtime (&rawtime);
-    std::cout <<  currentOrigin.getOriginTime().tm_hour << " -- " <<
-                  timeinfo->tm_min - currentOrigin.getOriginTime().tm_min <<
-                  " -- " <<  timeinfo->tm_sec - currentOrigin.getOriginTime().tm_sec
-                  << " -- " << std::endl;
-    difSeconds = timeinfo->tm_sec - currentOrigin.getOriginTime().tm_sec;
-    //difSeconds += (timeinfo->tm_min - currentOrigin.getOriginTime().tm_min)*60;
-    //difSeconds += (timeinfo->tm_hour - currentOrigin.getOriginTime().tm_hour)*3600;
+    difMseconds = currentOrigin.getOriginDate().daysTo(dateinfo)*24*3600000;
+    difMseconds += currentOrigin.getOriginTime().msecsTo(timeinfo);
 
     // getting the radius in meters.
-    radius = difSeconds * PROPAGATION_SPEED;
+    radius = (difMseconds/1000) * PROPAGATION_SPEED;
 
-    // Calculate the numbers of pixels to "Radius meters".
-    std::cout << currentOrigin.getOriginTime().tm_sec << std::endl;
+    // Calculate the number of pixels to "Radius meters".
     return (radius/MAP_METRES_LONGITUDE)*mapScene.width();
 
 }
@@ -234,13 +228,14 @@ void MapWidget::paintCircles(){
     QPoint center(mapScene.width()/2, mapScene.height ()/2);
 
     //definir radio del círculo
-    float radius = 10;
+    float radius = calculateRadius();
 
     //rectágulo que va a contener la elipse,
     //coordenada superior 0,0 y tamaño 2*radio tanto alto como ancho
     QRect rect(0,0,2*radius,2*radius);
 
-    //ESTO ES CLAVE: mover el rectágulo contenedor de manera que el centro del circulo sea el deseado
+    //ESTO ES CLAVE: 
+    //mover el rectágulo contenedor de manera que el centro del circulo sea el deseado
     rect.moveCenter(center);
 
     //pintar el circulo sobre la escena que contiene el mapa
@@ -323,18 +318,24 @@ void MapWidget::testOrigen(){
     mystations.insert(
                 Station("0x0003", "0x0003", 35.00204023875479, -8.2456402219765,3));
 
-    // getting time from system (best to test it):
-    time_t rawtime;
-    struct std::tm timeinfo;
-    time (&rawtime);
-    timeinfo = std::tm(*localtime (&rawtime));
+    // getting time from system (best to test it)
+    //it simulates 9 seconds of delay:
+    QTime timeinfo = QTime(QTime::currentTime().addMSecs(-999));
+    QDate dateinfo = QDate::currentDate();
 
-    //System time - 3.
-    timeinfo.tm_sec -= 13;
+    // getting time from string: [TESTED AND WORK]
+    //QTime timeinfo2 = QTime::fromString ("13:54:00.5","hh:mm:ss.z");
+    //QDate dateinfo2 = QDate::fromString ("2014-12-10","yyyy-MM-dd");
+    //std::cout << timeinfo2.hour() << "--" << timeinfo2.minute() 
+    //			<< "--" << timeinfo2.second() << std::endl;
+    //std::cout << dateinfo2.year() << "--" << dateinfo2.month() << "--" 
+    //			<< dateinfo2.day() << std::endl;
 
-    //Punta san felipe Cádiz 36°32'16.12"  -6°-18'-1.20" -> por google maps
-    Origin myOrigin("0x0001b",timeinfo, convertToDecimalDegrees(36,32,16.12),
-                    convertToDecimalDegrees(-6,-18,-1.20), 3.54, mystations);
+    //Punta san felipe Cádiz 36°32'16.12"  -6°-18'-1.20"
+    Origin myOrigin("0x0001b",dateinfo,timeinfo, 
+    				convertToDecimalDegrees(36,32,16.12),
+                    convertToDecimalDegrees(-6,-18,-1.20), 
+                    3.54, mystations);
     paintOrigin(myOrigin);
 }
 

@@ -1,8 +1,8 @@
 #include <iostream>
 #include "station.h"
 
-Station::Station(const std::string& id, const std::string& netId,
-                 long double latitude,long double longitude, int color):
+Station::Station(const std::string& id, const std::string& netId, 
+				 long double latitude,long double longitude, int color):
     			 stationID(id), 
     			 networkID(netId),
     			 latitude(latitude),
@@ -11,9 +11,9 @@ Station::Station(const std::string& id, const std::string& netId,
                  {}
 
 /**ON-SITE ALERT
- * Color Scale.
- * Static attribute for all the station objects.
- * Map with alert code and its color in hexadecimal form.
+* Color Scale.
+* Static attribute for all the station objects
+* Map with alert code and its color in hexadecimal form.
 */
 /*Initializing function*/
 std::map<int, const char*> initOnSiteAlert(){
@@ -32,9 +32,10 @@ std::map<int, const char*> initOnSiteAlert(){
 }
 /*Attribute definition*/
 std::map<int,const char*> Station::onSiteAlert = initOnSiteAlert();
-/*Getter for the color corresponding the code attribute of a single object*/
-const char* Station::getCurrentOnSiteAlert() const{
-    return onSiteAlert[this->color];
+
+/*Getter for the color corresponding the code attribute of a single object*/		
+const char* Station::getCurrentOnSiteAlert() const{		
+    return onSiteAlert[this->color];		
 }
 
 
@@ -92,15 +93,15 @@ bool operator < (const Station& station1, const Station& station2){
     return station1.stationID < station2.stationID;
 }
 
-bool operator == (const Station& station1, const Station& station2){
-    return station1.stationID == station2.stationID;
+bool operator == (const Station& station1, const Station& station2){		
+    return station1.stationID == station2.stationID;		
 }
 
 std::ostream& operator << (std::ostream& os, const Station& station){
     os << "Station ID: " << station.stationID ;
     os << "\nStation Network ID: " << station.networkID << "\nLatitude: ";
-    os << station.latitude << "\nLongitude: " << station.longitude
-       << "\nCode: " << station.color << "\n";
+    os << station.latitude << "\nLongitude: " << station.longitude 
+       << "\nOn-Site Alert: " << station.color << "\n";
     return os;
 }
 

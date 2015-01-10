@@ -7,17 +7,17 @@
 class Station{
 	
 	public:
-    Station(const std::string& id ="", const std::string& netId ="",
-            long double latitude = 0, long double longitude = 0, int color = -1);
+    Station(const std::string& id ="", const std::string& netId ="", 
+    		long double latitude = 0, long double longitude = 0, int color = -1);
 
-    /**ON-SITE ALERT
-     * Color Scale.
-     * Static attribute for all the station objects.
-     * Map with alert code and its color in hexadecimal form.
-    */
+   	/**ON-SITE ALERT
+	* Color Scale.
+	* Static attribute for all the station objects
+	* Map with alert code and its color in hexadecimal form.
+	*/
     static std::map<int,const char*> onSiteAlert;
-    const char* getCurrentOnSiteAlert() const;
-
+	const char* getCurrentOnSiteAlert() const;
+	
     /**GETTERS AND SETTERS**/
     std::string getStationID() const;
     void setStationID(const std::string &value);
@@ -33,6 +33,7 @@ class Station{
 
     int getColor() const;
     void setColor(int value);
+    const char* getCurrentOnSiteAlert();
 
     /**To String**/
     std::string stationToString() const;
