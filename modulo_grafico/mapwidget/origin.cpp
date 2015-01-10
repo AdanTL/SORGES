@@ -1,9 +1,10 @@
 #include<iostream>
 #include "origin.h"
 
-Origin::Origin(const std::string& id, const std::tm& time, long double latitude,
+Origin::Origin(const std::string& id, const QDate& date, const QTime& time, long double latitude,
     	   	   long double longitude, double magnitude, const std::set<Station>& stations):
                originID(id),
+               originDate(date),
                originTime(time),
    			   latitude(latitude),
    			   longitude(longitude),
@@ -52,15 +53,23 @@ void Origin::setLatitude(long double value)
 {
     latitude = value;
 }
-std::tm Origin::getOriginTime() const
+QTime Origin::getOriginTime() const
 {
     return originTime;
 }
-void Origin::setOriginTime(const std::tm &value)
+void Origin::setOriginTime(const QTime &value)
 {
     originTime = value;
 }
 
+QDate Origin::getOriginDate() const
+{
+    return originDate;
+}
+void Origin::setOriginDate(const QDate &value)
+{
+    originDate = value;
+}
 
 
 /**operators*/
@@ -72,10 +81,10 @@ bool operator < (const Origin& origin1, const Origin& origin2){
 }
 
 std::ostream& operator << (std::ostream& os, const Origin& origin){
-    os << "Timestamp: " << 1900 + origin.originTime.tm_year << "-" 
-       << 1 + origin.originTime.tm_mon << "-" << origin.originTime.tm_mday ;
-    os << " " << origin.originTime.tm_hour << ":" << origin.originTime.tm_min 
-       << ":" << origin.originTime.tm_sec;
+    os << "Timestamp: " << origin.originDate.year() << "-"
+       << origin.originDate.month() << "-" << origin.originDate.day();
+    os << " " << origin.originTime.hour() << ":" << origin.originTime.minute()
+       << ":" << origin.originTime.second();
     os << "\nMagnitude: " << origin.magnitude << "\nLatitude: ";
     os << origin.latitude << "\nLongitude: " << origin.longitude << "\n";
     for(std::set<Station>::iterator it=origin.stations.begin(); it!=origin.stations.end(); ++it)

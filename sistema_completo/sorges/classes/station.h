@@ -6,18 +6,13 @@
 class Station{
 	
 	public:
-    Station(const std::string& id ="", const std::string& netId ="",
-            long double latitude = 0, long double longitude = 0, int color = -1);
+    Station(const std::string& id ="", const std::string& netId ="", long double latitude = 0,
+            long double longitude = 0, int color = -1);
 
-    /**ON-SITE ALERT
-     * Color Scale.
-     * Static attribute for all the station objects.
-     * Map with alert code and its color in hexadecimal form.
-    */
+   	//escala de colores: correspondencias numero->color hexadecimal
     static std::map<int,const char*> onSiteAlert;
-    const char* getCurrentOnSiteAlert() const;
 
-    /**GETTERS AND SETTERS**/
+    //getters and setters
     std::string getStationID() const;
     void setStationID(const std::string &value);
 
@@ -32,10 +27,15 @@ class Station{
 
     int getColor() const;
     void setColor(int value);
+    const char* getCurrentOnSiteAlert();
 
-    /**OPERATORS**/
+    //operators
     friend bool operator < (const Station& station1, const Station& station2);
-    friend bool operator == (const Station& station1, const Station& station2);
+
+    bool operator == (const Station& station){
+        return stationID == station.stationID;
+    }
+
     friend std::ostream& operator << (std::ostream& os, const Station& station);
 
 private:

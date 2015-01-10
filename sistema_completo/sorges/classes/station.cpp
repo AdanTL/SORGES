@@ -1,8 +1,8 @@
 #include <iostream>
 #include "station.h"
 
-Station::Station(const std::string& id, const std::string& netId,
-                 long double latitude,long double longitude, int color):
+Station::Station(const std::string& id, const std::string& netId, long double latitude, 
+    	         long double longitude, int color):
     			 stationID(id), 
     			 networkID(netId),
     			 latitude(latitude),
@@ -10,32 +10,21 @@ Station::Station(const std::string& id, const std::string& netId,
     			 color(color)
                  {}
 
-/**ON-SITE ALERT
- * Color Scale.
- * Static attribute for all the station objects.
- * Map with alert code and its color in hexadecimal form.
-*/
-/*Initializing function*/
+/**funcion inicializadora de atributo estático
+ * escala de colores: correspondencias codigo -> color hexadecimal
+ *-1 negro, 0 verde, 1 amarillo, 2 naranja, 3 rojo
+ */
 std::map<int, const char*> initOnSiteAlert(){
     std::map<int, const char*> scale;
-    //-1 = black
     scale[-1] = "#000000";
-    //0 = green
     scale[0] = "#33FF00";
-    //1 = yellow
     scale[1] = "#CCFF00";
-    //2 = orange
     scale[2] = "#FF9900";
-    //3 = red
     scale[3] = "#FF0000";
     return scale;
 }
-/*Attribute definition*/
+/**atributo estático (de clase) con la escala de colores*/
 std::map<int,const char*> Station::onSiteAlert = initOnSiteAlert();
-/*Getter for the color corresponding the code attribute of a single object*/
-const char* Station::getCurrentOnSiteAlert() const{
-    return onSiteAlert[this->color];
-}
 
 
 /**Getters and setters*/
@@ -85,6 +74,10 @@ void Station::setColor(int value)
     color = value;
 }
 
+const char* Station::getCurrentOnSiteAlert(){
+    return onSiteAlert[this->color];
+}
+
 
 /**Operators*/
 	
@@ -92,14 +85,10 @@ bool operator < (const Station& station1, const Station& station2){
     return station1.stationID < station2.stationID;
 }
 
-bool operator == (const Station& station1, const Station& station2){
-    return station1.stationID == station2.stationID;
-}
 
 std::ostream& operator << (std::ostream& os, const Station& station){
     os << "Station ID: " << station.stationID ;
     os << "\nStation Network ID: " << station.networkID << "\nLatitude: ";
-    os << station.latitude << "\nLongitude: " << station.longitude
-       << "\nCode: " << station.color << "\n";
+    os << station.latitude << "\nLongitude: " << station.longitude << "\nCode: " << station.color << "\n";
     return os;
 }
