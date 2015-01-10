@@ -192,7 +192,7 @@ void MapWidget::paintOrigin(const Origin &origin){
 float MapWidget::calculateRadius()
 {
     long double radius;
-    long int difSeconds;
+    long int difMseconds;
     QTime timeinfo = QTime::currentTime();
     QDate dateinfo = QDate::currentDate();
 

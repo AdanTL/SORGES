@@ -10,7 +10,7 @@ OriginDataWidget::OriginDataWidget(QWidget *parent) :
     std::set<Station> stations;
     stations.insert(Station("#Sta1","netId1",10,10,1));
     stations.insert(Station("#Sta2","netId2",20,20,2));
-    Origin origin("origin#111111",std::tm(),36,-8,1.5,stations);
+    Origin origin("origin#111111",QDate(),QTime(),36,-8,1.5,stations);
     showOriginData (origin);
 }
 
