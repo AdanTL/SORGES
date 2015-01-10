@@ -91,8 +91,8 @@ void MapWidget::testOrigen(){
     mystations.insert(Station("0x0003", "0x0003", 35.00204023875479, -8.2456402219765, 3));
 
     // getting time from system (best to test it), it simules 9 seconds of delay:
-    QTime timeinfo = QTime(QTime::currentTime().addSecs(-9));
-    QDate dateinfo = QDate::currentDate();
+     QTime timeinfo = QTime(QTime::currentTime().addMSecs(-3500));
+     QDate dateinfo = QDate::currentDate();
 
     // getting time from string: [TESTED AND WORK]
 
@@ -232,18 +232,18 @@ void MapWidget::paintOrigin(const Origin &origin){
  */
 float MapWidget::calculateRadius(){
     long double radius;
-    long int difSeconds=0;
+    long int difMseconds;
     QTime timeinfo = QTime::currentTime ();
     QDate dateinfo = QDate::currentDate ();
 
    // Getting the system time and the origin time diference (only h/m/s).
-   difSeconds = (currentOrigin.getOriginDate().daysTo(dateinfo)*24*3600)+currentOrigin.getOriginTime().secsTo(timeinfo);
+   difMseconds = (currentOrigin.getOriginDate().daysTo(dateinfo)*24*3600000)+currentOrigin.getOriginTime().msecsTo(timeinfo);
 
-    // getting the radius in meters.
-    radius = difSeconds * SPEED_EXPANSION;
+   // getting the radius in meters.
+   radius = (difMseconds/1000) * SPEED_EXPANSION;
 
-    // Calculate the numbers of pixels to "Radius meters".
-    return (radius/MAP_METRES_LONGITUDE)*mapScene.width();
+   // Calculate the numbers of pixels to "Radius meters".
+   return (radius/MAP_METRES_LONGITUDE)*mapScene.width();
 
 }
 
