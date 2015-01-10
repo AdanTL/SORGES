@@ -13,8 +13,13 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        origindatawidget.cpp
+        origindatawidget.cpp\
+        origin.cpp\
+        station.cpp
 
-HEADERS  += origindatawidget.h
+HEADERS  += origindatawidget.h\
+            origin.h\
+            station.h
+
 
 FORMS    += origindatawidget.ui

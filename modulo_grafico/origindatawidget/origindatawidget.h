@@ -2,21 +2,25 @@
 #define ORIGINDATAWIDGET_H
 
 #include <QWidget>
+#include "origin.h"
 
 namespace Ui {
-class origindatawidget;
+class OriginDataWidget;
 }
-
-class origindatawidget : public QWidget
+class OriginDataWidget : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit origindatawidget(QWidget *parent = 0);
-    ~origindatawidget();
+    explicit OriginDataWidget(QWidget *parent = 0);
+    ~OriginDataWidget();
+
+public slots:
+    void showOriginData(const Origin& origin);
 
 private:
-    Ui::origindatawidget *ui;
+    Ui::OriginDataWidget *ui;
+    Origin currentOrigin;
 };
 
 #endif // ORIGINDATAWIDGET_H
