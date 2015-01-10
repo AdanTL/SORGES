@@ -103,3 +103,11 @@ std::ostream& operator << (std::ostream& os, const Station& station){
        << "\nCode: " << station.color << "\n";
     return os;
 }
+
+/**To String method*/
+/**uses the output operator format to create a string**/
+std::string Station::stationToString() const{
+    std::ostringstream convert;
+    convert << (*this);
+    return convert.str();
+}

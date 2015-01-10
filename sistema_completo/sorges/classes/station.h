@@ -2,6 +2,7 @@
 #define STATION_H
 #include <string>
 #include <map>
+#include <sstream>
  
 class Station{
 	
@@ -32,6 +33,9 @@ class Station{
 
     int getColor() const;
     void setColor(int value);
+
+    /**To String**/
+    std::string stationToString() const;
 
     /**OPERATORS**/
     friend bool operator < (const Station& station1, const Station& station2);

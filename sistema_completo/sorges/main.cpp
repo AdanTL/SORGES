@@ -9,6 +9,8 @@
 #include "classes/station.h"
 #include "classes/origin.h"
 #include "widgets/mapwidget.h"
+#include "widgets/origindatawidget.h"
+#include "widgets/stationsdatawidget.h"
 
 //funciones temporales para simular la llegada de datos
 //cuando se definan sockets y extracción desde fichero entonces se separarán a su modulo
@@ -66,8 +68,12 @@ void recibirOrigen(Origin& origen,const std::set<Station>& estacionesActuales){
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    MapWidget w;
-    w.show();
+    MapWidget mapW;
+    OriginDataWidget originDataW;
+    StationsDataWidget stationsDataW;
+    mapW.show();
+    originDataW.show();
+    stationsDataW.show();
 
     //simular llegada de estaciones
     std::set<Station> stations;
