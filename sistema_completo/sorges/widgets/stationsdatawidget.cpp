@@ -6,11 +6,12 @@ StationsDataWidget::StationsDataWidget(QWidget *parent) :
     ui(new Ui::StationsDataWidget)
 {
     ui->setupUi(this);
-
+    /*Test, borrar de aqui antes de entregar
     std::set<Station> stations;
     stations.insert(Station("#Sta1","netId1",10,10,1));
     stations.insert(Station("#Sta2","netId2",20,20,2));
     showStationsData (stations);
+    */
 }
 
 StationsDataWidget::~StationsDataWidget()

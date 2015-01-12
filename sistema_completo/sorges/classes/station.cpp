@@ -100,8 +100,8 @@ bool operator == (const Station& station1, const Station& station2){
 std::ostream& operator << (std::ostream& os, const Station& station){
     os << "Station ID: " << station.stationID ;
     os << "\nStation Network ID: " << station.networkID << "\nLatitude: ";
-    os << station.latitude << "\nLongitude: " << station.longitude 
-       << "\nOn-Site Alert: " << station.color << "\n";
+    os << station.latitude << "\nLongitude: " << station.longitude << "\n";
+    if (station.color != -1) os << "On-Site Alert: " << station.color << "\n";
     return os;
 }
 

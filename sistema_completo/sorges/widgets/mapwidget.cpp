@@ -199,7 +199,6 @@ float MapWidget::calculateRadius()
     // Getting the system time and the origin time diference (only h/m/s).
     difMseconds = currentOrigin.getOriginDate().daysTo(dateinfo)*24*3600000;
     difMseconds += currentOrigin.getOriginTime().msecsTo(timeinfo);
-
     // getting the radius in meters.
     radius = (difMseconds/1000) * PROPAGATION_SPEED;
 

@@ -21,12 +21,8 @@ void recibirEstaciones(std::set<Station>& estaciones){
         estaciones.insert(Station("0x0002", "0x0012", 36.232, -7.543, -1));
         estaciones.insert(Station("0x0003", "0x0013", 37.323, -5.887,-1));
 }
+
 void recibirOrigen(Origin& origen,const std::set<Station>& estacionesActuales){
-    //el tiempo se sacará del fichero, a fuego simulado
-    struct std::tm timeinfo = std::tm();
-    std::istringstream ss("2014-07-02 12:34:20.5");
-    //OJO QUE GET_TIME ES DE C++11 Y NO FUNCIONA AHORA MISMO
-    //ss >> std::get_time(&tm, "%Y-%m-%d %H:%M:%S");
 
     //las estaciones llegarán por código y color
     //se pueden sacar los objetos de la lista de estaciones actuales (buscando por codigo)
@@ -37,7 +33,7 @@ void recibirOrigen(Origin& origen,const std::set<Station>& estacionesActuales){
     //map codigo->color
     //esto podría ser una estructura muy válida como atributo del objeto Origen
     std::map<std::string, int> estacionesCodigoColor;
-    estacionesCodigoColor["0x0000"]=1;
+    estacionesCodigoColor["0x0001"]=1;
     estacionesCodigoColor["0x0002"]=3;
 
     //si lo dejamos como lo tenemos ahora y para el objeto origen
@@ -62,7 +58,14 @@ void recibirOrigen(Origin& origen,const std::set<Station>& estacionesActuales){
         estacionesOrigen.insert(station);
     }
 
-    //origen = Origin("0x0001b",timeinfo,36.5479,-9.2456,3.54, estacionesOrigen);
+    origen.setOriginID ("Origin#11111111");
+    origen.setOriginDate (QDate().currentDate ());
+    //+5segundos para que el radio de expansion salga
+    origen.setOriginTime (QTime().currentTime ().addSecs(-5));
+    origen.setLatitude (36.111);
+    origen.setLongitude (-7.213);
+    origen.setMagnitude (1.1);
+    origen.setStations (estacionesOrigen);
 }
 
 int main(int argc, char *argv[])
@@ -80,8 +83,13 @@ int main(int argc, char *argv[])
     recibirEstaciones(stations);
 
     //simular llegada de origen
-    //Origin origin;
-    //recibirOrigen(origin,stations);
+    Origin origin;
+    recibirOrigen(origin,stations);
+
+    mapW.paintStations(stations);
+    mapW.paintOrigin(origin);
+    originDataW.showOriginData (origin);
+    stationsDataW.showStationsData (stations);
 
     return a.exec();
 }
