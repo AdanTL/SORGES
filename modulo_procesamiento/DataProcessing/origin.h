@@ -3,8 +3,8 @@
 
 #include <ctime>
 #include <set>
-#include <qdate>
-#include <qtime>
+#include <QDate>
+#include <QTime>
 #include "station.h"
 
 class Origin{
@@ -21,8 +21,8 @@ class Origin{
     QTime getOriginTime() const;
     void setOriginTime(const QTime &value);
 
-    QDate Origin::getOriginDate() const;
-    void Origin::setOriginDate(const QDate &value);
+    QDate getOriginDate() const;
+    void setOriginDate(const QDate &value);
 
     long double getLatitude() const;
     void setLatitude(long double value);

@@ -26,7 +26,8 @@ Origin DataProcessing::ProcessOriginFromFile(const QString &namefile){
 
     std::vector<QStringList> stationsParameters = FindParameterOriginStations(fileContent);
         for(size_t i=0; i<stationsParameters.size(); i++){
-            auto  it = stations.find(Station(stationsParameters[i].at(0).toStdString()));
+            //auto  it = stations.find(Station(stationsParameters[i].at(0).toStdString()));
+            std::set<Station>::iterator it = stations.find(Station(stationsParameters[i].at(0).toStdString()));
             Station originOneStation = Station(*it);
             originOneStation.setColor((stationsParameters.at(i)).at(2).toInt());
             originStations.insert(originOneStation);
