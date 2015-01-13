@@ -25,6 +25,7 @@ HEADERS += \
     origin.h \
     station.h
 
-DISTFILES += \
-    testFiles/origin.txt \
-    testFiles/station.txt
+DISTFILES +=
+
+RESOURCES += \
+    resourcesfile.qrc

@@ -14,13 +14,53 @@ Origin DataProcessing::ProcessOriginFromFile(const QString &namefile){
     }
     fileContent = file.readAll();
     file.close();
-    std::cout << fileContent.toStdString() << std::endl;
 
+    std::string originID = FindParameterOriginID(fileContent).toStdString();
+    QDate originDate = QDate::fromString(FindParameterOriginDate(fileContent),"yyyy-MM-dd");
+    QTime originTime = QTime::fromString(FindParameterOriginTime(fileContent), "hh:mm:ss.z");
+    long double originLatitude = FindParameterOriginLatitude(fileContent).toDouble();
+    long double originLongitude = FindParameterOriginLongitude(fileContent).toDouble();
+    double originMagnitude = FindParameterOriginMagnitude(fileContent).toDouble();
+
+    std::set<Station> originStations;
+    /*
+    Station originOneStation();
+    std::vector<QStringList> stationsParameters = FindParameterOriginStations(fileContent);
+        for(size_t i=0; i<stationsParameters.size(); i++){
+            auto  it (stations.find(stationsParameters[i].at(0)));
+            originOneStation = Station(*it);
+            originOneStation.setColor((stationsParameters.at(i)).at(2).toInt);
+            originOneStation.insert(originStation);
+        }
+    */
+    Origin origen(originID,originDate,originTime,originLatitude,originLongitude,originMagnitude);
+    return origen;
 }
 
 std::set<Station> DataProcessing::ProcessStationsFromFile(const QString &namefile){
+    stations.clear();
 
-return std::set<Station>();
+    QString fileContent;
+    QFile file(namefile);
+    if(!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        std::cerr << "Problem to find the file: " << namefile.toStdString() << std::endl;
+        return stations;
+    }
+    fileContent = file.readAll();
+    file.close();
+
+    std::vector<QStringList> stationsParameters = FindParameterStations(fileContent);
+
+    for(size_t i=0; i<stationsParameters.size(); i++){
+        std::string StationId = stationsParameters.at(i).at(2).toStdString();
+        std::string StationIdNetwork = "";
+                //stationsParameters.at(i).at(//N).toStdString();
+        long double StationLatitude = stationsParameters.at(i).at(1).toDouble();
+        long double StationLongitude = stationsParameters.at(i).at(0).toDouble();
+        Station(StationId,StationIdNetwork,StationLatitude,StationLongitude);
+    }
+
+    return stations;
 }
 
 QString DataProcessing::FindParameterOriginID(const QString &originString){

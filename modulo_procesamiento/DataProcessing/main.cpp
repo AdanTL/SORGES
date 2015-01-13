@@ -41,7 +41,8 @@ int main(int argc, char *argv[])
           std::cout << stationList[i].at(j).toStdString();
     */
 
-    processing.ProcessOriginFromFile("testFile/origin.txt");
+    processing.ProcessOriginFromFile("qrc:/testFiles/origin.txt");
+    processing.ProcessStationsFromFile("qrc:/testFiles/station.txt");
 
     return a.exec();
 }
