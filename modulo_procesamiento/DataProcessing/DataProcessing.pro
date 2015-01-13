@@ -16,7 +16,15 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp \
-    dataprocessing.cpp
+    dataprocessing.cpp \
+    origin.cpp \
+    station.cpp
 
 HEADERS += \
-    dataprocessing.h
+    dataprocessing.h \
+    origin.h \
+    station.h
+
+DISTFILES += \
+    testFiles/origin.txt \
+    testFiles/station.txt
