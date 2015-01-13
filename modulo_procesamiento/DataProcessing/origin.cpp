@@ -81,13 +81,15 @@ bool operator < (const Origin& origin1, const Origin& origin2){
 }
 
 std::ostream& operator << (std::ostream& os, const Origin& origin){
+    os << "+++ OriginID: " << origin.getOriginID() << " +++\n";
     os << "Timestamp: " << origin.originDate.year() << "-"
        << origin.originDate.month() << "-" << origin.originDate.day();
     os << " " << origin.originTime.hour() << ":" << origin.originTime.minute()
-       << ":" << origin.originTime.second();
+       << ":" << origin.originTime.second() << "." << origin.originTime.msec();
     os << "\nMagnitude: " << origin.magnitude << "\nLatitude: ";
     os << origin.latitude << "\nLongitude: " << origin.longitude << "\n";
+    os << "------ Station List: -------\n";
     for(std::set<Station>::iterator it=origin.stations.begin(); it!=origin.stations.end(); ++it)
-        os << *it;
+        os <<*it << "\n" ;
     return os;
 }

@@ -1,0 +1,11 @@
+2014/02/17 02:39:54 [info/Autoloc/origin/id] 2014-02-17 02:39:01.8  36.192  -10.443  5.08
+2014/02/17 02:39:54 [info/Autoloc/origin/info] 1   PFVI  PM   1  1.60  54 02:39:30.3   -0.0 A   P      XXL   82.3 5.42 - 1.00 3.61 1.50
+2014/02/17 02:39:54 [info/Autoloc/origin/info] 2   PCVE  PM   1  2.40  52 02:39:41.8    0.0 A   P      XXL   76.6 5.29 - 1.00 3.53 1.50
+2014/02/17 02:39:54 [info/Autoloc/origin/info] 3   PNCL  PM   1  2.45  38 02:39:42.4   -0.0 A   P      XXL   43.6 4.36 - 1.00 2.91 1.50
+2014/02/17 02:39:54 [info/Autoloc/origin/info] 4   PVAQ  PM   1  2.50  60 02:39:43.1   -0.0 A   P      XXL   62.0 4.93 - 1.00 3.29 1.50
+2014/02/17 02:39:54 [info/Autoloc]  OUT 4      02:39:01.8  36.19  -10.44   5   0.0   4   4 s= 22.0
+2014-02-17 02:39:54.9 [scalertes_origen] Origen asociado: Origin#20140217023954.809531.13965
+2014-02-17 02:39:54.9 [scalertes_origen] Autor: scautoloc@geo1
+2014-02-17 02:39:54.9 [scalertes_origen]     CreationTime= 2014-02-17 02:39:54.8
+2014-02-17 02:39:54.9 [scalertes_origen]     Associated Phase Count= 4
+2014-02-17 02:39:54.9 [scalertes_origen]     Associated Station Count= 4

@@ -8,32 +8,31 @@ DataProcessing::DataProcessing()
 Origin DataProcessing::ProcessOriginFromFile(const QString &namefile){
     QString fileContent;
     QFile file(namefile);
+
     if(!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
         std::cerr << "Problem to find the file: " << namefile.toStdString() << std::endl;
         return Origin();
     }
+
     fileContent = file.readAll();
     file.close();
-
     std::string originID = FindParameterOriginID(fileContent).toStdString();
     QDate originDate = QDate::fromString(FindParameterOriginDate(fileContent),"yyyy-MM-dd");
     QTime originTime = QTime::fromString(FindParameterOriginTime(fileContent), "hh:mm:ss.z");
     long double originLatitude = FindParameterOriginLatitude(fileContent).toDouble();
     long double originLongitude = FindParameterOriginLongitude(fileContent).toDouble();
     double originMagnitude = FindParameterOriginMagnitude(fileContent).toDouble();
-
     std::set<Station> originStations;
-    /*
-    Station originOneStation();
+
     std::vector<QStringList> stationsParameters = FindParameterOriginStations(fileContent);
         for(size_t i=0; i<stationsParameters.size(); i++){
-            auto  it (stations.find(stationsParameters[i].at(0)));
-            originOneStation = Station(*it);
-            originOneStation.setColor((stationsParameters.at(i)).at(2).toInt);
-            originOneStation.insert(originStation);
+            auto  it = stations.find(Station(stationsParameters[i].at(0).toStdString()));
+            Station originOneStation = Station(*it);
+            originOneStation.setColor((stationsParameters.at(i)).at(2).toInt());
+            originStations.insert(originOneStation);
         }
-    */
-    Origin origen(originID,originDate,originTime,originLatitude,originLongitude,originMagnitude);
+
+    Origin origen(originID,originDate,originTime,originLatitude,originLongitude,originMagnitude,originStations);
     return origen;
 }
 
@@ -48,18 +47,20 @@ std::set<Station> DataProcessing::ProcessStationsFromFile(const QString &namefil
     }
     fileContent = file.readAll();
     file.close();
-
     std::vector<QStringList> stationsParameters = FindParameterStations(fileContent);
 
-    for(size_t i=0; i<stationsParameters.size(); i++){
-        std::string StationId = stationsParameters.at(i).at(2).toStdString();
-        std::string StationIdNetwork = "";
-                //stationsParameters.at(i).at(//N).toStdString();
-        long double StationLatitude = stationsParameters.at(i).at(1).toDouble();
-        long double StationLongitude = stationsParameters.at(i).at(0).toDouble();
-        Station(StationId,StationIdNetwork,StationLatitude,StationLongitude);
-    }
+    std::string StationId;
+    long double StationLatitude;
+    long double StationLongitude;
 
+    for(size_t i=0; i<stationsParameters.size(); i++){
+        StationId = stationsParameters.at(i).at(stationsParameters.at(i).size()-1).toStdString();
+        std::string StationIdNetwork = "TEST";
+                //stationsParameters.at(i).at(//N).toStdString();
+        StationLatitude = stationsParameters.at(i).at(1).toDouble();
+        StationLongitude = stationsParameters.at(i).at(0).toDouble();
+        stations.insert(Station(StationId,StationIdNetwork,StationLatitude,StationLongitude));
+    }
     return stations;
 }
 
@@ -101,10 +102,11 @@ QString DataProcessing::FindParameterOriginLongitude(const QString &originString
 }
 
 QString DataProcessing::FindParameterOriginMagnitude(const QString &originString){
+    // @TODO: FALTA POR IMPLEMENTAR A ESPERA DE INFORMACION.
     return QString("0");
 }
 
-// 2014/02/17 02:39:54 [info/Autoloc/origin/info] 1   PFVI  PM   1  1.60  54 02:39:30.3   -0.0 A   P      XXL   82.3 5.42 - 1.00 3.61 1.50
+
 std::vector<QStringList> DataProcessing::FindParameterOriginStations(const QString &originString){
     std::vector<QStringList> originStationParameters;
     QRegExp rx("/info\\D +\\d+ +\\S+ +\\S+ +\\d");
@@ -127,11 +129,13 @@ std::vector<QStringList> DataProcessing::FindParameterOriginStations(const QStri
 
 std::vector<QStringList> DataProcessing::FindParameterStations(const QString &stationsString){
     std::vector<QStringList> StationParameters;
-    QStringList eachStationsFile = stationsString.split("\\n");
-    QRegExp xr("\n");
+    QStringList eachStationsFile = stationsString.split("\n");
+    QString oneStation;
 
-    for (int i = 0; i < eachStationsFile.size(); ++i)
-            StationParameters.push_back(QString(eachStationsFile.at(i)).remove(xr).split("\t"));
-
+    for (int i = 0; i < eachStationsFile.size(); ++i){
+        oneStation = QString(eachStationsFile.at(i));
+        if(!oneStation.isEmpty())
+            StationParameters.push_back(oneStation.split("\t"));
+    }
     return StationParameters;
 }

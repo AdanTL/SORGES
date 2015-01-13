@@ -41,8 +41,15 @@ int main(int argc, char *argv[])
           std::cout << stationList[i].at(j).toStdString();
     */
 
-    processing.ProcessOriginFromFile("qrc:/testFiles/origin.txt");
-    processing.ProcessStationsFromFile("qrc:/testFiles/station.txt");
+    std::set<Station> Stations = processing.ProcessStationsFromFile(":/testFiles/station.txt");
+    Origin origen = processing.ProcessOriginFromFile(":/testFiles/origin.txt");
+
+    std::cout << "++++++++++++++++++++++++++++ PRUEBA ORIGEN: +++++++++++++++++++++++++++++\n" << std::endl;
+    std::cout << origen << std::endl;
+
+    std::cout << "++++++++++++++++++++++++++++ PRUEBA ESTACIONES: +++++++++++++++++++++++++++++\n" << std::endl;
+    for(std::set<Station>::iterator it=Stations.begin(); it!=Stations.end(); ++it)
+        std::cout <<*it << "\n" ;
 
     return a.exec();
 }
