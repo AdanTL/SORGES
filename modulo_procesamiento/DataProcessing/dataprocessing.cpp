@@ -95,7 +95,7 @@ QString DataProcessing::FindParameterOriginLatitude(const QString &originString)
 }
 
 QString DataProcessing::FindParameterOriginLongitude(const QString &originString){
-    QRegExp rx(":\\d+.\\d  \\d+.\\d+  -?\\d+.\\d");
+    QRegExp rx(":\\d+.\\d  \\d+.\\d+  -?\\d+.\\d+");
     QRegExp rx2(":\\d+.\\d  \\d+.\\d+  ");
     if(rx.indexIn(originString) != -1)
         return rx.cap(0).remove(rx2);
