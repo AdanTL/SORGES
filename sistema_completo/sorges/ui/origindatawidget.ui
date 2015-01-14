@@ -11,7 +11,11 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>origindatawidget</string>
+   <string>SORGES origin data</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="../images/logo.qrc">
+    <normaloff>:/Logo_sorges.png</normaloff>:/Logo_sorges.png</iconset>
   </property>
   <widget class="QLabel" name="timestamp">
    <property name="geometry">
@@ -194,6 +198,8 @@ p, li { white-space: pre-wrap; }
   </widget>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <resources/>
+ <resources>
+  <include location="../images/logo.qrc"/>
+ </resources>
  <connections/>
 </ui>

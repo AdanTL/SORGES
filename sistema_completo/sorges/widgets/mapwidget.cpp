@@ -3,6 +3,7 @@
 #include <sstream>
 #include <iomanip>
 #include <iostream>
+#include <QTimer>
 #include "mapwidget.h"
 #include "config/mapdefinition.h"
 #include "ui_mapwidget.h"
@@ -180,6 +181,11 @@ void MapWidget::paintOrigin(const Origin &origin){
                                                      G_EPICENTER,
                                                      B_EPICENTER,
                                                      T_EPICENTER)));
+
+    //Set the timer (each 5 seconds) for the concentric circles
+    QTimer *timer = new QTimer(this);
+    connect(timer, SIGNAL(timeout()), this, SLOT(paintCircles()));
+    timer->start(5000);
 }
 
 
@@ -218,13 +224,9 @@ void MapWidget::paintCircles(){
     //definir el centro del círculo: coordenadas del origen/evento
     //pasar las coordenadas almacenadas en el atributo currentOrigin a pixeles
     //y despues pasarselas al constructor de center
-    /*
     long double x,y;
     coordinatesToPixels(x,y,currentOrigin.getLatitude(),currentOrigin.getLongitude());
     QPoint center(x,y);
-    */
-    //--temporalmente definido el centro en el centro de la imagen
-    QPoint center(mapScene.width()/2, mapScene.height ()/2);
 
     //definir radio del círculo
     float radius = calculateRadius();

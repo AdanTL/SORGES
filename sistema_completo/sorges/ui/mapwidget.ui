@@ -10,8 +10,15 @@
     <height>577</height>
    </rect>
   </property>
+  <property name="cursor">
+   <cursorShape>WhatsThisCursor</cursorShape>
+  </property>
   <property name="windowTitle">
-   <string>MapWidget</string>
+   <string>SORGES map view</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="../images/logo.qrc">
+    <normaloff>:/Logo_sorges.png</normaloff>:/Logo_sorges.png</iconset>
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout">
    <item>
@@ -24,6 +31,8 @@
   </layout>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <resources/>
+ <resources>
+  <include location="../images/logo.qrc"/>
+ </resources>
  <connections/>
 </ui>
