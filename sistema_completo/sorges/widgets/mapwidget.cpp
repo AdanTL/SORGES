@@ -9,8 +9,9 @@
 #include "ui_mapwidget.h"
 
 MapWidget::MapWidget(QWidget *parent) :
-    QWidget(parent), ui(new Ui::MapWidget), mapScene(new QGraphicsScene(this))
-{
+    QWidget(parent), ui(new Ui::MapWidget), mapScene(new QGraphicsScene(this)),
+                                            circlesTimer(new QTimer(this))
+{    
     //Setup for the user interface.
     ui->setupUi(this);
 
@@ -26,6 +27,9 @@ MapWidget::MapWidget(QWidget *parent) :
 
 	//User interface contains the GraphicsView named mapView (see the ui form)
     ui->mapView->setScene(&mapScene);
+
+    //connect the timeout of the timer to the event to paint the concentric circles
+    connect(circlesTimer, SIGNAL(timeout()), this, SLOT(paintCircles()));
 
 	/******tests******/		
     /***borrar de aqui antes de entrega de codigo**/
@@ -153,6 +157,11 @@ void MapWidget::changeStationsColors(const std::set<Station> &changedStations)
 /**ORIGIN FUNCTIONS**/
 
 void MapWidget::paintOrigin(const Origin &origin){
+
+    //if timer of circles painting is on, stop it
+    if (circlesTimer->isActive ())
+        circlesTimer->stop();
+
     this->currentOrigin = origin;
 
     long double coordX, coordY;
@@ -183,9 +192,7 @@ void MapWidget::paintOrigin(const Origin &origin){
                                                      T_EPICENTER)));
 
     //Set the timer (each 5 seconds) for the concentric circles
-    QTimer *timer = new QTimer(this);
-    connect(timer, SIGNAL(timeout()), this, SLOT(paintCircles()));
-    timer->start(5000);
+    circlesTimer->start(5000);
 }
 
 
