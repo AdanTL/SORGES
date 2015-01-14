@@ -24,6 +24,7 @@ public slots:
     void paintOrigin(const Origin& origin);
     void paintStations(const std::set<Station>& stationsList);
     void paintCircles();
+void testing(); //slot de prueba de cambio de origen
 
 private:
     Ui::MapWidget *ui;
@@ -35,7 +36,7 @@ private:
     
     /**PRIVATE FUNCTIONS**/		
 		
-   /*EXPANSION CIRCLES RADIUS*/
+    /*EXPANSION CIRCLES RADIUS*/
     float calculateRadius();
 
 	/*CONVERSIONS OF COORDINATES*/
@@ -54,6 +55,10 @@ private:
 	/*STATION FUNCTIONS*/
     void changeStationsColors(const std::set<Station>& changedStations);
     void drawStation(const Station &station);
+    void clearStation(const std::string& stationID);
+
+    /*ORIGIN FUNCTIONS*/
+    void clearOrigin();
     
     /*TESTS*/
     void testPixelPrecision();

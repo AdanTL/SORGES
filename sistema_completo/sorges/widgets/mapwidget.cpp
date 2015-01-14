@@ -4,6 +4,7 @@
 #include <iomanip>
 #include <iostream>
 #include <QTimer>
+#include <QGraphicsItem>
 #include "mapwidget.h"
 #include "config/mapdefinition.h"
 #include "ui_mapwidget.h"
@@ -20,12 +21,14 @@ MapWidget::MapWidget(QWidget *parent) :
 
     //add image to scene
     QPixmap mapPixmap = QPixmap::fromImage(mapImage);
-    mapScene.addPixmap(mapPixmap);
+    QGraphicsItem *mapItem = mapScene.addPixmap(mapPixmap);
+    //and set the name of the item
+    mapItem->setData (0,"map");
 
-	//and fit rectangle to image limits
+    //and fit rectangle to image limits
     mapScene.setSceneRect(mapPixmap.rect());
 
-	//User interface contains the GraphicsView named mapView (see the ui form)
+    //User interface contains the GraphicsView named mapView (see the ui form)
     ui->mapView->setScene(&mapScene);
 
     //connect the timeout of the timer to the event to paint the concentric circles
@@ -33,6 +36,8 @@ MapWidget::MapWidget(QWidget *parent) :
 
 	/******tests******/		
     /***borrar de aqui antes de entrega de codigo**/
+
+    QTimer::singleShot(15000, this, SLOT(testing()));
     
     //pintado ejemplo circulo
     //paintCircles();
@@ -128,17 +133,34 @@ void MapWidget::paintStations(const std::set<Station>& stationsList)
         drawStation(*it);
 }
 
+void MapWidget::clearStation(const std::string &stationID)
+{
+    foreach(QGraphicsItem * item, mapScene.items()){
+        if (item->data(0).toString () == stationID.c_str()){
+            mapScene.removeItem(item);
+            break;
+        }
+    }
+}
+
 void MapWidget::drawStation(const Station& station)
 {
     long double coordX, coordY;
     coordinatesToPixels(coordX,coordY,station.getLatitude(),station.getLongitude());
-    QPolygonF Triangle;
-    Triangle.append(QPoint(coordX,coordY));
-    Triangle.append(QPoint(coordX+STATION_SIZE_X,coordY-STATION_SIZE_Y));
-    Triangle.append(QPoint(coordX-STATION_SIZE_X,coordY-STATION_SIZE_Y));
-    mapScene.addPolygon(Triangle,
-                        QPen(),
-                        QBrush(station.getCurrentOnSiteAlert()));
+
+    QPolygonF triangle;
+    triangle.append(QPoint(coordX,coordY));
+    triangle.append(QPoint(coordX+STATION_SIZE_X,coordY-STATION_SIZE_Y));
+    triangle.append(QPoint(coordX-STATION_SIZE_X,coordY-STATION_SIZE_Y));
+
+    //in case there is a station already there, we delete it
+    clearStation(station.getStationID());
+
+    //and we add the new one
+    const char * color = station.getCurrentOnSiteAlert();
+    QGraphicsItem *stationItem = mapScene.addPolygon(triangle,QPen(),QBrush(color));
+    stationItem->setData(0,station.getStationID().c_str());
+
 }
 
 void MapWidget::changeStationsColors(const std::set<Station> &changedStations)
@@ -156,11 +178,24 @@ void MapWidget::changeStationsColors(const std::set<Station> &changedStations)
 
 /**ORIGIN FUNCTIONS**/
 
+void MapWidget::clearOrigin()
+{
+    foreach(QGraphicsItem * item, mapScene.items()){
+        QString itemName = item->data(0).toString ();
+        if ( (itemName == "epicenter") || (itemName == "circle")){
+            mapScene.removeItem(item);
+        }
+    }
+}
+
 void MapWidget::paintOrigin(const Origin &origin){
 
     //if timer of circles painting is on, stop it
     if (circlesTimer->isActive ())
         circlesTimer->stop();
+
+    //if there is a current origin, we erase it
+    clearOrigin();
 
     this->currentOrigin = origin;
 
@@ -177,22 +212,30 @@ void MapWidget::paintOrigin(const Origin &origin){
     //First circle
     QRect rect(0,0,2*radius,2*radius);
     rect.moveCenter(center);
-    mapScene.addEllipse(rect,QPen(),
-                             QBrush(QColor(R_EPICENTER_FIRST_CIRCLE,
-                                           G_EPICENTER_FIRST_CIRCLE,
-                                           B_EPICENTER_FIRST_CIRCLE,
-                                           T_EPICENTER_FIRST_CIRCLE)));
+    QGraphicsItem *circleItem = mapScene.addEllipse(rect,
+                                                    QPen(),
+                                                    QBrush(QColor(R_EPICENTER_FIRST_CIRCLE,
+                                                                  G_EPICENTER_FIRST_CIRCLE,
+                                                                  B_EPICENTER_FIRST_CIRCLE,
+                                                                  T_EPICENTER_FIRST_CIRCLE)));
+    circleItem->setData(0,"circle");
 
     //Epicenter mark (to be on top of the first circle)
     QRect rect2(0,0,2*RADIUS_EPICENTER,2*RADIUS_EPICENTER);
     rect2.moveCenter(center);
-    mapScene.addEllipse (rect2,QPen(),QBrush(QColor( R_EPICENTER,
-                                                     G_EPICENTER,
-                                                     B_EPICENTER,
-                                                     T_EPICENTER)));
+    QGraphicsItem *epicenterItem = mapScene.addEllipse(rect2,
+                                                       QPen(),
+                                                       QBrush(QColor(R_EPICENTER,
+                                                                     G_EPICENTER,
+                                                                     B_EPICENTER,
+                                                                     T_EPICENTER)));
+    epicenterItem->setData(0,"epicenter");
 
     //Set the timer (each 5 seconds) for the concentric circles
     circlesTimer->start(5000);
+
+
+foreach(QGraphicsItem * item, mapScene.items())std::cout<< item->data(0).toString ().toStdString () << std::endl;
 }
 
 
@@ -247,12 +290,26 @@ void MapWidget::paintCircles(){
     rect.moveCenter(center);
 
     //pintar el circulo sobre la escena que contiene el mapa
-    mapScene.addEllipse (rect);
+    QGraphicsItem *circleItem = mapScene.addEllipse (rect);
+    circleItem->setData(0,"circle");
+
 }
 
 
 /***************************************tests**********************************/
 
+
+/*
+ * slot de prueba para simular un cambio en la llegada de un nuevo origen
+ * (llama con un nuevo objeto a paintOrigin, que ya se encarga de limpiar y pintar)
+*/
+void MapWidget::testing(){
+    Origin myOrigin("0x0001b",QDate().currentDate (),QTime().currentTime ().addSecs (-5),
+                    convertToDecimalDegrees(36,32,16.12),
+                    convertToDecimalDegrees(-6,-18,-1.20),
+                    3.54);
+    paintOrigin(myOrigin);
+}
 /*
  * Funcion privada para probar la precision de la conversion de coordenadas a
  * pixeles de la imagen
