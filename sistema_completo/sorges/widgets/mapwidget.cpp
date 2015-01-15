@@ -24,6 +24,7 @@ MapWidget::MapWidget(QWidget *parent) :
     QGraphicsItem *mapItem = mapScene.addPixmap(mapPixmap);
     //and set the name of the item
     mapItem->setData (0,"map");
+    mapItem->setFlag (QGraphicsItem::ItemIsSelectable, true);
 
     //and fit rectangle to image limits
     mapScene.setSceneRect(mapPixmap.rect());
@@ -160,6 +161,7 @@ void MapWidget::drawStation(const Station& station)
     const char * color = station.getCurrentOnSiteAlert();
     QGraphicsItem *stationItem = mapScene.addPolygon(triangle,QPen(),QBrush(color));
     stationItem->setData(0,station.getStationID().c_str());
+    stationItem->setFlag (QGraphicsItem::ItemIsSelectable, true);
 
 }
 
@@ -230,6 +232,7 @@ void MapWidget::paintOrigin(const Origin &origin){
                                                                      B_EPICENTER,
                                                                      T_EPICENTER)));
     epicenterItem->setData(0,"epicenter");
+    epicenterItem->setFlag (QGraphicsItem::ItemIsSelectable, true);
 
     //Set the timer (each 5 seconds) for the concentric circles
     circlesTimer->start(5000);
