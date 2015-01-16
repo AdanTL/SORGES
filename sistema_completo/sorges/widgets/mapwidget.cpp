@@ -69,7 +69,7 @@ long double MapWidget::convertToDecimalDegrees(long double degrees,
                                                long double seconds)
 {
 
-    return degrees + (minutes/60) + (seconds/3600);
+    return degrees + (long double)(minutes/60) + (long double)(seconds/3600);
 }
 
 /*
@@ -237,8 +237,6 @@ void MapWidget::paintOrigin(const Origin &origin){
     //Set the timer (each 5 seconds) for the concentric circles
     circlesTimer->start(5000);
 
-
-foreach(QGraphicsItem * item, mapScene.items())std::cout<< item->data(0).toString ().toStdString () << std::endl;
 }
 
 
@@ -248,7 +246,7 @@ foreach(QGraphicsItem * item, mapScene.items())std::cout<< item->data(0).toStrin
 /**
  * Function for calculating the expansion circle radius every 5 seconds
  */
-float MapWidget::calculateRadius()
+long double MapWidget::calculateRadius()
 {
     long double radius;
     long int difMseconds;
@@ -262,7 +260,11 @@ float MapWidget::calculateRadius()
     radius = (difMseconds/1000) * PROPAGATION_SPEED;
 
     // Calculate the number of pixels to "Radius meters".
-    return (radius/MAP_METRES_LONGITUDE)*mapScene.width();
+    //meanMetres is the medium between the referenced distances in metres of
+    //the X-axis at the top and and the botton of the image, which are different
+    //due to the shape of heart and its projection
+    long double meanMetres = (MAP_METRES_LONGITUDE_BOTTOM+MAP_METRES_LONGITUDE_TOP)/2;
+    return radius/meanMetres*mapScene.width();
 
 }
 
@@ -282,7 +284,7 @@ void MapWidget::paintCircles(){
     QPoint center(x,y);
 
     //definir radio del círculo
-    float radius = calculateRadius();
+    long double radius = calculateRadius();
 
     //rectágulo que va a contener la elipse,
     //coordenada superior 0,0 y tamaño 2*radio tanto alto como ancho
@@ -308,8 +310,8 @@ void MapWidget::paintCircles(){
 */
 void MapWidget::testing(){
     Origin myOrigin("0x0001b",QDate().currentDate (),QTime().currentTime ().addSecs (-5),
-                    convertToDecimalDegrees(36,32,16.12),
-                    convertToDecimalDegrees(-6,-18,-1.20),
+                    36.533517,
+                    -6.300797,
                     3.54);
     paintOrigin(myOrigin);
 }

@@ -19,7 +19,7 @@ class MapWidget : public QWidget
 public:
     explicit MapWidget(QWidget *parent = 0);
     ~MapWidget();
-    
+
 public slots:
     void paintOrigin(const Origin& origin);
     void paintStations(const std::set<Station>& stationsList);
@@ -37,7 +37,7 @@ private:
     /**PRIVATE FUNCTIONS**/		
 		
     /*EXPANSION CIRCLES RADIUS*/
-    float calculateRadius();
+    long double calculateRadius();
 
 	/*CONVERSIONS OF COORDINATES*/
     void coordinatesToPixels(long double &pixelX, long double &pixelY,

@@ -23,8 +23,13 @@
     /*Latitude Y-axis length in meters*/
     #define MAP_METRES_LATITUDE 667200
 
-    /*Longitude X-axis length in meters*/
-    #define MAP_METRES_LONGITUDE 1014520
+    /*Longitude X-axis length in meters (bottom)*/
+    #define MAP_METRES_LONGITUDE_BOTTOM 1014520
+
+    /*Longitude X-axis length in meters (top)*/
+    #define MAP_METRES_LONGITUDE_TOP 936400
+
+
 
 /****/
 
