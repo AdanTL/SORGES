@@ -2,5 +2,6 @@
     <qresource prefix="/">
         <file>testFiles/origin.txt</file>
         <file>testFiles/station.txt</file>
+        <file>testFiles/scalertes_picks.log</file>
     </qresource>
 </RCC>

@@ -64,6 +64,31 @@ std::set<Station> DataProcessing::ProcessStationsFromFile(const QString &namefil
     }
     return stations;
 }
+QString DataProcessing::ProcessColorStationsFromFile(const QString &namefile){
+    QString fileContent;
+    QFile file(namefile);
+    if(!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        std::cerr << "Problem to find the file: " << namefile.toStdString() << std::endl;
+        return QString();
+    }
+    // INEFICIENTE 1000% ESTO DE ABAJO:
+    fileContent = file.readAll();
+    file.close();
+
+    QRegExp rxLastDateTime("\\d\\d\\d\\d-\\d+-\\d+ \\d+:\\d+:\\d+.\\d");
+    if(rxLastDateTime.lastIndexIn(fileContent) != -1){
+        QRegExp rxLineAlert(rxLastDateTime.cap(0) +"\tEstaci\\S+ \\S+\tNivel de Alerta:\\d");
+        if(rxLineAlert.lastIndexIn(fileContent) != -1){
+            QRegExp rxStation("\tEstaci\\S+ \\S+");
+            QRegExp rxStationRm("\\d\\d\\d\\d-\\d+-\\d+ \\d+:\\d+:\\d+.\\d\tEstaci\\S+ ");
+            QRegExp rxColour("Nivel de Alerta:\\d");
+            QRegExp rxColourRm("Nivel de Alerta:");
+            return rxLineAlert.cap().remove(rxStationRm).remove(rxColourRm);
+        }
+
+    }
+    return QString();
+}
 
 QString DataProcessing::FindParameterOriginID(const QString &originString){
      QRegExp rx("Origin#\\S+");
