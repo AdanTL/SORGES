@@ -21,6 +21,7 @@ StationsDataWidget::~StationsDataWidget()
 
 void StationsDataWidget::showStationsData(const std::set<Station>& stations){
     currentStations = stations;
+    ui->textEdit_stations->clear();
     for(std::set<Station>::iterator it=currentStations.begin();
                                     it!=currentStations.end();++it){
         ui->textEdit_stations->append((*it).stationToString().c_str());

@@ -56,6 +56,7 @@ private:
     void changeStationsColors(const std::set<Station>& changedStations);
     void drawStation(const Station &station);
     void clearStation(const std::string& stationID);
+    void clearStations();
 
     /*ORIGIN FUNCTIONS*/
     void clearOrigin();

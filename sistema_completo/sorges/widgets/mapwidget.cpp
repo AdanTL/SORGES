@@ -129,9 +129,20 @@ void MapWidget::coordinatesToPixels(long double &pixelX,long double &pixelY,
 
 void MapWidget::paintStations(const std::set<Station>& stationsList)
 {
+    this->stations.clear ();
+    clearStations();
     this->stations = stationsList;
     for(std::set<Station>::iterator it=stations.begin(); it!=stations.end(); ++it)
         drawStation(*it);
+}
+
+void MapWidget::clearStations()
+{
+    foreach(QGraphicsItem * item, mapScene.items()){
+        if (item->data(1).toString () == "station"){
+            mapScene.removeItem(item);
+        }
+    }
 }
 
 void MapWidget::clearStation(const std::string &stationID)
@@ -161,6 +172,7 @@ void MapWidget::drawStation(const Station& station)
     const char * color = station.getCurrentOnSiteAlert();
     QGraphicsItem *stationItem = mapScene.addPolygon(triangle,QPen(),QBrush(color));
     stationItem->setData(0,station.getStationID().c_str());
+    stationItem->setData(1,"station");
     stationItem->setFlag (QGraphicsItem::ItemIsSelectable, true);
 
 }
