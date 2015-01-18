@@ -15,7 +15,7 @@ public:
     DataProcessing();
     Origin ProcessOriginFromFile(const QString &namefile);
     std::set<Station> ProcessStationsFromFile(const QString &namefile);
-    QString ProcessColorStationsFromFile(const QString &namefile);
+    QStringList ProcessColorStationsFromFile(const QString &namefile);
 //private:
     Origin origen;
     std::set<Station> stations;
