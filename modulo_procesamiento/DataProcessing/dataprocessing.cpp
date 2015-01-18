@@ -1,50 +1,71 @@
 #include "dataprocessing.h"
 
+
 DataProcessing::DataProcessing()
 {
 }
 
 
-Origin DataProcessing::ProcessOriginFromFile(const QString &namefile){
+void DataProcessing::ProcessAnyFile(const QString &namefile){
+    if(namefile ==  FILE_LOG_ORIGIN)
+        ProcessOriginFromFileLog(namefile);
+    else
+        if(namefile == FILE_LOG_PICKS)
+            ProcessColorStationsFromFile(namefile);
+        else
+            if(namefile == FILE_XML_ORIGIN)
+                ProcessOriginFromFileXml(namefile);
+}
+
+//CHANGES:
+    //set latitude and longitude.
+void DataProcessing::ProcessOriginFromFileLog(const QString &namefile){
+    std::cout << "ProcessOriginFromFileLog" << namefile.toStdString() << std::endl;
+    QRegExp rxNewOrigen("NUEVO ORIGEN -");
     QString fileContent;
     QFile file(namefile);
+    int pos=file.size();
+    bool found = false;
 
     if(!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
         std::cerr << "Problem to find the file: " << namefile.toStdString() << std::endl;
-        return Origin();
+        return;
     }
 
-    fileContent = file.readAll();
-    file.close();
-    std::string originID = FindParameterOriginID(fileContent).toStdString();
-    QDate originDate = QDate::fromString(FindParameterOriginDate(fileContent),"yyyy-MM-dd");
-    QTime originTime = QTime::fromString(FindParameterOriginTime(fileContent), "hh:mm:ss.z");
-    long double originLatitude = FindParameterOriginLatitude(fileContent).toDouble();
-    long double originLongitude = FindParameterOriginLongitude(fileContent).toDouble();
-    double originMagnitude = FindParameterOriginMagnitude(fileContent).toDouble();
-    std::set<Station> originStations;
+    // Get Fragment with the same Date and Time (it contents some rubbish data, but it is not important).
+    do{
+        pos -= 10;
+        file.seek(pos);
+        fileContent = file.readAll();
+        if(rxNewOrigen.indexIn(fileContent) != -1)
+            found = true;
+    }while(found == false);
 
-    std::vector<QStringList> stationsParameters = FindParameterOriginStations(fileContent);
-        for(size_t i=0; i<stationsParameters.size(); i++){
-            //auto  it = stations.find(Station(stationsParameters[i].at(0).toStdString()));
-            std::set<Station>::iterator it = stations.find(Station(stationsParameters[i].at(0).toStdString()));
-            Station originOneStation = Station(*it);
-            originOneStation.setColor((stationsParameters.at(i)).at(2).toInt());
-            originStations.insert(originOneStation);
-        }
-
-    Origin origen(originID,originDate,originTime,originLatitude,originLongitude,originMagnitude,originStations);
-    return origen;
+    //Look for parameters into log file.
+    origen.setOriginID(FindParameterOriginID(fileContent).toStdString());
+    origen.setOriginDate(QDate::fromString(FindParameterOriginDate(fileContent),"yyyy-MM-dd"));
+    origen.setOriginTime(QTime::fromString(FindParameterOriginTime(fileContent),"hh:mm:ss.z"));
+    //origen.setLatitude(FindParameterOriginLatitude(fileContent).toDouble());
+    //origen.setLongitude(FindParameterOriginLongitude(fileContent).toDouble());
+    //origen.setMagnitude(FindParameterOriginLongitude(fileContent).toDouble());
+    //origen.setStations(FindParameterOriginLongitude(fileContent).toDouble());
 }
 
-std::set<Station> DataProcessing::ProcessStationsFromFile(const QString &namefile){
+void DataProcessing::ProcessOriginFromFileXml(const QString &namefile){
+// @TODO: QUEDA POR IMPLEMENTAR:
+    std::cout << "ProcessOriginFromFileXml" << namefile.toStdString() << std::endl;
+
+}
+
+// FINAL VERSION (BY THE MOMENT).
+void DataProcessing::ProcessStationsFromFile(const QString &namefile){
     stations.clear();
 
     QString fileContent;
     QFile file(namefile);
     if(!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
         std::cerr << "Problem to find the file: " << namefile.toStdString() << std::endl;
-        return stations;
+        return;
     }
     fileContent = file.readAll();
     file.close();
@@ -62,10 +83,11 @@ std::set<Station> DataProcessing::ProcessStationsFromFile(const QString &namefil
         StationLongitude = stationsParameters.at(i).at(0).toDouble();
         stations.insert(Station(StationId,StationIdNetwork,StationLatitude,StationLongitude));
     }
-    return stations;
 }
 
-QStringList DataProcessing::ProcessColorStationsFromFile(const QString &namefile){
+// FINAL VERSION (BY THE MOMENT).
+void DataProcessing::ProcessColorStationsFromFile(const QString &namefile){
+    std::cout << "ProcessColorStationsFromFile" << namefile.toStdString() << std::endl;
     QRegExp rxLastDateTime("\n\\d+-\\d+-\\d+ \\d+:\\d+:\\d+.\\d");
     QString fileContent;
     QString lastTime;
@@ -75,7 +97,7 @@ QStringList DataProcessing::ProcessColorStationsFromFile(const QString &namefile
 
     if(!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
         std::cerr << "Problem to find the file: " << namefile.toStdString() << std::endl;
-        return QStringList();
+        return;
     }
 
     // Get Eficiently the last Date in File.
@@ -102,11 +124,13 @@ QStringList DataProcessing::ProcessColorStationsFromFile(const QString &namefile
     if(rxLineAlert.lastIndexIn(fileContent) != -1){
         QRegExp rxStationRm("\\d\\d\\d\\d-\\d+-\\d+ \\d+:\\d+:\\d+.\\d\tEstaci\\S+ ");
         QRegExp rxColourRm("Nivel de Alerta:");
-        return rxLineAlert.cap().remove(rxStationRm).remove(rxColourRm).split("\t");
+        QStringList parameters = rxLineAlert.cap().remove(rxStationRm).remove(rxColourRm).split("\t");
+        Station st(parameters.at(0).toStdString());
+        stations.find(st);//->setColor(parameters.at(1));
     }
-
-    return QStringList();
 }
+
+
 
 QString DataProcessing::FindParameterOriginID(const QString &originString){
      QRegExp rx("Origin#\\S+");
@@ -116,16 +140,18 @@ QString DataProcessing::FindParameterOriginID(const QString &originString){
 }
 
 QString DataProcessing::FindParameterOriginDate(const QString &originString){
-    QRegExp rx("\\d+-\\d+-\\d+");
+    QRegExp rx("CreationTime= \\d+-\\d+-\\d+");
+    QRegExp rx1("CreationTime= ");
     if(rx.indexIn(originString) != -1)
-        return rx.cap(0);
+        return rx.cap(0).remove(rx1);
     return QString();
 }
 
 QString DataProcessing::FindParameterOriginTime(const QString &originString){
-    QRegExp rx("\\d+:\\d+:\\d+.\\d");
+    QRegExp rx("CreationTime= \\d+-\\d+-\\d+ \\d+:\\d+:\\d+.\\d");
+    QRegExp rx1("CreationTime= \\d+-\\d+-\\d+ ");
     if(rx.indexIn(originString) != -1)
-        return rx.cap(0);
+        return rx.cap(0).remove(rx1);
     return QString();
 }
 

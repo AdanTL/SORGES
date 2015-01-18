@@ -87,8 +87,12 @@ bool operator < (const Station& station1, const Station& station2){
 
 
 std::ostream& operator << (std::ostream& os, const Station& station){
-    os << "Station ID: " << station.stationID ;
-    os << "\nStation Network ID: " << station.networkID << "\nLatitude: ";
-    os << station.latitude << "\nLongitude: " << station.longitude << "\nCode: " << station.color << "\n";
+    os << "\t\t<Station>\n";
+    os << "\t\t\t<StationID>" << station.getStationID().c_str() << "</StationID>\n";
+    os << "\t\t\t<StationNetworkID>" << station.getNetworkID().c_str() << "</StationNetworkID>\n";
+    os << "\t\t\t<StationLatitude>" << (double)station.getLatitude() << "</StationLatitude>\n";
+    os << "\t\t\t<StationLongitude>" << (double)station.getLongitude() << "</StationLongitude>\n";
+    os << "\t\t\t<StationColourCode>" << station.getColor() << "</StationColourCode>\n";
+    os << "\t\t</Station>";
     return os;
 }

@@ -1,6 +1,7 @@
 #ifndef STATION_H
 #define STATION_H
 #include <string>
+#include <QTextStream>
 #include <map>
  
 class Station{
@@ -37,7 +38,6 @@ class Station{
     }
 
     friend std::ostream& operator << (std::ostream& os, const Station& station);
-
 private:
     std::string stationID;
     std::string networkID;

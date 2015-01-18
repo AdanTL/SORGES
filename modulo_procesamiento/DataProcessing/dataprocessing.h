@@ -9,16 +9,32 @@
 #include "origin.h"
 #include "station.h"
 
+// ADD into Configure file .h or Qsetting object.
+#define FILE_INICIAL_STATIONS ":/testFiles/station.txt"
+
+#define FILE_LOG_ORIGIN ":/testFiles/origin.txt"
+#define FILE_LOG_PICKS ":/testFiles/scalertes_picks.log"
+#define FILE_XML_ORIGIN ":/testFiles/gfz2014dibx.last.xml"
+
+#define FILE_OUTPUT ":/testFiles/output_test.txt"
+
+
 class DataProcessing
 {
 public:
     DataProcessing();
-    Origin ProcessOriginFromFile(const QString &namefile);
-    std::set<Station> ProcessStationsFromFile(const QString &namefile);
-    QStringList ProcessColorStationsFromFile(const QString &namefile);
+    void ProcessAnyFile(const QString &namefile);
+    void ProcessStationsFromFile(const QString &namefile);
+    Origin getOrigin(){return origen;}
+    std::set<Station> getStations(){return stations;}
+
 //private:
     Origin origen;
     std::set<Station> stations;
+
+    void ProcessOriginFromFileLog(const QString &namefile);
+    void ProcessColorStationsFromFile(const QString &namefile);
+    void ProcessOriginFromFileXml(const QString &namefile);
 
     QString FindParameterOriginID(const QString &originString);
     QString FindParameterOriginDate(const QString &originString);
