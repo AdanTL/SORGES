@@ -26,6 +26,7 @@ void DataProcessing::ProcessOriginFromFileLog(const QString &namefile){
     QFile file(namefile);
     int pos=file.size();
     bool found = false;
+    bool overflow = false;
 
     if(!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
         std::cerr << "Problem to find the file: " << namefile.toStdString() << std::endl;
@@ -35,11 +36,20 @@ void DataProcessing::ProcessOriginFromFileLog(const QString &namefile){
     // Get Fragment with the same Date and Time (it contents some rubbish data, but it is not important).
     do{
         pos -= 10;
+        //it is not a empty file.
+        if(pos < 0){
+            overflow = false;
+            pos = 0;
+        }
         file.seek(pos);
         fileContent = file.readAll();
         if(rxNewOrigen.indexIn(fileContent) != -1)
             found = true;
-    }while(found == false);
+    }while(found == false && overflow == false);
+
+    // if is overflowed return.
+    if(found == false)
+        return;
 
     //Look for parameters into log file.
     origen.setOriginID(FindParameterOriginID(fileContent).toStdString());
@@ -94,6 +104,7 @@ void DataProcessing::ProcessColorStationsFromFile(const QString &namefile){
     QFile file(namefile);    
     int pos=file.size();
     bool found = false;
+    bool overflowed = false;
 
     if(!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
         std::cerr << "Problem to find the file: " << namefile.toStdString() << std::endl;
@@ -102,39 +113,59 @@ void DataProcessing::ProcessColorStationsFromFile(const QString &namefile){
 
     // Get Eficiently the last Date in File.
     do{
+        //File empty.
+        if(pos < 0){
+            pos = 0;
+            overflowed = true;
+        }
+
         pos -= 100;
         file.seek(pos);
         fileContent = file.readAll();
-    }while(rxLastDateTime.lastIndexIn(fileContent) == -1);
-    lastTime = rxLastDateTime.cap(0);
+    }while(rxLastDateTime.lastIndexIn(fileContent) == -1 && overflowed == false);
+
+    // if it is not overflowed.
+    if(rxLastDateTime.lastIndexIn(fileContent) != -1)
+        lastTime = rxLastDateTime.cap(0);
+    else
+        return;
+
+    found = false;
+    overflowed = false;
 
     // Get Fragment with the same Date and Time (it contents some rubbish data, but it is not important).
     do{
         pos -= 100;
+        if(pos < 0){
+            overflowed = true;
+            pos = 0;
+        }
         file.seek(pos);
         fileContent = file.readAll();
         if(rxLastDateTime.indexIn(fileContent) != -1)
             if(rxLastDateTime.cap() != lastTime)
                 found = true;
-    }while(found == false);
+    }while(found == false && overflowed == false);
 
-    // Look for the Station Alert line, and take the values.
-    QRegExp rxLineAlert(lastTime +"\tEstaci\\S+ \\S+\tNivel de Alerta:\\d");
-    rxLineAlert.lastIndexIn(fileContent);
-    if(rxLineAlert.lastIndexIn(fileContent) != -1){
-        QRegExp rxStationRm("\n\\d\\d\\d\\d-\\d+-\\d+ \\d+:\\d+:\\d+.\\d\tEstaci\\S+ ");
-        QRegExp rxColourRm("Nivel de Alerta:");
-        QStringList parameters = rxLineAlert.cap().remove(rxStationRm).remove(rxColourRm).split("\t");
-        // Look for a station with the same ID and extract it
-        std::set<Station>::iterator it = stations.find(Station(parameters.at(0).toStdString()));
-        Station st(*it);
-        // Change color and update this value.
-        st.setColor(parameters.at(1).toInt());
-        stations.erase(it);
-        stations.insert(st);
+    if(found){
+        // Look for the Station Alert line, and take the values.
+        QRegExp rxLineAlert(lastTime +"\tEstaci\\S+ \\S+\tNivel de Alerta:\\d");
+        rxLineAlert.lastIndexIn(fileContent);
+        if(rxLineAlert.lastIndexIn(fileContent) != -1){
+            QRegExp rxStationRm("\n\\d\\d\\d\\d-\\d+-\\d+ \\d+:\\d+:\\d+.\\d\tEstaci\\S+ ");
+            QRegExp rxColourRm("Nivel de Alerta:");
+            QStringList parameters = rxLineAlert.cap().remove(rxStationRm).remove(rxColourRm).split("\t");
+            // Look for a station with the same ID and extract it
+            std::set<Station>::iterator it = stations.find(Station(parameters.at(0).toStdString()));
+            Station st(*it);
+            // Change color and update this value.
+            st.setColor(parameters.at(1).toInt());
+            stations.erase(it);
+            stations.insert(st);
+        }
     }
-}
 
+}
 
 
 QString DataProcessing::FindParameterOriginID(const QString &originString){
@@ -214,3 +245,4 @@ std::vector<QStringList> DataProcessing::FindParameterStations(const QString &st
     }
     return StationParameters;
 }
+
