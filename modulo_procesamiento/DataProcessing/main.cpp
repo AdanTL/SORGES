@@ -43,11 +43,13 @@ int main(int argc, char *argv[])
 
     std::set<Station> Stations = processing.ProcessStationsFromFile(":/testFiles/station.txt");
     Origin origen = processing.ProcessOriginFromFile(":/testFiles/origin.txt");
-    QString Colour  = processing.ProcessColorStationsFromFile(":/testFiles/scalertes_picks.log");
-    if(Colour.size() > 0)
-        std::cout << Colour.toStdString() << std::endl;
-    else
+    QStringList Colour(processing.ProcessColorStationsFromFile(":/testFiles/scalertes_picks.log"));
+    std::cout << "------TEST SCALERTE_PICK----------" << std::endl;
+    if(Colour.size() == 0)
         std::cout << "Ningun Color detectado" << std::endl;
+    else
+        for(size_t i=0; i<Colour.size(); i++)
+            std::cout << Colour.at(i).toStdString() << std::endl;
 
     /*std::cout << "++++++++++++++++++++++++++++ PRUEBA ORIGEN: +++++++++++++++++++++++++++++\n" << std::endl;
     std::cout << origen << std::endl;
