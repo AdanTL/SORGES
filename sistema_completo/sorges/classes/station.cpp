@@ -98,10 +98,18 @@ bool operator == (const Station& station1, const Station& station2){
 }
 
 std::ostream& operator << (std::ostream& os, const Station& station){
-    os << "Station ID: " << station.stationID ;
-    os << "\nStation Network ID: " << station.networkID << "\nLatitude: ";
-    os << station.latitude << "\nLongitude: " << station.longitude << "\n";
-    if (station.color != -1) os << "On-Site Alert: " << station.color << "\n";
+    os << "\t\t<Station>\n";
+    os << "\t\t\t<StationID>" << station.getStationID().c_str()
+       << "</StationID>\n";
+    os << "\t\t\t<StationNetworkID>" << station.getNetworkID().c_str()
+       << "</StationNetworkID>\n";
+    os << "\t\t\t<StationLatitude>" << (double)station.getLatitude()
+       << "</StationLatitude>\n";
+    os << "\t\t\t<StationLongitude>" << (double)station.getLongitude()
+       << "</StationLongitude>\n";
+    os << "\t\t\t<StationOnSiteAlert>" << station.getColor()
+       << "</StationOnSiteAlert>\n";
+    os << "\t\t</Station>";
     return os;
 }
 
@@ -109,6 +117,11 @@ std::ostream& operator << (std::ostream& os, const Station& station){
 /**uses the output operator format to create a string**/
 std::string Station::stationToString() const{
     std::ostringstream convert;
-    convert << (*this);
+
+    convert << "Station ID: " << this->stationID ;
+    convert << "\nStation Network ID: " << this->networkID << "\nLatitude: ";
+    convert << this->latitude << "\nLongitude: " << this->longitude << "\n";
+    if (this->color != -1) convert << "On-Site Alert: " << this->color << "\n";
+
     return convert.str();
 }

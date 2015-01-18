@@ -93,14 +93,27 @@ bool operator == (const Origin& origin1, const Origin& origin2){
 }
 
 std::ostream& operator << (std::ostream& os, const Origin& origin){
-    os << "Timestamp: " << origin.originDate.year() << "-"
-       << origin.originDate.month() << "-" << origin.originDate.day();
-    os << " " << origin.originTime.hour() << ":" << origin.originTime.minute()
-       << ":" << origin.originTime.second();
-    os << "\nMagnitude: " << origin.magnitude << "\nLatitude: ";
-    os << origin.latitude << "\nLongitude: " << origin.longitude << "\n";
-    for(std::set<Station>::iterator it=origin.stations.begin(); 
-    								it!=origin.stations.end(); ++it)
-        os << *it;
+    os << "<Origin>\n";
+    os << "\t<OriginID>" << origin.getOriginID().c_str() << "</OriginID>\n";
+    os << "\t<OriginDate>"
+       << origin.getOriginDate().toString("yyyy-MM-dd").toStdString().c_str()
+       << "</OriginDate>\n";
+    os << "\t<OriginTime>"
+       << origin.getOriginTime().toString("hh:mm:ss.z").toStdString().c_str()
+       << "</OriginTime>\n";
+    os << "\t<OriginMagnitude>" << origin.getMagnitude()
+       << "</OriginMagnitude>\n";
+    os << "\t<OriginLatitude>" << (double)origin.getLatitude()
+       << "</OriginLatitude>\n";
+    os << "\t<OriginLongitude>" << (double)origin.getLongitude()
+       << "</OriginLongitude>\n";
+    os << "\t<AssociatedStations>\n";
+    os << "\t\t<StationsNumber>"<< origin.stations.size()
+       << "</StationsNumber>\n";
+    for(std::set<Station>::iterator it=origin.stations.begin();
+                                    it!=origin.stations.end(); ++it)
+        os << *it << "\n" ;
+    os << "\t</AssociatedStations>\n";
+    os << "</Origin>";
     return os;
 }

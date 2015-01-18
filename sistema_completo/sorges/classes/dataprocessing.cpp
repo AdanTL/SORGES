@@ -16,7 +16,7 @@ DataProcessing::DataProcessing(QObject* parent):
         std::cerr << "Problem to find the file: "
                   << config->value("filepaths/stations").toString().toStdString()
                   << std::endl;
-    /*
+
     if (!watcher.addPath(config->value("filepaths/picks").toString()))
         std::cerr << "Problem to find the file: "
                   << config->value("filepaths/picks").toString().toStdString()
@@ -27,11 +27,10 @@ DataProcessing::DataProcessing(QObject* parent):
                   << config->value("filepaths/origins").toString().toStdString()
                   << std::endl;
 
-    if (!watcher.addPath(config.value("filepaths/events").toString()))
+    if (!watcher.addPath(config->value("filepaths/events").toString()))
         std::cerr << "Problem to find the file: "
                   << config->value("filepaths/events").toString().toStdString()
                   << std::endl;
-    */
 
     connect(&watcher,SIGNAL(fileChanged(QString)),this,SLOT(fileChangedSlot(QString)));
 
@@ -39,9 +38,9 @@ DataProcessing::DataProcessing(QObject* parent):
 
 void DataProcessing::init(){
     //List of stations loaded at the start of the system with dataProcessor.init()
-    stations = ProcessStationsFromFile(config->value("filepaths/stations").toString());
-    if (!stations.empty())
-        emit stationsLoaded(stations);
+    processStationsFromFile(config->value("filepaths/stations").toString());
+    if (!this->stations.empty())
+        emit stationsLoaded(this->stations);
 }
 
 void DataProcessing::fileChangedSlot(QString path)
@@ -49,23 +48,48 @@ void DataProcessing::fileChangedSlot(QString path)
     //keep the watch on the file
     watcher.addPath(path);
 
-    stations = ProcessStationsFromFile(path);
-    if (!stations.empty())
-        emit stationsLoaded(stations);
+    if (path == config->value(("filepaths/stations"))) {
+        processStationsFromFile(path);
+        if (!this->stations.empty())
+            emit stationsLoaded(this->stations);
+    }
+
+    else if (path == config->value(("filepaths/picks"))){
+        /*@ToDo procces picks
+        //processColorStationsFromFile(path);
+        emit stationColorReceived();
+        */
+    }
+
+    else if (path == config->value(("filepaths/origins"))){
+        /*@ToDo procces origins
+        //processOriginFromFileLog(path);
+        emit originReceived(this->origin);
+        */
+    }
+
+    else if (path == config->value(("filepaths/events"))){
+        /*@ToDo procces events
+        //processOriginFromFileXml(path);
+        emit eventReceived(this->origin);
+        */
+    }
+
+    else std::cerr<<"Unrecognized file: "<<path.toStdString()<<std::endl;
+
   }
 
-std::set<Station> DataProcessing::ProcessStationsFromFile(const QString &namefile){
+void DataProcessing::processStationsFromFile(const QString &namefile){
     stations.clear();
 
     QString fileContent;
     QFile file(namefile);
     if(!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
         std::cerr << "Problem to find the file: " << namefile.toStdString() << std::endl;
-        return stations;
     }
     fileContent = file.readAll();
     file.close();
-    std::vector<QStringList> stationsParameters = FindParameterStations(fileContent);
+    std::vector<QStringList> stationsParameters = findParameterStations(fileContent);
 
     std::string StationId;
     long double StationLatitude;
@@ -79,11 +103,10 @@ std::set<Station> DataProcessing::ProcessStationsFromFile(const QString &namefil
         StationLongitude = stationsParameters.at(i).at(0).toDouble();
         stations.insert(Station(StationId,StationIdNetwork,StationLatitude,StationLongitude));
     }
-    return stations;
 }
 
 
-std::vector<QStringList> DataProcessing::FindParameterStations(const QString &stationsString){
+std::vector<QStringList> DataProcessing::findParameterStations(const QString &stationsString){
     std::vector<QStringList> StationParameters;
     QStringList eachStationsFile = stationsString.split("\n");
     QString oneStation;

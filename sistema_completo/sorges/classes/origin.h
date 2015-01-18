@@ -5,6 +5,7 @@
 #include <set>
 #include <QDate>
 #include <QTime>
+#include <QTextStream>
 #include "station.h"
 
 class Origin{

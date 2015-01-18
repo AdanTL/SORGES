@@ -3,6 +3,7 @@
 #include <string>
 #include <map>
 #include <sstream>
+#include <QTextStream>
  
 class Station{
 	
