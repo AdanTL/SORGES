@@ -1,4 +1,4 @@
-#include "dataprocessing.h"
+﻿#include "dataprocessing.h"
 
 
 DataProcessing::DataProcessing()
@@ -20,7 +20,7 @@ void DataProcessing::ProcessAnyFile(const QString &namefile){
 //CHANGES:
     //set latitude and longitude.
 void DataProcessing::ProcessOriginFromFileLog(const QString &namefile){
-    std::cout << "ProcessOriginFromFileLog" << namefile.toStdString() << std::endl;
+    //std::cout << "ProcessOriginFromFileLog" << namefile.toStdString() << std::endl;
     QRegExp rxNewOrigen("NUEVO ORIGEN -");
     QString fileContent;
     QFile file(namefile);
@@ -53,7 +53,7 @@ void DataProcessing::ProcessOriginFromFileLog(const QString &namefile){
 
 void DataProcessing::ProcessOriginFromFileXml(const QString &namefile){
 // @TODO: QUEDA POR IMPLEMENTAR:
-    std::cout << "ProcessOriginFromFileXml" << namefile.toStdString() << std::endl;
+    //std::cout << "ProcessOriginFromFileXml" << namefile.toStdString() << std::endl;
 
 }
 
@@ -87,7 +87,7 @@ void DataProcessing::ProcessStationsFromFile(const QString &namefile){
 
 // FINAL VERSION (BY THE MOMENT).
 void DataProcessing::ProcessColorStationsFromFile(const QString &namefile){
-    std::cout << "ProcessColorStationsFromFile" << namefile.toStdString() << std::endl;
+    //std::cout << "ProcessColorStationsFromFile" << namefile.toStdString() << std::endl;
     QRegExp rxLastDateTime("\n\\d+-\\d+-\\d+ \\d+:\\d+:\\d+.\\d");
     QString fileContent;
     QString lastTime;
@@ -122,11 +122,16 @@ void DataProcessing::ProcessColorStationsFromFile(const QString &namefile){
     QRegExp rxLineAlert(lastTime +"\tEstaci\\S+ \\S+\tNivel de Alerta:\\d");
     rxLineAlert.lastIndexIn(fileContent);
     if(rxLineAlert.lastIndexIn(fileContent) != -1){
-        QRegExp rxStationRm("\\d\\d\\d\\d-\\d+-\\d+ \\d+:\\d+:\\d+.\\d\tEstaci\\S+ ");
+        QRegExp rxStationRm("\n\\d\\d\\d\\d-\\d+-\\d+ \\d+:\\d+:\\d+.\\d\tEstaci\\S+ ");
         QRegExp rxColourRm("Nivel de Alerta:");
         QStringList parameters = rxLineAlert.cap().remove(rxStationRm).remove(rxColourRm).split("\t");
-        Station st(parameters.at(0).toStdString());
-        stations.find(st);//->setColor(parameters.at(1));
+        // Look for a station with the same ID and extract it
+        std::set<Station>::iterator it = stations.find(Station(parameters.at(0).toStdString()));
+        Station st(*it);
+        // Change color and update this value.
+        st.setColor(parameters.at(1).toInt());
+        stations.erase(it);
+        stations.insert(st);
     }
 }
 

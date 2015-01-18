@@ -10,11 +10,14 @@ int main(int argc, char *argv[])
     //First instrucction.
     processing.ProcessStationsFromFile(":/testFiles/station.txt");
 
-    // Those instruction can be concurrent called.
+    // Those instruction will be concurrent called.
     processing.ProcessAnyFile(":/testFiles/scalertes_picks.log");
     processing.ProcessAnyFile(":/testFiles/origin.txt");
     processing.ProcessAnyFile(":/testFiles/gfz2014dibx.last.xml");
-    processing.getOrigin().setStations(processing.getStations());
-    std::cout << processing.getOrigin() << std::endl;
+
+    std::set<Station> stations(processing.getStations());
+    Origin origen(processing.getOrigin());
+    origen.setStations(stations);
+    std::cout << origen << std::endl;
     return a.exec();
 }
