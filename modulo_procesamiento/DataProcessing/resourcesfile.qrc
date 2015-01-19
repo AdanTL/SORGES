@@ -4,6 +4,5 @@
         <file>testFiles/station.txt</file>
         <file>testFiles/scalertes_picks.log</file>
         <file>testFiles/output_test.txt</file>
-        <file>testFiles/gfz2014dibx.last.xml</file>
     </qresource>
 </RCC>

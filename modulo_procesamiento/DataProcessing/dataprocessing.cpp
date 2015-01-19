@@ -35,22 +35,24 @@ void DataProcessing::ProcessOriginFromFileLog(const QString &namefile){
 
     // Get Fragment with the same Date and Time (it contents some rubbish data, but it is not important).
     do{
-        pos -= 10;
+        pos -= 1500;
         //it is not a empty file.
         if(pos < 0){
-            overflow = false;
+            overflow = true;
             pos = 0;
         }
         file.seek(pos);
         fileContent = file.readAll();
+
         if(rxNewOrigen.indexIn(fileContent) != -1)
             found = true;
     }while(found == false && overflow == false);
 
     // if is overflowed return.
-    if(found == false)
+    if(found == false){
+        //cerr
         return;
-
+    }
     //Look for parameters into log file.
     origen.setOriginID(FindParameterOriginID(fileContent).toStdString());
     origen.setOriginDate(QDate::fromString(FindParameterOriginDate(fileContent),"yyyy-MM-dd"));
@@ -113,13 +115,13 @@ void DataProcessing::ProcessColorStationsFromFile(const QString &namefile){
 
     // Get Eficiently the last Date in File.
     do{
+        pos -= 100;
         //File empty.
         if(pos < 0){
             pos = 0;
             overflowed = true;
         }
 
-        pos -= 100;
         file.seek(pos);
         fileContent = file.readAll();
     }while(rxLastDateTime.lastIndexIn(fileContent) == -1 && overflowed == false);
@@ -127,9 +129,10 @@ void DataProcessing::ProcessColorStationsFromFile(const QString &namefile){
     // if it is not overflowed.
     if(rxLastDateTime.lastIndexIn(fileContent) != -1)
         lastTime = rxLastDateTime.cap(0);
-    else
+    else{
+        //cerr
         return;
-
+    }
     found = false;
     overflowed = false;
 
