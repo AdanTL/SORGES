@@ -3,10 +3,7 @@
         <file>testFiles/origin.txt</file>
         <file>testFiles/station.txt</file>
         <file>testFiles/scalertes_picks.log</file>
-<<<<<<< HEAD
         <file>testFiles/gfz2014dibx.last.xml</file>
-=======
         <file>testFiles/output_test.txt</file>
->>>>>>> 81e6025084d9a60a208249cbc7ba6d96bb37b7ed
     </qresource>
 </RCC>

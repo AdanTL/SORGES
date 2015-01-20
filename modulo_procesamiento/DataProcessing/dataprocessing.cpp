@@ -63,7 +63,7 @@ void DataProcessing::ProcessOriginFromFileLog(const QString &namefile){
     //origen.setMagnitude(FindParameterOriginLongitude(fileContent).toDouble());
     //origen.setStations(FindParameterOriginLongitude(fileContent).toDouble());
 }
-
+//hay que renombrar la funcion xq pilla cosas de las stations
 void DataProcessing::ProcessOriginFromFileXml(const QString &namefile){
     std::set<Station> stations;
     QStringList networkID, stationID;
@@ -78,32 +78,44 @@ void DataProcessing::ProcessOriginFromFileXml(const QString &namefile){
         return;
     }
     QXmlStreamReader xml(file.readAll());
-    do{
+    while(!xml.atEnd()){
 
-        while(!xml.atEnd() && xml.name() != "pick")
+        while(!xml.atEnd() && xml.name() != "pick"){
             xml.readNextStartElement();
 
-        while(xml.is && xml.name() != "waveformID")
+        }
+        if(xml.name()=="pick"){
+        do{
             xml.readNextStartElement();
+        }while(xml.name() != "waveformID");
+        }
 
-        QXmlStreamAttributes attributes = xml.attributes();
-           if(attributes.hasAttribute("networkCode")) {
-                networkID << attributes.value("networkCode").toString();
-           }
-           if(attributes.hasAttribute("stationCode")) {
-                stationID << attributes.value("stationCode").toString();
-           }
-    }while(!xml.atEnd());
-    for(size_t i=0; i<stationID.size(); i++)
-        std::cout << stationID.at(i).toStdString() << std::endl;
-    do{
-        xml.readNextStartElement();
-    }while(!xml.atEnd() && xml.name() != "origin");
+               if(xml.name()==("waveformID")){
 
-    QXmlStreamAttributes attributes = xml.attributes();
-       if(attributes.hasAttribute("publicID")) {
-            originID = attributes.value("publicID").toString();
-       }
+                   QXmlStreamAttributes attributes = xml.attributes();
+                   if(attributes.hasAttribute("networkCode")) {
+                        networkID << attributes.value("networkCode").toString();
+                   }
+                   if(attributes.hasAttribute("stationCode")) {
+                        stationID << attributes.value("stationCode").toString();
+                   }
+               }
+
+
+    }
+    for(size_t i=0; i<stationID.size()-1; i++){
+    std::cout << stationID.at(i).toStdString() << std::endl;}
+    std::cout << "---------------" << std::endl;
+    for(size_t i=0; i<networkID.size()-1; i++){
+    std::cout << networkID.at(i).toStdString() << std::endl;}
+        do{
+            xml.readNextStartElement();
+        }while(!xml.atEnd() && xml.name() != "origin");
+
+        QXmlStreamAttributes attribute = xml.attributes();
+           if(attribute.hasAttribute("publicID")) {
+                originID = attribute.value("publicID").toString();
+           }
 
     do{
         xml.readNextStartElement();
