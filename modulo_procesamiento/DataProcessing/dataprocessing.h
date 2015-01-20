@@ -13,11 +13,10 @@
 // ADD into Configure file .h or Qsetting object.
 #define FILE_INICIAL_STATIONS ":/testFiles/station.txt"
 
-#define FILE_LOG_ORIGIN ":/testFiles/origin.txt"
+#define FILE_LOG_ORIGIN ":/testFiles/scalertes_origenes.log"
 #define FILE_LOG_PICKS ":/testFiles/scalertes_picks.log"
 #define FILE_XML_ORIGIN ":/testFiles/gfz2014dibx.last.xml"
 
-#define FILE_OUTPUT ":/testFiles/output_test.txt"
 
 
 class DataProcessing
@@ -42,7 +41,7 @@ public:
     QString FindParameterOriginTime(const QString &originString);
     QString FindParameterOriginLatitude(const QString &originString);
     QString FindParameterOriginLongitude(const QString &originString);
-    QString FindParameterOriginMagnitude(const QString &originString);
+    //QString FindParameterOriginMagnitude(const QString &originString);
     std::vector<QStringList> FindParameterOriginStations(const QString &originString);
 
     std::vector<QStringList> FindParameterStations(const QString &stationsString);

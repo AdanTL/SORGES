@@ -14,7 +14,7 @@ void DataProcessing::ProcessAnyFile(const QString &namefile){
         if(namefile == FILE_LOG_PICKS)
             ProcessColorStationsFromFile(namefile);
         else
-            if(namefile == FILE_XML_ORIGIN)
+            if(namefile.contains(".xml"))
                 ProcessOriginFromFileXml(namefile);
 }
 
@@ -36,7 +36,7 @@ void DataProcessing::ProcessOriginFromFileLog(const QString &namefile){
 
     // Get Fragment with the same Date and Time (it contents some rubbish data, but it is not important).
     do{
-        pos -= 1500;
+        pos -= 4000;
         //it is not a empty file.
         if(pos < 0){
             overflow = true;
@@ -58,8 +58,8 @@ void DataProcessing::ProcessOriginFromFileLog(const QString &namefile){
     origen.setOriginID(FindParameterOriginID(fileContent).toStdString());
     origen.setOriginDate(QDate::fromString(FindParameterOriginDate(fileContent),"yyyy-MM-dd"));
     origen.setOriginTime(QTime::fromString(FindParameterOriginTime(fileContent),"hh:mm:ss.z"));
-    //origen.setLatitude(FindParameterOriginLatitude(fileContent).toDouble());
-    //origen.setLongitude(FindParameterOriginLongitude(fileContent).toDouble());
+    origen.setLatitude(FindParameterOriginLatitude(fileContent).toDouble());
+    origen.setLongitude(FindParameterOriginLongitude(fileContent).toDouble());
     //origen.setMagnitude(FindParameterOriginLongitude(fileContent).toDouble());
     //origen.setStations(FindParameterOriginLongitude(fileContent).toDouble());
 }
@@ -69,9 +69,14 @@ void DataProcessing::ProcessOriginFromFileXml(const QString &namefile){
     QStringList networkID, stationID;
     QString originID;
     QString eventID;
+    QString magnitudeID;
     long double originLatitude, originLongitude;
     double originMagnitude=0.0;
-    QDateTime originDateTime;
+    QString dateTime;
+    QDate originDate;
+    QTime originTime;
+    QRegExp rxDate("\\d+-\\d+-\\d+");
+    QRegExp rxTime("\\d+:\\d+:\\d+.\\d\\d?\\d?");
     QDomElement element;
 
     QDomDocument doc(namefile);
@@ -107,8 +112,6 @@ void DataProcessing::ProcessOriginFromFileXml(const QString &namefile){
         }
         originLatitude = origin.firstChildElement("latitude").firstChildElement("value").text().toDouble();
         originLongitude = origin.firstChildElement("longitude").firstChildElement("value").text().toDouble();
-        //ALGO CON LA MAGNITUD:
-        //originMagnitude = ...;
     }
 
     //Get Event values:
@@ -120,22 +123,35 @@ void DataProcessing::ProcessOriginFromFileXml(const QString &namefile){
             if(element.hasAttribute("publicID")){
                 eventID = element.attribute("publicID");
             }
-            originDateTime = QDateTime::fromString(event.firstChildElement("creationTime").text(),"yyyy-MM-ddThh:mm:ss.zzz");
+            dateTime = event.firstChildElement("creationInfo").firstChildElement("creationTime").text();
+            if(rxDate.indexIn(dateTime) != -1)
+                originDate = QDate::fromString(rxDate.cap(0),"yyyy-MM-dd");
+            if(rxTime.indexIn(dateTime) != -1)
+                originTime = QTime::fromString(rxTime.cap(0),"hh:mm:ss.zzz");
+            magnitudeID = event.firstChildElement("preferredMagnitudeID").text();
+        }
+    }
+
+    // Getting the magnitudes values
+    QDomNodeList magnitudes = doc.elementsByTagName("magnitude");
+    for (int i = 0; i < magnitudes.size(); i++) {
+        QDomNode magnitude = magnitudes.item(i);
+        if(magnitude.hasAttributes() && magnitude.isElement()){
+            element = magnitude.toElement();
+            if(element.hasAttribute("publicID"))
+                if(element.attribute("publicID") == magnitudeID)
+                    if(!magnitude.firstChildElement("magnitude").hasAttributes())
+                        originMagnitude = magnitude.firstChildElement("magnitude").firstChildElement("value").text().toDouble();
         }
     }
 
     // PRINTING AND SETTING ORIGIN AND STATIONS.
-        for(int i=0; i<networkID.size(); i++)
-            std::cout << stationID.at(i).toStdString() << "\t" << networkID.at(i).toStdString() << std::endl;
-        std::cout << originID.toStdString() << "\n" << eventID.toStdString() << "\n"
-                  << originLatitude << "\n" << originLongitude << "\n"
-                  << originDateTime.toString("yyyy-MM-dd hh:mm:ss.zzz").toStdString();
 
         origen.setOriginID(originID.toStdString());
         origen.setLatitude(originLatitude);
         origen.setLongitude(originLongitude);
-        origen.setOriginDate(QDate::fromString(originDateTime.toString("yyyy-MM-dd"),"yyyy-MM-dd"));
-        origen.setOriginTime(QTime::fromString(originDateTime.toString("hh:mm:ss.zzz"),"hh:mm:ss.zzz"));
+        origen.setOriginDate(originDate);
+        origen.setOriginTime(originTime);
         for(int i=0; i<stationID.size(); i++){
             std::set<Station>::iterator it = stations.find(Station(stationID.at(i).toStdString()));
             if(it != stations.end()){
@@ -145,12 +161,9 @@ void DataProcessing::ProcessOriginFromFileXml(const QString &namefile){
                 stations.insert(st);
                 mystations.insert(st);
             }
-            else
-                std::cout << stationID.at(i).toStdString() << std::endl;
         }
         origen.setStations(mystations);
         origen.setMagnitude(originMagnitude);
-        std::cout << origen << std::endl;
 
     }
 
@@ -281,26 +294,30 @@ QString DataProcessing::FindParameterOriginTime(const QString &originString){
     return QString();
 }
 
+
 QString DataProcessing::FindParameterOriginLatitude(const QString &originString){
-    QRegExp rx(":\\d+.\\d  \\d+.\\d+");
-    QRegExp rx2(":\\d+.\\d  ");
-    if(rx.indexIn(originString) != -1)
-        return rx.cap(0).remove(rx2);
+    QRegExp rx("origen->latitud = \\S+[(]");
+    QRegExp rx2("origen->latitud = ");
+    if(rx.lastIndexIn(originString) != -1){
+        return rx.cap(0).remove(rx2).remove("(");
+    }
     return QString();
 }
 
 QString DataProcessing::FindParameterOriginLongitude(const QString &originString){
-    QRegExp rx(":\\d+.\\d  \\d+.\\d+  -?\\d+.\\d+");
-    QRegExp rx2(":\\d+.\\d  \\d+.\\d+  ");
-    if(rx.indexIn(originString) != -1)
-        return rx.cap(0).remove(rx2);
+    QRegExp rx("origen->longitug = \\S+[(]");
+    QRegExp rx2("origen->longitug = ");
+    if(rx.lastIndexIn(originString) != -1)
+        return rx.cap(0).remove(rx2).remove("(");
     return QString();
 }
 
-QString DataProcessing::FindParameterOriginMagnitude(const QString &originString){
-    // @TODO: FALTA POR IMPLEMENTAR A ESPERA DE INFORMACION.
-    return QString("0");
-}
+// There is not any REGEXP to find the magnitude:
+
+//QString DataProcessing::FindParameterOriginMagnitude(const QString &originString){
+//    // @TODO: FALTA POR IMPLEMENTAR A ESPERA DE INFORMACION.
+//    return QString("0");
+//}
 
 
 std::vector<QStringList> DataProcessing::FindParameterOriginStations(const QString &originString){

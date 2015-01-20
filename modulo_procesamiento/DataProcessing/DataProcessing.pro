@@ -29,4 +29,4 @@ HEADERS += \
 DISTFILES +=
 
 RESOURCES += \
-    resourcesfile.qrc
+    fileresource.qrc

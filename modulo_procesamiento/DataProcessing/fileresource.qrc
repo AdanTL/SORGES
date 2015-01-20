@@ -1,9 +1,11 @@
 <RCC>
     <qresource prefix="/">
-        <file>testFiles/scalertes_picks.log</file>
         <file>testFiles/gfz2014dibx.last.xml</file>
         <file>testFiles/gfz2015bjph.last.xml</file>
+        <file>testFiles/origin.txt</file>
+        <file>testFiles/output_test.txt</file>
         <file>testFiles/scalertes_origenes.log</file>
+        <file>testFiles/scalertes_picks.log</file>
         <file>testFiles/station.txt</file>
     </qresource>
 </RCC>
