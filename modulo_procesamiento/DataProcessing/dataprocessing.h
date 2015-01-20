@@ -6,6 +6,7 @@
 #include <set>
 #include <QFile>
 #include <QStringList>
+#include <QtXml/QDomDocument>
 #include "origin.h"
 #include "station.h"
 

@@ -7,10 +7,12 @@ int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
     DataProcessing processing;
-    processing.ProcessOriginFromFileXml(":/testFiles/gfz2014dibx.last.xml");
 
     //First instrucction.
-    //processing.ProcessStationsFromFile(":/testFiles/station.txt");
+    processing.ProcessStationsFromFile(":/testFiles/station.txt");
+
+
+    processing.ProcessOriginFromFileXml(":/testFiles/gfz2014dibx.last.xml");
 
     // Those instruction will be concurrent called.
     //processing.ProcessAnyFile(":/testFiles/scalertes_picks.log");

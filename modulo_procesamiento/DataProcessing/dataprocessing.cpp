@@ -65,83 +65,94 @@ void DataProcessing::ProcessOriginFromFileLog(const QString &namefile){
 }
 //hay que renombrar la funcion xq pilla cosas de las stations
 void DataProcessing::ProcessOriginFromFileXml(const QString &namefile){
-    std::set<Station> stations;
+    std::set<Station> mystations;
     QStringList networkID, stationID;
     QString originID;
-    long double originLatitude, OriginLongitude;
-    double originMagnitude;
+    QString eventID;
+    long double originLatitude, originLongitude;
+    double originMagnitude=0.0;
     QDateTime originDateTime;
+    QDomElement element;
 
+    QDomDocument doc(namefile);
     QFile file(namefile);
-    if(!file.open(QIODevice::ReadOnly | QIODevice::Text)){
-        std::cerr << "Problem to find the file" << namefile.toStdString() << std::endl;
+    if (!file.open(QIODevice::ReadOnly))
+        return;
+    if (!doc.setContent(&file)) {
+        file.close();
         return;
     }
-    QXmlStreamReader xml(file.readAll());
-    while(!xml.atEnd()){
+    file.close();
 
-        while(!xml.atEnd() && xml.name() != "pick"){
-            xml.readNextStartElement();
 
+    // Getting the pick values:
+    QDomNodeList picks = doc.elementsByTagName("pick");
+    for (int i = 0; i < picks.size(); i++) {
+        QDomNode element = picks.item(i);
+        QDomElement waveformID = element.firstChildElement("waveformID");
+        if(waveformID.hasAttribute("stationCode"))
+            stationID << waveformID.attribute("stationCode");
+        if(waveformID.hasAttribute("networkCode"))
+            networkID << waveformID.attribute("networkCode");
+    }
+
+    // Getting the Origin Value:
+    QDomNodeList origins = doc.elementsByTagName("origin");
+    for (int i = 0; i < origins.size(); i++) {
+        QDomNode origin = origins.item(i);
+        if(origin.isElement()){
+            QDomElement element = origin.toElement();
+            if(element.hasAttribute("publicID"))
+            originID = element.attribute("publicID");
         }
-        if(xml.name()=="pick"){
-        do{
-            xml.readNextStartElement();
-        }while(xml.name() != "waveformID");
+        originLatitude = origin.firstChildElement("latitude").firstChildElement("value").text().toDouble();
+        originLongitude = origin.firstChildElement("longitude").firstChildElement("value").text().toDouble();
+        //ALGO CON LA MAGNITUD:
+        //originMagnitude = ...;
+    }
+
+    //Get Event values:
+    QDomNodeList events = doc.elementsByTagName("event");
+    for (int i = 0; i < events.size(); i++) {
+        QDomNode event = events.item(i);
+        if(event.isElement()){
+            element = event.toElement();
+            if(element.hasAttribute("publicID")){
+                eventID = element.attribute("publicID");
+            }
+            originDateTime = QDateTime::fromString(event.firstChildElement("creationTime").text(),"yyyy-MM-ddThh:mm:ss.zzz");
         }
+    }
 
-               if(xml.name()==("waveformID")){
+    // PRINTING AND SETTING ORIGIN AND STATIONS.
+        for(int i=0; i<networkID.size(); i++)
+            std::cout << stationID.at(i).toStdString() << "\t" << networkID.at(i).toStdString() << std::endl;
+        std::cout << originID.toStdString() << "\n" << eventID.toStdString() << "\n"
+                  << originLatitude << "\n" << originLongitude << "\n"
+                  << originDateTime.toString("yyyy-MM-dd hh:mm:ss.zzz").toStdString();
 
-                   QXmlStreamAttributes attributes = xml.attributes();
-                   if(attributes.hasAttribute("networkCode")) {
-                        networkID << attributes.value("networkCode").toString();
-                   }
-                   if(attributes.hasAttribute("stationCode")) {
-                        stationID << attributes.value("stationCode").toString();
-                   }
-               }
-
+        origen.setOriginID(originID.toStdString());
+        origen.setLatitude(originLatitude);
+        origen.setLongitude(originLongitude);
+        origen.setOriginDate(QDate::fromString(originDateTime.toString("yyyy-MM-dd"),"yyyy-MM-dd"));
+        origen.setOriginTime(QTime::fromString(originDateTime.toString("hh:mm:ss.zzz"),"hh:mm:ss.zzz"));
+        for(int i=0; i<stationID.size(); i++){
+            std::set<Station>::iterator it = stations.find(Station(stationID.at(i).toStdString()));
+            if(it != stations.end()){
+                Station st(*it);
+                st.setNetworkID(networkID.at(i).toStdString());
+                stations.erase(it);
+                stations.insert(st);
+                mystations.insert(st);
+            }
+            else
+                std::cout << stationID.at(i).toStdString() << std::endl;
+        }
+        origen.setStations(mystations);
+        origen.setMagnitude(originMagnitude);
+        std::cout << origen << std::endl;
 
     }
-    for(size_t i=0; i<stationID.size()-1; i++){
-    std::cout << stationID.at(i).toStdString() << std::endl;}
-    std::cout << "---------------" << std::endl;
-    for(size_t i=0; i<networkID.size()-1; i++){
-    std::cout << networkID.at(i).toStdString() << std::endl;}
-        do{
-            xml.readNextStartElement();
-        }while(!xml.atEnd() && xml.name() != "origin");
-
-        QXmlStreamAttributes attribute = xml.attributes();
-           if(attribute.hasAttribute("publicID")) {
-                originID = attribute.value("publicID").toString();
-           }
-
-    do{
-        xml.readNextStartElement();
-    }while(!xml.atEnd() && xml.name() != "latitude");
-    do{
-        xml.readNextStartElement();
-    }while(!xml.atEnd() && xml.name() != "value");
-    originLatitude = xml.readElementText().toDouble();
-
-    do{
-        xml.readNextStartElement();
-    }while(!xml.atEnd() && xml.name() != "longitude");
-    do{
-        xml.readNextStartElement();
-    }while(!xml.atEnd() && xml.name() != "value");
-    OriginLongitude = xml.readElementText().toDouble();
-
-    do{
-        xml.readNextStartElement();
-    }while(!xml.atEnd() && xml.name() != "longitude");
-    do{
-        xml.readNextStartElement();
-    }while(!xml.atEnd() && xml.name() != "value");
-    OriginLongitude = xml.readElementText().toDouble();
-
-}
 
 // FINAL VERSION (BY THE MOMENT).
 void DataProcessing::ProcessStationsFromFile(const QString &namefile){
@@ -234,11 +245,13 @@ void DataProcessing::ProcessColorStationsFromFile(const QString &namefile){
             QStringList parameters = rxLineAlert.cap().remove(rxStationRm).remove(rxColourRm).split("\t");
             // Look for a station with the same ID and extract it
             std::set<Station>::iterator it = stations.find(Station(parameters.at(0).toStdString()));
-            Station st(*it);
-            // Change color and update this value.
-            st.setColor(parameters.at(1).toInt());
-            stations.erase(it);
-            stations.insert(st);
+            if(it != stations.end()){
+                Station st(*it);
+                // Change color and update this value.
+                st.setColor(parameters.at(1).toInt());
+                stations.erase(it);
+                stations.insert(st);
+            }
         }
     }
 
