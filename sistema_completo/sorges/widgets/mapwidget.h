@@ -62,6 +62,7 @@ private:
 
     /*ORIGIN FUNCTIONS*/
     void clearOrigin();
+    void updateEventStations();
     
     /*TESTS*/
     void testPixelPrecision();
