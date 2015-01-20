@@ -232,13 +232,15 @@ std::set<Station> DataProcessing::processColorStationsFromFile(const QString &na
                         std::set<Station>::iterator it = stations
                                                         .find(Station(parameters.at(0)
                                                                       .toStdString()));
-                        Station st(*it);
-                        // Change color and update this value.
-                        st.setColor(parameters.at(1).toInt());
-                        stations.erase(it);
-                        stations.insert(st);
+                        if(it != stations.end()){
+                            Station st(*it);
+                            // Change color and update this value.
+                            st.setColor(parameters.at(1).toInt());
+                            stations.erase(it);
+                            stations.insert(st);
 
-                        stationChanged.insert(st);
+                            stationChanged.insert(st);
+                        }
                     }
                 }
             }

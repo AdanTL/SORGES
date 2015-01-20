@@ -5,6 +5,7 @@
 #include <iostream>
 #include <QTimer>
 #include <QGraphicsItem>
+#include <algorithm>
 #include "mapwidget.h"
 #include "../config/mapdefinition.h"
 #include "ui_mapwidget.h"
@@ -129,7 +130,7 @@ void MapWidget::coordinatesToPixels(long double &pixelX,long double &pixelY,
 
 void MapWidget::paintStations(const std::set<Station>& stationsList)
 {
-    this->stations.clear ();
+    this->stations.clear();
     clearStations();
     this->stations = stationsList;
     for(std::set<Station>::iterator it=stations.begin(); it!=stations.end(); ++it)
@@ -202,6 +203,24 @@ void MapWidget::clearOrigin()
     }
 }
 
+void MapWidget::updateEventStations()
+{
+    std::set<Station> relatedStations = this->currentOrigin.getStations();
+
+    //update stations related
+    changeStationsColors(relatedStations);
+
+    //turn off to black the non-related
+    foreach (Station currentStation, this->stations) {
+        if (relatedStations.find(currentStation) == relatedStations.end()){
+            currentStation.setColor(-1);
+            drawStation(currentStation);
+            stations.erase(stations.find(currentStation));
+            stations.insert(currentStation);
+        }
+    }
+}
+
 void MapWidget::paintOrigin(const Origin &origin){
 
     //if timer of circles painting is on, stop it
@@ -219,13 +238,6 @@ void MapWidget::paintOrigin(const Origin &origin){
     coordinatesToPixels(coordX,coordY,currentOrigin.getLatitude(),
                                       currentOrigin.getLongitude());
     QPoint center(coordX, coordY);
-
-    /* ESTO HAY QUE TOCARLO PORQUE YA LAS ESTACIONES RELACIONADAS SOLO CON EVENTO
-     * ASI QUE AQUI HABRIA QUE COMPROBAR QUE CUANDO RELATEDSTATIONS NO SON VACIAS ENTONCES
-     * LLAMAR A UNA FUNCION QUE DEJE ESTAS EN SU COLOR PERO QUE DEJE LAS OTRAS A NEGRO
-    //change the color of related stations
-    changeStationsColors(currentOrigin.getStations());
-    */
 
     //First circle
     QRect rect(0,0,2*radius,2*radius);
@@ -252,6 +264,11 @@ void MapWidget::paintOrigin(const Origin &origin){
 
     //Set the timer (each 5 seconds) for the concentric circles
     circlesTimer->start(5000);
+
+    //only the last origin (event) will have related stations
+    if (!currentOrigin.getStations().empty()){
+        updateEventStations();
+    }
 
 }
 
