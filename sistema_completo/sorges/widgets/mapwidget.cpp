@@ -39,7 +39,7 @@ MapWidget::MapWidget(QWidget *parent) :
 	/******tests******/		
     /***borrar de aqui antes de entrega de codigo**/
 
-    //QTimer::singleShot(15000, this, SLOT(testing()));
+    //QTimer::singleShot(3000, this, SLOT(testing()));
     
     //pintado ejemplo circulo
     //paintCircles();
@@ -317,12 +317,21 @@ void MapWidget::paintCircles(){
     //radius of the circle at current time
     long double radius = calculateRadius();
 
-    //circle will be fit into a rectangle whose center is moved to epicenter
-    QRect rect(0,0,2*radius,2*radius);
-    rect.moveCenter(center);
+    //if the radius is out of map bounds (hypotenuse), no need to paint anymore
+    long double hypotenuse = sqrt(mapScene.width()*mapScene.width()
+                             + mapScene.height()*mapScene.height());
 
-    QGraphicsItem *circleItem = mapScene.addEllipse(rect);
-    circleItem->setData(0,"circle");
+    if (radius <= hypotenuse){
+        //circle will be fit into a rectangle whose center is moved to epicenter
+        QRect rect(0,0,2*radius,2*radius);
+        rect.moveCenter(center);
+
+        QGraphicsItem *circleItem = mapScene.addEllipse(rect);
+        circleItem->setData(0,"circle");
+    }
+    else {
+        circlesTimer->stop();
+    }
 
 }
 
