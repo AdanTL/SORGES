@@ -5,8 +5,8 @@
 #include <QWidget>
 #include <QGraphicsScene>
 #include <set>
-#include "classes/station.h"
-#include "classes/origin.h"
+#include "../classes/station.h"
+#include "../classes/origin.h"
 
 namespace Ui {
 class MapWidget;

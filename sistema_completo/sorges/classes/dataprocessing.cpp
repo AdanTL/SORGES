@@ -117,40 +117,44 @@ void DataProcessing::processOriginFromFileLog(const QString &namefile){
     if(!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
         std::cerr << "Problem to find the file: "
                   << namefile.toStdString() << std::endl;
-        return;
     }
+    else{
+        // Get Fragment with the same Date and Time (it contents some rubbish data).
+        do{
+            pos -= 1500;
+            //it is not a empty file.
+            if(pos < 0){
+                overflow = true;
+                pos = 0;
+            }
+            file.seek(pos);
+            fileContent = file.readAll();
 
-    // Get Fragment with the same Date and Time (it contents some rubbish data).
-    do{
-        pos -= 1500;
-        //it is not a empty file.
-        if(pos < 0){
-            overflow = true;
-            pos = 0;
+            if(rxNewOrigen.indexIn(fileContent) != -1)
+                found = true;
+        }while(found == false && overflow == false);
+
+        // if is overflowed return.
+        if(found == false){
+            std::cerr<<"NO ORIGIN FOUND AT "
+                       +QDateTime::currentDateTime().toString().toStdString()
+                     <<std::endl;
         }
-        file.seek(pos);
-        fileContent = file.readAll();
-
-        if(rxNewOrigen.indexIn(fileContent) != -1)
-            found = true;
-    }while(found == false && overflow == false);
-
-    // if is overflowed return.
-    if(found == false){
-        std::cerr<<"NO ORIGIN FOUND AT "
-                   +QDateTime::currentDateTime().toString().toStdString()
-                 <<std::endl;
-    }
-    else {
-        //Look for parameters into log file.
-        origin.setOriginID(findParameterOriginID(fileContent).toStdString());
-        origin.setOriginDate(QDate::fromString(
-                             findParameterOriginDate(fileContent),"yyyy-MM-dd"));
-        origin.setOriginTime(QTime::fromString(
-                             findParameterOriginTime(fileContent),"hh:mm:ss.z"));
-        origin.setLatitude(findParameterOriginLatitude(fileContent).toDouble());
-        origin.setLongitude(findParameterOriginLongitude(fileContent).toDouble());
-        origin.setMagnitude(findParameterOriginMagnitude(fileContent).toDouble());
+        else {
+            QDateTime dateTimeOrigin = QDateTime::fromString(findParameterOriginDate(fileContent)+" "
+                             +findParameterOriginTime(fileContent),"yyyy-MM-dd hh:mm:ss.z");
+            if(dateTimeOrigin >= lastDateTime){
+                //Look for parameters into log file.
+                origin.setOriginID(findParameterOriginID(fileContent).toStdString());
+                origin.setOriginDate(QDate::fromString(
+                                     findParameterOriginDate(fileContent),"yyyy-MM-dd"));
+                origin.setOriginTime(QTime::fromString(
+                                     findParameterOriginTime(fileContent),"hh:mm:ss.z"));
+                origin.setLatitude(findParameterOriginLatitude(fileContent).toDouble());
+                origin.setLongitude(findParameterOriginLongitude(fileContent).toDouble());
+                origin.setMagnitude(findParameterOriginMagnitude(fileContent).toDouble());
+            }
+        }
     }
 
 }

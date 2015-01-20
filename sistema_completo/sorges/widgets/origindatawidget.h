@@ -2,7 +2,7 @@
 #define ORIGINDATAWIDGET_H
 
 #include <QWidget>
-#include "classes/origin.h"
+#include "../classes/origin.h"
 
 namespace Ui {
 class OriginDataWidget;

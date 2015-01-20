@@ -7,7 +7,7 @@
 #include <QGraphicsItem>
 #include <algorithm>
 #include "mapwidget.h"
-#include "config/mapdefinition.h"
+#include "../config/mapdefinition.h"
 #include "ui_mapwidget.h"
 
 MapWidget::MapWidget(QWidget *parent) :

@@ -3,7 +3,7 @@
 
 #include <QWidget>
 #include <set>
-#include "classes/station.h"
+#include "../classes/station.h"
 
 namespace Ui {
 class StationsDataWidget;
