@@ -125,3 +125,14 @@ std::string Station::stationToString() const{
 
     return convert.str();
 }
+
+std::string& operator << (std::string& os, const Station& station){
+    os += "\t\t<Station>\n";
+    os += "\t\t\t<StationID>" + station.getStationID() + "</StationID>\n";
+    os += "\t\t\t<StationNetworkID>" + station.getNetworkID() + "</StationNetworkID>\n";
+    os += "\t\t\t<StationLatitude>" + QString::number((double)station.getLatitude()).toStdString() + "</StationLatitude>\n";
+    os += "\t\t\t<StationLongitude>" +  QString::number((double)station.getLongitude()).toStdString() + "</StationLongitude>\n";
+    os += "\t\t\t<StationColourCode>" +  QString::number(station.getColor()).toStdString() + "</StationColourCode>\n";
+    os += "\t\t</Station>";
+   return os;
+}

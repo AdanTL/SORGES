@@ -1,5 +1,6 @@
 #include <QSettings>
 #include <QDir>
+#include <QXmlStreamReader>
 #include "dataprocessing.h"
 
 DataProcessing::DataProcessing(QObject* parent):
@@ -66,10 +67,8 @@ void DataProcessing::fileChangedSlot(QString path)
     }
 
     else if (path == config->value(("filepaths/events"))){
-        /*@ToDo procces events
-        //processOriginFromFileXml(path);
+        processOriginFromFileXml(path);
         emit eventReceived(this->origin);
-        */
     }
 
     else std::cerr<<"Unrecognized file: "<<path.toStdString()<<std::endl;
@@ -121,7 +120,7 @@ void DataProcessing::processOriginFromFileLog(const QString &namefile){
     else{
         // Get Fragment with the same Date and Time (it contents some rubbish data).
         do{
-            pos -= 1500;
+            pos -= 4000;
             //it is not a empty file.
             if(pos < 0){
                 overflow = true;
@@ -152,7 +151,6 @@ void DataProcessing::processOriginFromFileLog(const QString &namefile){
                                      findParameterOriginTime(fileContent),"hh:mm:ss.z"));
                 origin.setLatitude(findParameterOriginLatitude(fileContent).toDouble());
                 origin.setLongitude(findParameterOriginLongitude(fileContent).toDouble());
-                origin.setMagnitude(findParameterOriginMagnitude(fileContent).toDouble());
             }
         }
     }
@@ -249,6 +247,109 @@ std::set<Station> DataProcessing::processColorStationsFromFile(const QString &na
     return stationChanged;
 }
 
+void DataProcessing::processOriginFromFileXml(const QString &namefile){
+    std::set<Station> mystations;
+    QStringList networkID, stationID;
+    QString originID;
+    QString eventID;
+    QString magnitudeID;
+    long double originLatitude, originLongitude;
+    double originMagnitude=0.0;
+    QString dateTime;
+    QDate originDate;
+    QTime originTime;
+    QRegExp rxDate("\\d+-\\d+-\\d+");
+    QRegExp rxTime("\\d+:\\d+:\\d+.\\d\\d?\\d?");
+    QDomElement element;
+
+    QDomDocument doc(namefile);
+    QFile file(namefile);
+    if (!file.open(QIODevice::ReadOnly))
+        return;
+    if (!doc.setContent(&file)) {
+        file.close();
+        return;
+    }
+    file.close();
+
+
+    // Getting the pick values:
+    QDomNodeList picks = doc.elementsByTagName("pick");
+    for (int i = 0; i < picks.size(); i++) {
+        QDomNode element = picks.item(i);
+        QDomElement waveformID = element.firstChildElement("waveformID");
+        if(waveformID.hasAttribute("stationCode"))
+            stationID << waveformID.attribute("stationCode");
+        if(waveformID.hasAttribute("networkCode"))
+            networkID << waveformID.attribute("networkCode");
+    }
+
+    // Getting the Origin Value:
+    QDomNodeList origins = doc.elementsByTagName("origin");
+    for (int i = 0; i < origins.size(); i++) {
+        QDomNode origin = origins.item(i);
+        if(origin.isElement()){
+            QDomElement element = origin.toElement();
+            if(element.hasAttribute("publicID"))
+            originID = element.attribute("publicID");
+        }
+        originLatitude = origin.firstChildElement("latitude").firstChildElement("value").text().toDouble();
+        originLongitude = origin.firstChildElement("longitude").firstChildElement("value").text().toDouble();
+    }
+
+    //Get Event values:
+    QDomNodeList events = doc.elementsByTagName("event");
+    for (int i = 0; i < events.size(); i++) {
+        QDomNode event = events.item(i);
+        if(event.isElement()){
+            element = event.toElement();
+            if(element.hasAttribute("publicID")){
+                eventID = element.attribute("publicID");
+            }
+            dateTime = event.firstChildElement("creationInfo").firstChildElement("creationTime").text();
+            if(rxDate.indexIn(dateTime) != -1)
+                originDate = QDate::fromString(rxDate.cap(0),"yyyy-MM-dd");
+            if(rxTime.indexIn(dateTime) != -1)
+                originTime = QTime::fromString(rxTime.cap(0),"hh:mm:ss.zzz");
+            magnitudeID = event.firstChildElement("preferredMagnitudeID").text();
+        }
+    }
+
+    // Getting the magnitudes values
+    QDomNodeList magnitudes = doc.elementsByTagName("magnitude");
+    for (int i = 0; i < magnitudes.size(); i++) {
+        QDomNode magnitude = magnitudes.item(i);
+        if(magnitude.hasAttributes() && magnitude.isElement()){
+            element = magnitude.toElement();
+            if(element.hasAttribute("publicID"))
+                if(element.attribute("publicID") == magnitudeID)
+                    if(!magnitude.firstChildElement("magnitude").hasAttributes())
+                        originMagnitude = magnitude.firstChildElement("magnitude").firstChildElement("value").text().toDouble();
+        }
+    }
+
+    // PRINTING AND SETTING ORIGIN AND STATIONS.
+
+        origin.setOriginID(originID.toStdString());
+        origin.setLatitude(originLatitude);
+        origin.setLongitude(originLongitude);
+        origin.setOriginDate(originDate);
+        origin.setOriginTime(originTime);
+        for(int i=0; i<stationID.size(); i++){
+            std::set<Station>::iterator it = stations.find(Station(stationID.at(i).toStdString()));
+            if(it != stations.end()){
+                Station st(*it);
+                st.setNetworkID(networkID.at(i).toStdString());
+                stations.erase(it);
+                stations.insert(st);
+                mystations.insert(st);
+            }
+        }
+        origin.setStations(mystations);
+        origin.setMagnitude(originMagnitude);
+
+}
+
 
 std::vector<QStringList> DataProcessing::findParameterStations(const QString &stationsString){
     std::vector<QStringList> StationParameters;
@@ -287,22 +388,18 @@ QString DataProcessing::findParameterOriginTime(const QString &originString){
 }
 
 QString DataProcessing::findParameterOriginLatitude(const QString &originString){
-    /*QRegExp rx(":\\d+.\\d  \\d+.\\d+");
-    QRegExp rx2(":\\d+.\\d  ");
-    if(rx.indexIn(originString) != -1)
-        return rx.cap(0).remove(rx2);*/
-    return QString("35");
+    QRegExp rx("origen->latitud = \\S+[(]");
+    QRegExp rx2("origen->latitud = ");
+    if(rx.lastIndexIn(originString) != -1){
+        return rx.cap(0).remove(rx2).remove("(");
+    }
+    return QString();
 }
 
 QString DataProcessing::findParameterOriginLongitude(const QString &originString){
-    /*QRegExp rx(":\\d+.\\d  \\d+.\\d+  -?\\d+.\\d+");
-    QRegExp rx2(":\\d+.\\d  \\d+.\\d+  ");
-    if(rx.indexIn(originString) != -1)
-        return rx.cap(0).remove(rx2);*/
-    return QString("-10");
-}
-
-QString DataProcessing::findParameterOriginMagnitude(const QString &originString){
-    // @TODO: FALTA POR IMPLEMENTAR A ESPERA DE INFORMACION.
-    return QString("0");
+    QRegExp rx("origen->longitug = \\S+[(]");
+    QRegExp rx2("origen->longitug = ");
+    if(rx.lastIndexIn(originString) != -1)
+        return rx.cap(0).remove(rx2).remove("(");
+    return QString();
 }

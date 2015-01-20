@@ -43,6 +43,7 @@ class Station{
     friend bool operator < (const Station& station1, const Station& station2);
     friend bool operator == (const Station& station1, const Station& station2);
     friend std::ostream& operator << (std::ostream& os, const Station& station);
+    friend std::string& operator << (std::string& os, const Station& station);
 
 private:
     std::string stationID;

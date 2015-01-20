@@ -117,3 +117,22 @@ std::ostream& operator << (std::ostream& os, const Origin& origin){
     os << "</Origin>";
     return os;
 }
+
+std::string& operator << (std::string& os, const Origin& origin){
+    os += "<Origin>\n";
+    os +=  "\t<OriginID>" + origin.getOriginID()+ "</OriginID>\n";
+    os += "\t<OriginDate>" + origin.getOriginDate().toString("yyyy-MM-dd").toStdString() + "</OriginDate>\n";
+    os += "\t<OriginTime>" + origin.getOriginTime().toString("hh:mm:ss.z").toStdString() + "</OriginTime>\n";
+    os += "\t<OriginMagnitude>" +  QString::number((double)origin.getMagnitude()).toStdString() +  "</OriginMagnitude>\n";
+    os += "\t<OriginLatitude>" +  QString::number((double)origin.getLatitude()).toStdString() + "</OriginLatitude>\n";
+    os += "\t<OriginLongitude>" + QString::number((double)origin.getLongitude()).toStdString() +  "</OriginLongitude>\n";
+    os += "\t<StationsAssocied>\n";
+    os += "\t\t<NumberStations>"+ QString::number(origin.stations.size()).toStdString() + "</NumberStations>\n";
+    for(std::set<Station>::iterator it=origin.stations.begin(); it!=origin.stations.end(); ++it){
+            os << *it;
+            os += "\n" ;
+    }
+    os += "\t</StationsAssocied>\n";
+    os += "</Origin>";
+    return os;
+}

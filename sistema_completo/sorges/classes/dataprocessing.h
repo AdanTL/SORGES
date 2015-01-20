@@ -9,6 +9,7 @@
 #include <QStringList>
 #include <QFileSystemWatcher>
 #include <QSettings>
+#include <QtXml/QDomDocument>
 #include "origin.h"
 #include "station.h"
 
@@ -33,7 +34,7 @@ private slots:
     void processStationsFromFile(const QString &namefile);
     std::set<Station> processColorStationsFromFile(const QString &namefile);
     void processOriginFromFileLog(const QString &namefile);
-    //void processOriginFromFileXml(const QString &namefile);
+    void processOriginFromFileXml(const QString &namefile);
 
 
 private:
@@ -51,7 +52,7 @@ private:
     QString findParameterOriginTime(const QString &originString);
     QString findParameterOriginLatitude(const QString &originString);
     QString findParameterOriginLongitude(const QString &originString);
-    QString findParameterOriginMagnitude(const QString &originString);
+
 };
 
 #endif // DATAPROCESSING_H
