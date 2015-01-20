@@ -1,4 +1,5 @@
 ﻿#include "dataprocessing.h"
+#include <QXmlStreamReader>
 
 
 DataProcessing::DataProcessing()
@@ -64,8 +65,69 @@ void DataProcessing::ProcessOriginFromFileLog(const QString &namefile){
 }
 
 void DataProcessing::ProcessOriginFromFileXml(const QString &namefile){
-// @TODO: QUEDA POR IMPLEMENTAR:
-    //std::cout << "ProcessOriginFromFileXml" << namefile.toStdString() << std::endl;
+    std::set<Station> stations;
+    QStringList networkID, stationID;
+    QString originID;
+    long double originLatitude, OriginLongitude;
+    double originMagnitude;
+    QDateTime originDateTime;
+
+    QFile file(namefile);
+    if(!file.open(QIODevice::ReadOnly | QIODevice::Text)){
+        std::cerr << "Problem to find the file" << namefile.toStdString() << std::endl;
+        return;
+    }
+    QXmlStreamReader xml(file.readAll());
+    do{
+
+        while(!xml.atEnd() && xml.name() != "pick")
+            xml.readNextStartElement();
+
+        while(xml.is && xml.name() != "waveformID")
+            xml.readNextStartElement();
+
+        QXmlStreamAttributes attributes = xml.attributes();
+           if(attributes.hasAttribute("networkCode")) {
+                networkID << attributes.value("networkCode").toString();
+           }
+           if(attributes.hasAttribute("stationCode")) {
+                stationID << attributes.value("stationCode").toString();
+           }
+    }while(!xml.atEnd());
+    for(size_t i=0; i<stationID.size(); i++)
+        std::cout << stationID.at(i).toStdString() << std::endl;
+    do{
+        xml.readNextStartElement();
+    }while(!xml.atEnd() && xml.name() != "origin");
+
+    QXmlStreamAttributes attributes = xml.attributes();
+       if(attributes.hasAttribute("publicID")) {
+            originID = attributes.value("publicID").toString();
+       }
+
+    do{
+        xml.readNextStartElement();
+    }while(!xml.atEnd() && xml.name() != "latitude");
+    do{
+        xml.readNextStartElement();
+    }while(!xml.atEnd() && xml.name() != "value");
+    originLatitude = xml.readElementText().toDouble();
+
+    do{
+        xml.readNextStartElement();
+    }while(!xml.atEnd() && xml.name() != "longitude");
+    do{
+        xml.readNextStartElement();
+    }while(!xml.atEnd() && xml.name() != "value");
+    OriginLongitude = xml.readElementText().toDouble();
+
+    do{
+        xml.readNextStartElement();
+    }while(!xml.atEnd() && xml.name() != "longitude");
+    do{
+        xml.readNextStartElement();
+    }while(!xml.atEnd() && xml.name() != "value");
+    OriginLongitude = xml.readElementText().toDouble();
 
 }
 
