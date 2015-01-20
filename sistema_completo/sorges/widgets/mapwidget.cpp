@@ -38,7 +38,7 @@ MapWidget::MapWidget(QWidget *parent) :
 	/******tests******/		
     /***borrar de aqui antes de entrega de codigo**/
 
-    QTimer::singleShot(15000, this, SLOT(testing()));
+    //QTimer::singleShot(15000, this, SLOT(testing()));
     
     //pintado ejemplo circulo
     //paintCircles();
@@ -220,8 +220,12 @@ void MapWidget::paintOrigin(const Origin &origin){
                                       currentOrigin.getLongitude());
     QPoint center(coordX, coordY);
 
+    /* ESTO HAY QUE TOCARLO PORQUE YA LAS ESTACIONES RELACIONADAS SOLO CON EVENTO
+     * ASI QUE AQUI HABRIA QUE COMPROBAR QUE CUANDO RELATEDSTATIONS NO SON VACIAS ENTONCES
+     * LLAMAR A UNA FUNCION QUE DEJE ESTAS EN SU COLOR PERO QUE DEJE LAS OTRAS A NEGRO
     //change the color of related stations
     changeStationsColors(currentOrigin.getStations());
+    */
 
     //First circle
     QRect rect(0,0,2*radius,2*radius);
@@ -281,33 +285,26 @@ long double MapWidget::calculateRadius()
 }
 
 
-/**funcion que pinta un circulo de expansion
- * centro en epicentro
- * radio calculado con la funcion calculateRadius()
- * FALTA HACERLA AUTOMATICA CADA 5s
+/**
+ * Painter method for the concentric circles of the origins
+ * representing the seismic wave expansion.
+ * Authomatically called by timer each 5s when a origin is set
  */
 void MapWidget::paintCircles(){
 
-    //definir el centro del círculo: coordenadas del origen/evento
-    //pasar las coordenadas almacenadas en el atributo currentOrigin a pixeles
-    //y despues pasarselas al constructor de center
+    //center of the circles: origin epicenter
     long double x,y;
     coordinatesToPixels(x,y,currentOrigin.getLatitude(),currentOrigin.getLongitude());
     QPoint center(x,y);
 
-    //definir radio del círculo
+    //radius of the circle at current time
     long double radius = calculateRadius();
 
-    //rectágulo que va a contener la elipse,
-    //coordenada superior 0,0 y tamaño 2*radio tanto alto como ancho
+    //circle will be fit into a rectangle whose center is moved to epicenter
     QRect rect(0,0,2*radius,2*radius);
-
-    //ESTO ES CLAVE: 
-    //mover el rectágulo contenedor de manera que el centro del circulo sea el deseado
     rect.moveCenter(center);
 
-    //pintar el circulo sobre la escena que contiene el mapa
-    QGraphicsItem *circleItem = mapScene.addEllipse (rect);
+    QGraphicsItem *circleItem = mapScene.addEllipse(rect);
     circleItem->setData(0,"circle");
 
 }

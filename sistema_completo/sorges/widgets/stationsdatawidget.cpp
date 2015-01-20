@@ -28,3 +28,11 @@ void StationsDataWidget::showStationsData(const std::set<Station>& stations){
     }
 }
 
+void StationsDataWidget::changeStationsData(const std::set<Station>& stations){
+    foreach(Station station,stations){
+        currentStations.erase(currentStations.find(station));
+        currentStations.insert(station);
+        showStationsData(currentStations);
+    }
+}
+

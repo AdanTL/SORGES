@@ -21,7 +21,7 @@ public:
 
 signals:
     void stationsLoaded(std::set<Station> stations);
-    void stationColorReceived(/*?*/);
+    void stationColorReceived(std::set<Station> changedStation);
     void originReceived(Origin origin);
     void eventReceived(Origin origin);
 
@@ -31,8 +31,8 @@ public slots:
 private slots:
     void fileChangedSlot(QString path);
     void processStationsFromFile(const QString &namefile);
-    //void processColorStationsFromFile(const QString &namefile);
-    //void processOriginFromFileLog(const QString &namefile);
+    std::set<Station> processColorStationsFromFile(const QString &namefile);
+    void processOriginFromFileLog(const QString &namefile);
     //void processOriginFromFileXml(const QString &namefile);
 
 
@@ -41,18 +41,17 @@ private:
     std::set<Station> stations;
     QFileSystemWatcher watcher;
     QSettings *config;
+    QDateTime lastDateTime;
 
 
     std::vector<QStringList> findParameterStations(const QString &stationsString);
-    /*
+
     QString findParameterOriginID(const QString &originString);
     QString findParameterOriginDate(const QString &originString);
     QString findParameterOriginTime(const QString &originString);
     QString findParameterOriginLatitude(const QString &originString);
     QString findParameterOriginLongitude(const QString &originString);
     QString findParameterOriginMagnitude(const QString &originString);
-    std::vector<QStringList> findParameterOriginStations(const QString &originString);
-    */
 };
 
 #endif // DATAPROCESSING_H

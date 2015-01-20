@@ -19,6 +19,7 @@ public:
 
 public slots:
     void showStationsData(const std::set<Station>& stations);
+    void changeStationsData(const std::set<Station>& stations);
 
 private:
     Ui::StationsDataWidget *ui;

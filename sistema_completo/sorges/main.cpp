@@ -30,6 +30,18 @@ int main(int argc, char *argv[])
     QObject::connect (&dataProcessor, SIGNAL(stationsLoaded(std::set<Station>)),
                       &mapW, SLOT(paintStations(std::set<Station>)));
 
+    QObject::connect (&dataProcessor, SIGNAL(originReceived(Origin)),
+                      &originDataW, SLOT(showOriginData(Origin)));
+
+    QObject::connect (&dataProcessor, SIGNAL(originReceived(Origin)),
+                      &mapW, SLOT(paintOrigin(Origin)));
+
+    QObject::connect (&dataProcessor, SIGNAL(stationColorReceived(std::set<Station>)),
+                      &stationsDataW, SLOT(changeStationsData(std::set<Station>)));
+
+    QObject::connect (&dataProcessor, SIGNAL(stationColorReceived(std::set<Station>)),
+                      &mapW, SLOT(changeStationsColors(std::set<Station>)));
+
     mapW.show();
     originDataW.show();
     stationsDataW.show();

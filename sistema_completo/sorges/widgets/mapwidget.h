@@ -23,8 +23,11 @@ public:
 public slots:
     void paintOrigin(const Origin& origin);
     void paintStations(const std::set<Station>& stationsList);
-    void paintCircles();
+    void changeStationsColors(const std::set<Station>& changedStations);
 void testing(); //slot de prueba de cambio de origen
+
+private slots:
+    void paintCircles();
 
 private:
     Ui::MapWidget *ui;
@@ -53,7 +56,6 @@ private:
                                         long double seconds);
 
 	/*STATION FUNCTIONS*/
-    void changeStationsColors(const std::set<Station>& changedStations);
     void drawStation(const Station &station);
     void clearStation(const std::string& stationID);
     void clearStations();
