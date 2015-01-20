@@ -38,6 +38,7 @@ class Station{
     }
 
     friend std::ostream& operator << (std::ostream& os, const Station& station);
+    friend std::string& operator << (std::string& os, const Station& station);
 private:
     std::string stationID;
     std::string networkID;

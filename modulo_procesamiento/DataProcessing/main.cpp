@@ -22,6 +22,8 @@ int main(int argc, char *argv[])
     //std::set<Station> stations(processing.getStations());
     Origin origen(processing.getOrigin());
     //origen.setStations(stations);
-    std::cout << origen << std::endl;
+    std::string test;
+    test << origen;
+    std::cout << test << std::endl;
     return a.exec();
 }

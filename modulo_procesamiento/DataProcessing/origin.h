@@ -40,6 +40,7 @@ class Origin{
     //operators
     friend bool operator < (const Origin& origin1, const Origin& origin2);
     friend std::ostream& operator << (std::ostream& os, const Origin& origin);
+    friend std::string& operator << (std::string& os, const Origin& origin);
 
 private:
     std::string originID;
