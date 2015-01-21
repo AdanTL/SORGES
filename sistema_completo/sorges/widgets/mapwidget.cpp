@@ -6,6 +6,8 @@
 #include <QTimer>
 #include <QGraphicsItem>
 #include <algorithm>
+#include <QToolTip>
+#include <QWhatsThis>
 #include "mapwidget.h"
 #include "../config/mapdefinition.h"
 #include "ui_mapwidget.h"
@@ -25,7 +27,7 @@ MapWidget::MapWidget(QWidget *parent) :
     QGraphicsItem *mapItem = mapScene.addPixmap(mapPixmap);
     //and set the name of the item
     mapItem->setData (0,"map");
-    mapItem->setFlag (QGraphicsItem::ItemIsSelectable, true);
+    //mapItem->setFlag (QGraphicsItem::ItemIsSelectable, true);
 
     //and fit rectangle to image limits
     mapScene.setSceneRect(mapPixmap.rect());
@@ -35,6 +37,10 @@ MapWidget::MapWidget(QWidget *parent) :
 
     //connect the timeout of the timer to the event to paint the concentric circles
     connect(circlesTimer, SIGNAL(timeout()), this, SLOT(paintCircles()));
+
+    //showing item info when selected
+    connect(&mapScene, SIGNAL(selectionChanged()),this,SLOT(showInformation()));
+
 
 	/******tests******/		
     /***borrar de aqui antes de entrega de codigo**/
@@ -59,6 +65,35 @@ MapWidget::MapWidget(QWidget *parent) :
 MapWidget::~MapWidget()
 {
     delete ui;
+}
+
+void MapWidget::showInformation()
+{
+    foreach(QGraphicsItem * item,mapScene.selectedItems ())
+    {
+        if (item->data(1).toString() == "station"){
+            Station st(*(stations
+                         .find(Station(item->data (0).toString().toStdString()))));
+            st.setColor (2);
+            st.setNetworkID ("AA");
+            long double x,y;
+            coordinatesToPixels(x,y,st.getLatitude(),st.getLongitude());
+            QPoint pos(x-40,y-40);
+            std::string s = "<span style=\"color:black;\">"
+                    +st.stationToString()+"</span>";
+            QWhatsThis::showText(pos,s.c_str());
+        }
+        if (item->data(0).toString () == "epicenter"){
+            long double x,y;
+            coordinatesToPixels(x,y,
+                                currentOrigin.getLatitude(),
+                                currentOrigin.getLongitude());
+            QPoint pos(x-40,y-40);
+            std::string s = "<span style=\"color:black;\">"
+                    +currentOrigin.originToString()+"</span>";
+            QWhatsThis::showText(pos,s.c_str());
+        }
+    }
 }
 
 

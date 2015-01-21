@@ -58,17 +58,20 @@ void DataProcessing::fileChangedSlot(QString path)
 
     else if (path == config->value(("filepaths/picks"))){
         std::set<Station> changedStation = processColorStationsFromFile(path);
-        emit stationColorReceived(changedStation);
+        if (!changedStation.empty())
+            emit stationColorReceived(changedStation);
     }
 
     else if (path == config->value(("filepaths/origins"))){
         processOriginFromFileLog(path);
-        emit originReceived(this->origin);
+        if(this->origin.getOriginID().length() > 0)
+            emit originReceived(this->origin);
     }
 
     else if (path == config->value(("filepaths/events"))){
         processOriginFromFileXml(path);
-        emit eventReceived(this->origin);
+        if(this->origin.getOriginID().length() > 0)
+            emit eventReceived(this->origin);
     }
 
     else std::cerr<<"Unrecognized file: "<<path.toStdString()<<std::endl;

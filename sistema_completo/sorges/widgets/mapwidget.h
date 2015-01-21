@@ -28,6 +28,7 @@ void testing(); //slot de prueba de cambio de origen
 
 private slots:
     void paintCircles();
+    void showInformation();
 
 private:
     Ui::MapWidget *ui;
