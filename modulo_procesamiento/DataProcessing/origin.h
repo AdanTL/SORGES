@@ -5,7 +5,9 @@
 #include <set>
 #include <QDate>
 #include <QTime>
-#include <QTextStream>
+#include <QDateTime>
+#include <QFile>
+#include <QtXml/QDomDocument>
 #include "station.h"
 
 class Origin{
@@ -37,10 +39,13 @@ class Origin{
     std::set<Station> getStations() const;
     void setStations(const std::set<Station> &value);
 
+    std::string toStdString()const;
+    void fromQDomNode(const QDomNode& xml);
+    static std::set<Origin> originsFromQDomDocument(const QDomDocument& xml);
+
     //operators
     friend bool operator < (const Origin& origin1, const Origin& origin2);
     friend std::ostream& operator << (std::ostream& os, const Origin& origin);
-    friend std::string& operator << (std::string& os, const Origin& origin);
 
 private:
     std::string originID;

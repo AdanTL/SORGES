@@ -20,10 +20,18 @@ int main(int argc, char *argv[])
     //processing.ProcessAnyFile(":/testFiles/gfz2014dibx.last.xml");
 
     //std::set<Station> stations(processing.getStations());
-    Origin origen(processing.getOrigin());
-    //origen.setStations(stations);
-    std::string test;
-    test << origen;
-    std::cout << test << std::endl;
+
+
+    Origin origen;
+    QDomDocument doc(":/testFiles/origin.txt");
+    QFile file(":/testFiles/origin.txt");
+    if (!file.open(QIODevice::ReadOnly))
+        return  a.exec();
+    if (!doc.setContent(&file)) {
+        file.close();
+        return  a.exec();
+    }
+    file.close();
+    Origin::originsFromQDomDocument(doc);
     return a.exec();
 }
