@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <QToolTip>
 #include <QWhatsThis>
+#include <QDateTime>
 #include "mapwidget.h"
 #include "../config/mapdefinition.h"
 #include "ui_mapwidget.h"
@@ -40,7 +41,8 @@ MapWidget::MapWidget(QWidget *parent) :
 
     //showing item info when selected
     connect(&mapScene, SIGNAL(selectionChanged()),this,SLOT(showInformation()));
-
+    Origin origin("origin#656486265262696526952652689452684",QDate::currentDate (),QTime::currentTime (),35,-9,1);
+    paintOrigin(origin);
 
 	/******tests******/		
     /***borrar de aqui antes de entrega de codigo**/
@@ -74,24 +76,46 @@ void MapWidget::showInformation()
         if (item->data(1).toString() == "station"){
             Station st(*(stations
                          .find(Station(item->data (0).toString().toStdString()))));
-            st.setColor (2);
-            st.setNetworkID ("AA");
             long double x,y;
             coordinatesToPixels(x,y,st.getLatitude(),st.getLongitude());
-            QPoint pos(x-40,y-40);
-            std::string s = "<span style=\"color:black;\">"
-                    +st.stationToString()+"</span>";
-            QWhatsThis::showText(pos,s.c_str());
+            QPoint pos(this->pos().x()+x-80,this->pos().y()+y-50);
+            std::string s = "<span style=\"color:black;\"> Station ID: "
+                            +st.getStationID ()
+                            +"<br>Net ID: "+st.getNetworkID ()
+                            +"<br>Latitude: "
+                            +QString::number((double)st.getLatitude()).toStdString ()
+                            +"<br>Longitude: "
+                            +QString::number((double)st.getLongitude ()).toStdString ()
+                            +"<br>On-Site Alert: ";
+            if(st.getColor()>-1) s+=QString::number(st.getColor ()).toStdString ();
+                            s+="</span>";
+            QWhatsThis::showText(pos,s.c_str(),ui->mapView);
         }
-        if (item->data(0).toString () == "epicenter"){
+        else if (item->data(0).toString() == "epicenter"){
             long double x,y;
             coordinatesToPixels(x,y,
                                 currentOrigin.getLatitude(),
                                 currentOrigin.getLongitude());
-            QPoint pos(x-40,y-40);
-            std::string s = "<span style=\"color:black;\">"
-                    +currentOrigin.originToString()+"</span>";
-            QWhatsThis::showText(pos,s.c_str());
+            QPoint pos(this->pos().x()+x-100,this->pos().y()+y-110);
+            std::string s = "<span style=\"color:black;\"> Origin ID:<br>"
+                            +currentOrigin.getOriginID()
+                            +"<br>Timestamp: ";
+                        s+= currentOrigin.getOriginDate()
+                                .toString("dd-MM-yyyy")
+                                .toStdString ()+" ";
+                        s+= currentOrigin.getOriginTime()
+                                .toString("hh:mm:ss.z")
+                                .toStdString ();
+                        s+="<br>Latitude: "
+                            +QString::number((double)
+                                             currentOrigin.getLatitude()).toStdString()
+                            +"<br>Longitude: "
+                            +QString::number((double)
+                                             currentOrigin.getLongitude()).toStdString ();
+            if(currentOrigin.getMagnitude() > 0)
+                            s+=QString::number(currentOrigin.getMagnitude()).toStdString ();
+                            s+="</span>";
+            QWhatsThis::showText(pos,s.c_str(),ui->mapView);
         }
     }
 }

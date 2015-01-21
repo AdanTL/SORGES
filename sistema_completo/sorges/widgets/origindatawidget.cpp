@@ -46,7 +46,7 @@ void OriginDataWidget::showOriginData(const Origin& origin){
 
     std::set<Station> stations = origin.getStations();
     for(std::set<Station>::iterator it=stations.begin();it!=stations.end(); ++it){
-        ui->textEdit_stations->setTextBackgroundColor((*it).getCurrentOnSiteAlert());
+        //ui->textEdit_stations->setTextBackgroundColor((*it).getCurrentOnSiteAlert());
         ui->textEdit_stations->append((*it).stationToString().c_str());
     }
     //dumpOriginXml();

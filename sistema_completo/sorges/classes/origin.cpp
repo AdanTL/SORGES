@@ -151,7 +151,7 @@ std::string Origin::originToString() const{
 
     convert << "Origin ID: " << this->originID << "\n";
     convert << "Timestamp: " << this->originDate.toString().toStdString()
-                             << this->originDate.toString().toStdString()<<"\n";
+                             << this->originTime.toString().toStdString()<<"\n";
     convert << "Latitude: "<< this->latitude
             << "\nLongitude: " << this->longitude << "\n";
     if (this->magnitude != 0) convert << "Magnitude: " << this->magnitude << "\n";
