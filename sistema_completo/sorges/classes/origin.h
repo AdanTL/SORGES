@@ -42,7 +42,7 @@ class Origin{
 
     /**To String**/
     std::string originToString() const;
-    std::string toStdString()const;
+    std::string toStringXml()const;
     void fromQDomNode(const QDomNode& xml);
     static std::set<Origin> originsFromQDomDocument(const QDomDocument& xml);
 

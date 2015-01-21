@@ -39,7 +39,7 @@ class Station{
 
     /**To String**/
     std::string stationToString() const;
-    std::string toStdString()const;
+    std::string toStringXml()const;
     static std::set<Station> stationsFromQDomElement(const QDomElement &xml);
     void fromQDomNode(const QDomNode& stationNode);
 

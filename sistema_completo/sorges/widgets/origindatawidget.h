@@ -2,6 +2,7 @@
 #define ORIGINDATAWIDGET_H
 
 #include <QWidget>
+#include <iostream>
 #include "../classes/origin.h"
 
 namespace Ui {
@@ -13,6 +14,7 @@ class OriginDataWidget : public QWidget
 
 public:
     explicit OriginDataWidget(QWidget *parent = 0);
+    void dumpOriginXml();
     ~OriginDataWidget();
 
 public slots:

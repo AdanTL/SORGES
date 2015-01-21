@@ -164,7 +164,7 @@ std::string Origin::originToString() const{
     return convert.str();
 }
 
-std::string Origin::toStdString ()const{
+std::string Origin::toStringXml ()const{
     std::string os;
     os += "<Origin>\n";
     os +=  "\t<OriginID>" + getOriginID()+ "</OriginID>\n";
@@ -176,7 +176,7 @@ std::string Origin::toStdString ()const{
     os += "\t<StationsAssocied>\n";
     os += "\t\t<NumberStations>"+ QString::number(stations.size()).toStdString() + "</NumberStations>\n";
     for(std::set<Station>::iterator it=stations.begin(); it!=stations.end(); ++it){
-            os += (*it).toStdString();
+            os += (*it).toStringXml();
             os += "\n" ;
     }
     os += "\t</StationsAssocied>\n";

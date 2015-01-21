@@ -127,7 +127,7 @@ std::string Station::stationToString() const{
     return convert.str();
 }
 
-std::string Station::toStdString() const{
+std::string Station::toStringXml() const{
     std::string os;
     os += "\t\t<Station>\n";
     os += "\t\t\t<StationID>" + getStationID() + "</StationID>\n";
