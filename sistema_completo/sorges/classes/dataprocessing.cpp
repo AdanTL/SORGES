@@ -5,7 +5,7 @@
 
 DataProcessing::DataProcessing(QObject* parent):
     watcher(this),
-    config(new QSettings(":/sorges.conf",QSettings::NativeFormat)),
+    config(new QSettings(":/sorges.conf",QSettings::IniFormat)),
     lastDateTime(QDateTime::currentDateTime())
     {
 
@@ -13,7 +13,6 @@ DataProcessing::DataProcessing(QObject* parent):
     //cargar de resources mientras compilamos (ver lista de inicializacion)
     //una vez se entregue el producto compilado, probar esto añadiendolo a lista inicialización
     //QSettings config(QDir::currentPath()+"directorio de config/sorges.conf",QSettings::NativeFormat);
-
     if (!watcher.addPath(config->value("filepaths/stations").toString()))
         std::cerr << "Problem to find the file: "
                   << config->value("filepaths/stations").toString().toStdString()
@@ -52,14 +51,18 @@ void DataProcessing::fileChangedSlot(QString path)
 
     if (path == config->value(("filepaths/stations"))) {
         processStationsFromFile(path);
-        if (!this->stations.empty())
+        if (!this->stations.empty()){
             emit stationsLoaded(this->stations);
+            dumpStationXml();
+        }
     }
 
     else if (path == config->value(("filepaths/picks"))){
         std::set<Station> changedStation = processColorStationsFromFile(path);
-        if (!changedStation.empty())
+        if (!changedStation.empty()){
             emit stationColorReceived(changedStation);
+            dumpStationXml();
+        }
     }
 
     else if (path == config->value(("filepaths/origins"))){
@@ -90,25 +93,26 @@ void DataProcessing::processStationsFromFile(const QString &namefile){
     if(!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
         std::cerr << "Problem to find the file: "
                   << namefile.toStdString() << std::endl;
-    }
-    fileContent = file.readAll();
-    file.close();
-    std::vector<QStringList> stationsParameters =
-                                             findParameterStations(fileContent);
+    }else{
+        fileContent = file.readAll();
+        file.close();
+        std::vector<QStringList> stationsParameters =
+                                                 findParameterStations(fileContent);
 
-    std::string StationId;
-    long double StationLatitude;
-    long double StationLongitude;
+        std::string StationId;
+        long double StationLatitude;
+        long double StationLongitude;
 
-    for(size_t i=0; i<stationsParameters.size(); i++){
-        StationId = stationsParameters.at(i).at(stationsParameters.at(i)
-                                                .size()-1).toStdString();
-        std::string StationIdNetwork = "";
-                //stationsParameters.at(i).at(//N).toStdString();
-        StationLatitude = stationsParameters.at(i).at(1).toDouble();
-        StationLongitude = stationsParameters.at(i).at(0).toDouble();
-        stations.insert(Station(StationId,StationIdNetwork,
-                                StationLatitude,StationLongitude));
+        for(size_t i=0; i<stationsParameters.size(); i++){
+            StationId = stationsParameters.at(i).at(stationsParameters.at(i)
+                                                    .size()-1).toStdString();
+            std::string StationIdNetwork = "";
+                    //stationsParameters.at(i).at(//N).toStdString();
+            StationLatitude = stationsParameters.at(i).at(1).toDouble();
+            StationLongitude = stationsParameters.at(i).at(0).toDouble();
+            stations.insert(Station(StationId,StationIdNetwork,
+                                    StationLatitude,StationLongitude));
+        }
     }
 }
 
@@ -418,14 +422,27 @@ QString DataProcessing::findParameterOriginLongitude(const QString &originString
 
 
 void DataProcessing::dumpOriginXml(){
-    QFile file(QString::fromStdString("/home/"+origin.getOriginID()+".xml"));
+    QFile file(QString::fromStdString("/home/andres/Escritorio/repositorio/"+origin.getOriginID()+".xml"));
+    if(!file.open(QIODevice::ReadWrite | QIODevice::Text)){
+        std::cerr << "Problem to create origin backup file: " <<  "xml" << std::endl;
+        return;
+    }
+
+    QTextStream out(&file);
+    out << QString::fromStdString("<?xml version=\"1.0\" encoding=\"UTF-8\"?> \n"+origin.toStringXml());
+    file.close();
+
+}
+
+void DataProcessing::dumpStationXml(){
+    QFile file(QString::fromStdString("/home/andres/Escritorio/repositorio/Stations#"+QDateTime::currentDateTime().toString("yyyyMMddhhmmss.zzz").toStdString()+".xml"));
     if(!file.open(QIODevice::ReadWrite | QIODevice::Text)){
         std::cerr << "Problem to create Log file: " <<  "xml" << std::endl;
         return;
     }
 
     QTextStream out(&file);
-    out << QString::fromStdString("<?xml version=\"1.0\" encoding=\"UTF-8\"?> \n"+origin.toStringXml());
+    out << QString::fromStdString("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<Stations>\n"+Station::stationsToStringXml(stations,"\t"))+"</Stations>";
     file.close();
 
 }
