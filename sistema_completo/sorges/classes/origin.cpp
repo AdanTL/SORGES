@@ -136,3 +136,23 @@ std::string& operator << (std::string& os, const Origin& origin){
     os += "</Origin>";
     return os;
 }
+
+/**To String method*/
+/**uses the output operator format to create a string**/
+std::string Origin::originToString() const{
+    std::ostringstream convert;
+
+    convert << "Origin ID: " << this->originID << "\n";
+    convert << "Timestamp: " << this->originDate.toString().toStdString()
+                             << this->originDate.toString().toStdString()<<"\n";
+    convert << "Latitude: "<< this->latitude
+            << "\nLongitude: " << this->longitude << "\n";
+    if (this->magnitude != 0) convert << "Magnitude: " << this->magnitude << "\n";
+    if (!(this->stations.empty())){
+        convert << "Related Stations:\n";
+        foreach(Station st,this->stations){
+            convert << st.getStationID() << "\n";
+        }
+    }
+    return convert.str();
+}

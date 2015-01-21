@@ -38,6 +38,9 @@ class Origin{
     std::set<Station> getStations() const;
     void setStations(const std::set<Station> &value);
 
+    /**To String**/
+    std::string originToString() const;
+
     /**OPERATORS**/
     friend bool operator < (const Origin& origin1, const Origin& origin2);
     friend bool operator == (const Origin& origin1, const Origin& origin2);
