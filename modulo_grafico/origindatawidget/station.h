@@ -1,7 +1,9 @@
 #ifndef STATION_H
 #define STATION_H
 #include <string>
-#include <map>
+#include <QTextStream>
+#include <QtXml/QDomDocument>
+#include <set>
  
 class Station{
 	
@@ -36,8 +38,11 @@ class Station{
         return stationID == station.stationID;
     }
 
-    friend std::ostream& operator << (std::ostream& os, const Station& station);
+    std::string toStdString()const;
+    static std::set<Station> stationsFromQDomElement(const QDomElement &xml);
+    void fromQDomNode(const QDomNode& stationNode);
 
+    friend std::ostream& operator << (std::ostream& os, const Station& station);
 private:
     std::string stationID;
     std::string networkID;

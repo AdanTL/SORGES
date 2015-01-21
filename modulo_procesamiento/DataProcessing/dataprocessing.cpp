@@ -106,7 +106,7 @@ void DataProcessing::ProcessOriginFromFileXml(const QString &namefile){
     for (int i = 0; i < origins.size(); i++) {
         QDomNode origin = origins.item(i);
         if(origin.isElement()){
-            QDomElement element = origin.toElement();
+            element = origin.toElement();
             if(element.hasAttribute("publicID"))
             originID = element.attribute("publicID");
         }

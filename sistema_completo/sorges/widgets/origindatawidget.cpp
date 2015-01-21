@@ -49,19 +49,6 @@ void OriginDataWidget::showOriginData(const Origin& origin){
         ui->textEdit_stations->setTextBackgroundColor((*it).getCurrentOnSiteAlert());
         ui->textEdit_stations->append((*it).stationToString().c_str());
     }
-    //dumpOriginXml();
 
 }
 
-
-/*void OriginDataWidget::dumpOriginXml(){
-    QFile file("/home/felipe/origins.xml");
-    if(!file.open(QIODevice::ReadWrite | QIODevice::Text)){
-        std::cerr << "Problem to create Log file: " <<  "xml" << std::endl;
-        return;
-    }
-    QTextStream out(&file);
-    out << QString::fromStdString(currentOrigin.toStringXml());
-    file.close();
-
-}*/

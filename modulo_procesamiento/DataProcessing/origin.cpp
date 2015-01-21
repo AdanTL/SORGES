@@ -125,6 +125,8 @@ std::set<Origin> Origin::originsFromQDomDocument(const QDomDocument& xml){
 
 std::string Origin::toStdString ()const{
     std::string os;
+
+    os += "<?xml version=\"1.0\" encoding=\"UTF-8\"?> \n";
     os += "<Origin>\n";
     os +=  "\t<OriginID>" + getOriginID()+ "</OriginID>\n";
     os += "\t<OriginDate>" + getOriginDate().toString("yyyy-MM-dd").toStdString() + "</OriginDate>\n";
