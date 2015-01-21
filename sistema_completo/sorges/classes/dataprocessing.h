@@ -19,6 +19,7 @@ class DataProcessing : public QObject
 
 public:
     DataProcessing(QObject* parent = 0);
+    void dumpOriginXml();
 
 signals:
     void stationsLoaded(std::set<Station> stations);

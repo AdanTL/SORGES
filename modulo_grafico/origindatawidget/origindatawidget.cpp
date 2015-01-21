@@ -2,6 +2,9 @@
 #include <sstream>
 #include "origindatawidget.h"
 #include "ui_origindatawidget.h"
+#define PATH_OUTPUT_XML "laputamadredeadan.xml"
+#include <QDir>
+#include <QFile>
 
 OriginDataWidget::OriginDataWidget(QWidget *parent) :
     QWidget(parent),
@@ -52,5 +55,19 @@ void OriginDataWidget::showOriginData(const Origin& origin){
     for(std::set<Station>::iterator it=stations.begin();it!=stations.end(); ++it){
         ui->textEdit_stations->append(stationToString(*it).c_str());
     }
+
+    dumpOriginXml();
+}
+
+void OriginDataWidget::dumpOriginXml(){
+
+    QFile file(QDir::currentPath()+"/logFiles/currentTime().xml");
+    file.open(QIODevice::WriteOnly || QIODevice::Text);
+    QTextStream out(&file);
+    out << currentOrigin.toStdString();
+
+
+
+
 
 }

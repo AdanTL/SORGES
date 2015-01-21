@@ -64,14 +64,18 @@ void DataProcessing::fileChangedSlot(QString path)
 
     else if (path == config->value(("filepaths/origins"))){
         processOriginFromFileLog(path);
-        if(this->origin.getOriginID().length() > 0)
+        if(this->origin.getOriginID().length() > 0){
             emit originReceived(this->origin);
+            dumpOriginXml();
+        }
     }
 
     else if (path == config->value(("filepaths/events"))){
         processOriginFromFileXml(path);
-        if(this->origin.getOriginID().length() > 0)
+        if(this->origin.getOriginID().length() > 0){
             emit eventReceived(this->origin);
+            dumpOriginXml();
+        }
     }
 
     else std::cerr<<"Unrecognized file: "<<path.toStdString()<<std::endl;
@@ -409,4 +413,19 @@ QString DataProcessing::findParameterOriginLongitude(const QString &originString
     if(rx.lastIndexIn(originString) != -1)
         return rx.cap(0).remove(rx2).remove("(");
     return QString();
+}
+
+
+
+void DataProcessing::dumpOriginXml(){
+    QFile file(QString::fromStdString("/home/"+origin.getOriginID()+".xml"));
+    if(!file.open(QIODevice::ReadWrite | QIODevice::Text)){
+        std::cerr << "Problem to create Log file: " <<  "xml" << std::endl;
+        return;
+    }
+
+    QTextStream out(&file);
+    out << QString::fromStdString("<?xml version=\"1.0\" encoding=\"UTF-8\"?> \n"+origin.toStringXml());
+    file.close();
+
 }
