@@ -2,8 +2,9 @@
 #define STATION_H
 #include <string>
 #include <map>
-#include <sstream>
 #include <QTextStream>
+#include <QDomDocument>
+#include <set>
  
 class Station{
 	
@@ -38,12 +39,14 @@ class Station{
 
     /**To String**/
     std::string stationToString() const;
+    std::string toStdString()const;
+    static std::set<Station> stationsFromQDomElement(const QDomElement &xml);
+    void fromQDomNode(const QDomNode& stationNode);
 
     /**OPERATORS**/
     friend bool operator < (const Station& station1, const Station& station2);
     friend bool operator == (const Station& station1, const Station& station2);
     friend std::ostream& operator << (std::ostream& os, const Station& station);
-    friend std::string& operator << (std::string& os, const Station& station);
 
 private:
     std::string stationID;

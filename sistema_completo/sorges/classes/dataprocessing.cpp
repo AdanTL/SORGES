@@ -296,8 +296,10 @@ void DataProcessing::processOriginFromFileXml(const QString &namefile){
             if(element.hasAttribute("publicID"))
             originID = element.attribute("publicID");
         }
-        originLatitude = origin.firstChildElement("latitude").firstChildElement("value").text().toDouble();
-        originLongitude = origin.firstChildElement("longitude").firstChildElement("value").text().toDouble();
+        originLatitude = origin.firstChildElement("latitude")
+                                   .firstChildElement("value").text().toDouble();
+        originLongitude = origin.firstChildElement("longitude")
+                                   .firstChildElement("value").text().toDouble();
     }
 
     //Get Event values:
@@ -309,7 +311,8 @@ void DataProcessing::processOriginFromFileXml(const QString &namefile){
             if(element.hasAttribute("publicID")){
                 eventID = element.attribute("publicID");
             }
-            dateTime = event.firstChildElement("creationInfo").firstChildElement("creationTime").text();
+            dateTime = event.firstChildElement("creationInfo")
+                                        .firstChildElement("creationTime").text();
             if(rxDate.indexIn(dateTime) != -1)
                 originDate = QDate::fromString(rxDate.cap(0),"yyyy-MM-dd");
             if(rxTime.indexIn(dateTime) != -1)
@@ -327,13 +330,14 @@ void DataProcessing::processOriginFromFileXml(const QString &namefile){
             if(element.hasAttribute("publicID"))
                 if(element.attribute("publicID") == magnitudeID)
                     if(!magnitude.firstChildElement("magnitude").hasAttributes())
-                        originMagnitude = magnitude.firstChildElement("magnitude").firstChildElement("value").text().toDouble();
+                        originMagnitude = magnitude.firstChildElement("magnitude")
+                                          .firstChildElement("value").text().toDouble();
         }
     }
 
     // PRINTING AND SETTING ORIGIN AND STATIONS.
 
-        origin.setOriginID(originID.toStdString());
+        origin.setOriginID(eventID.toStdString()+"\t"+originID.toStdString());
         origin.setLatitude(originLatitude);
         origin.setLongitude(originLongitude);
         origin.setOriginDate(originDate);

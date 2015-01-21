@@ -1,4 +1,5 @@
 #include <iostream>
+#include <sstream>
 #include "station.h"
 
 Station::Station(const std::string& id, const std::string& netId, 
@@ -126,13 +127,34 @@ std::string Station::stationToString() const{
     return convert.str();
 }
 
-std::string& operator << (std::string& os, const Station& station){
+std::string Station::toStdString() const{
+    std::string os;
     os += "\t\t<Station>\n";
-    os += "\t\t\t<StationID>" + station.getStationID() + "</StationID>\n";
-    os += "\t\t\t<StationNetworkID>" + station.getNetworkID() + "</StationNetworkID>\n";
-    os += "\t\t\t<StationLatitude>" + QString::number((double)station.getLatitude()).toStdString() + "</StationLatitude>\n";
-    os += "\t\t\t<StationLongitude>" +  QString::number((double)station.getLongitude()).toStdString() + "</StationLongitude>\n";
-    os += "\t\t\t<StationColourCode>" +  QString::number(station.getColor()).toStdString() + "</StationColourCode>\n";
+    os += "\t\t\t<StationID>" + getStationID() + "</StationID>\n";
+    os += "\t\t\t<StationNetworkID>" + getNetworkID() + "</StationNetworkID>\n";
+    os += "\t\t\t<StationLatitude>" + QString::number((double)getLatitude()).toStdString() + "</StationLatitude>\n";
+    os += "\t\t\t<StationLongitude>" +  QString::number((double)getLongitude()).toStdString() + "</StationLongitude>\n";
+    os += "\t\t\t<StationColourCode>" +  QString::number(getColor()).toStdString() + "</StationColourCode>\n";
     os += "\t\t</Station>";
    return os;
+}
+
+
+void Station::fromQDomNode(const QDomNode& stationNode){
+    stationID = stationNode.firstChildElement("StationID").text().toStdString();
+    networkID = stationNode.firstChildElement("StationNetworkID").text().toStdString();
+    latitude = stationNode.firstChildElement("StationLatitude").text().toDouble();
+    longitude = stationNode.firstChildElement("StationLongitude").text().toDouble();
+    color = stationNode.firstChildElement("StationColourCode").text().toInt();
+}
+
+std::set<Station> Station::stationsFromQDomElement(const QDomElement& xml){
+    std::set<Station> myStations;
+    QDomNodeList stations = xml.elementsByTagName("Station");
+    for (int i = 0; i < stations.size(); i++) {
+        Station myStation;
+        myStation.fromQDomNode(stations.item(i));
+        myStations.insert(myStation);
+    }
+    return myStations;
 }

@@ -1,3 +1,4 @@
+#include<sstream>
 #include "origindatawidget.h"
 #include "ui_origindatawidget.h"
 
