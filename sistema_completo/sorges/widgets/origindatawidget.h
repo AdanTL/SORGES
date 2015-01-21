@@ -14,7 +14,7 @@ class OriginDataWidget : public QWidget
 
 public:
     explicit OriginDataWidget(QWidget *parent = 0);
-    void dumpOriginXml();
+    //void dumpOriginXml();
     ~OriginDataWidget();
 
 public slots:
