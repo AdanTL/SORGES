@@ -3,7 +3,6 @@
 # PROYECTO SORGES
 #
 #-------------------------------------------------
-
 QT       += core gui
 QT       += xml
 
@@ -11,7 +10,6 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = sorges
 TEMPLATE = app
-
 
 SOURCES += main.cpp\
            widgets/mapwidget.cpp \
@@ -35,4 +33,4 @@ FORMS    += ui/mapwidget.ui \
 
 RESOURCES += images/map.qrc \
 			 images/logo.qrc \
-    config/configfile.qrc
+			 config/configfile.qrc

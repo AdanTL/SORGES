@@ -41,8 +41,6 @@ MapWidget::MapWidget(QWidget *parent) :
 
     //showing item info when selected
     connect(&mapScene, SIGNAL(selectionChanged()),this,SLOT(showInformation()));
-    Origin origin("origin#656486265262696526952652689452684",QDate::currentDate (),QTime::currentTime (),35,-9,1);
-    paintOrigin(origin);
 
 	/******tests******/		
     /***borrar de aqui antes de entrega de codigo**/
@@ -290,6 +288,11 @@ void MapWidget::paintOrigin(const Origin &origin){
     clearOrigin();
 
     this->currentOrigin = origin;
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//OJO CON ESTO SOLO PARA PRUEBA DEL JUEVES
+this->currentOrigin.setOriginTime (QTime::currentTime ().addSecs (-3));
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
     long double coordX, coordY;
     long double radius = calculateRadius();
