@@ -8,11 +8,11 @@ DataProcessing::DataProcessing(QObject* parent):
     config(new QSettings(":/sorges.conf",QSettings::NativeFormat)),
     lastDateTime(QDateTime::currentDateTime())
     {
-
     //SETTINGS CONFIGURATION
     //cargar de resources mientras compilamos (ver lista de inicializacion)
+    //new QSettings(":/sorges.conf",QSettings::NativeFormat)
     //una vez se entregue el producto compilado, probar esto añadiendolo a lista inicialización
-    //QSettings config(QDir::currentPath()+"directorio de config/sorges.conf",QSettings::NativeFormat);
+    //new QSettings(QDir::currentPath()+"/config/sorges.conf",QSettings::NativeFormat)
 
     if (!watcher.addPath(config->value("filepaths/stations").toString()))
         std::cerr << "Problem to find the file: "
@@ -66,7 +66,7 @@ void DataProcessing::fileChangedSlot(QString path)
         processOriginFromFileLog(path);
         if(this->origin.getOriginID().length() > 0){
             emit originReceived(this->origin);
-            dumpOriginXml();
+            //dumpOriginXml();
         }
     }
 
@@ -74,7 +74,7 @@ void DataProcessing::fileChangedSlot(QString path)
         processOriginFromFileXml(path);
         if(this->origin.getOriginID().length() > 0){
             emit eventReceived(this->origin);
-            dumpOriginXml();
+            //dumpOriginXml();
         }
     }
 
