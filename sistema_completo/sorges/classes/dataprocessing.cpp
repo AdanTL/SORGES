@@ -4,6 +4,7 @@
 #include "dataprocessing.h"
 
 DataProcessing::DataProcessing(QObject* parent):
+    QObject(parent),
     watcher(this),
     config(new QSettings(":/sorges.conf",QSettings::NativeFormat)),
     lastDateTime(QDateTime::currentDateTime())
@@ -419,6 +420,10 @@ QString DataProcessing::findParameterOriginLongitude(const QString &originString
 
 
 void DataProcessing::dumpOriginXml(){
+
+    QDir current(QDir::currentPath());
+    current.mkdir("backup");
+
     QFile file(
           QString::fromStdString(QDir::currentPath().toStdString ()
                                  +"/backup/"+origin.getOriginID()+".xml"));
@@ -434,6 +439,10 @@ void DataProcessing::dumpOriginXml(){
 }
 
 void DataProcessing::dumpStationXml(){
+
+    QDir current(QDir::currentPath());
+    current.mkdir("backup");
+
     QFile file(
           QString::fromStdString(QDir::currentPath().toStdString()
                                  +"/backup/Stations#"+QDateTime::currentDateTime()
