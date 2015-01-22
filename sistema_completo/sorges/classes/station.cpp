@@ -134,7 +134,7 @@ std::string Station::toStringXml(const std::string& tab) const{
     os += tab + "\t<StationNetworkID>" + getNetworkID() + "</StationNetworkID>\n";
     os += tab + "\t<StationLatitude>" + QString::number((double)getLatitude()).toStdString() + "</StationLatitude>\n";
     os += tab + "\t<StationLongitude>" +  QString::number((double)getLongitude()).toStdString() + "</StationLongitude>\n";
-    os += tab + "\t<StationColourCode>" +  QString::number(getColor()).toStdString() + "</StationColourCode>\n";
+    os += tab + "\t<StationOnSiteAlert>" +  QString::number(getColor()).toStdString() + "</StationOnSiteAlert>\n";
     os += tab + "</Station>\n";
    return os;
 }
@@ -153,7 +153,7 @@ void Station::fromQDomNode(const QDomNode& stationNode){
     networkID = stationNode.firstChildElement("StationNetworkID").text().toStdString();
     latitude = stationNode.firstChildElement("StationLatitude").text().toDouble();
     longitude = stationNode.firstChildElement("StationLongitude").text().toDouble();
-    color = stationNode.firstChildElement("StationColourCode").text().toInt();
+    color = stationNode.firstChildElement("StationOnSiteAlert").text().toInt();
 }
 
 std::set<Station> Station::stationsFromQDomElement(const QDomElement& xml){

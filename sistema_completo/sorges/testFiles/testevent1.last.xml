@@ -673,7 +673,7 @@
     </amplitude>
     <origin publicID="Origin#2015012222.05775.14181">
       <time>
-        <value>2015-01-22T21:30:05.415664Z</value>
+        <value>2015-01-23T21:30:05.415664Z</value>
         <uncertainty>2.707817459</uncertainty>
       </time>
       <latitude>
@@ -705,7 +705,7 @@
       <creationInfo>
         <agencyID>roa</agencyID>
         <author>scautoloc@geo1</author>
-        <creationTime>2015-01-22T21:30:56.05774Z</creationTime>
+        <creationTime>2015-01-23T21:30:56.05774Z</creationTime>
       </creationInfo>
       <arrival>
         <pickID>20140217.023930.38-AIC-PM.PFVI..HHZ</pickID>
@@ -1431,8 +1431,8 @@
         <creationInfo>
           <agencyID>roa</agencyID>
           <author>scmag@geo1</author>
-          <creationTime>2015-01-22T21:30:00.000000Z</creationTime>
-          <modificationTime>2015-01-22T21:30:00.000000Z</modificationTime>
+          <creationTime>2015-01-23T21:30:00.000000Z</creationTime>
+          <modificationTime>2015-01-23T21:30:00.000000Z</modificationTime>
         </creationInfo>
       </magnitude>
     </origin>
@@ -1442,8 +1442,8 @@
       <creationInfo>
         <agencyID>roa</agencyID>
         <author>scevent@geo1</author>
-        <creationTime>2015-01-22T21:30:00.000000Z</creationTime>
-        <modificationTime>2015-01-22T21:30:00.000000Z</modificationTime>
+        <creationTime>2015-01-23T21:30:00.000000Z</creationTime>
+        <modificationTime>2015-01-23T21:30:00.000000Z</modificationTime>
       </creationInfo>
       <description>
         <text>Azores Cape St. Vincent Ridge</text>

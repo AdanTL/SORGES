@@ -129,7 +129,7 @@ void Origin::fromQDomNode(const QDomNode& originNode){
     latitude = originNode.firstChildElement("OriginLatitude").text().toDouble();
     longitude = originNode.firstChildElement("OriginLongitude").text().toDouble();
     magnitude = originNode.firstChildElement("OriginMagnitude").text().toDouble();
-    stations = Station::stationsFromQDomElement(originNode.firstChildElement("StationsAssocied"));
+    stations = Station::stationsFromQDomElement(originNode.firstChildElement("AssociatedStations"));
 }
 
 std::set<Origin> Origin::originsFromQDomDocument(const QDomDocument& xml){
@@ -173,12 +173,12 @@ std::string Origin::toStringXml ()const{
     os += "\t<OriginMagnitude>" +  QString::number((double)getMagnitude()).toStdString() +  "</OriginMagnitude>\n";
     os += "\t<OriginLatitude>" +  QString::number((double)getLatitude()).toStdString() + "</OriginLatitude>\n";
     os += "\t<OriginLongitude>" + QString::number((double)getLongitude()).toStdString() +  "</OriginLongitude>\n";
-    os += "\t<StationsAssocied>\n";
-    os += "\t\t<NumberStations>"+ QString::number(stations.size()).toStdString() + "</NumberStations>\n";
+    os += "\t<AssociatedStations>\n";
+    os += "\t\t<StationsNumber>"+ QString::number(stations.size()).toStdString() + "</NumberStations>\n";
     for(std::set<Station>::iterator it=stations.begin(); it!=stations.end(); ++it){
             os += (*it).toStringXml("\t\t");
     }
-    os += "\t</StationsAssocied>\n";
+    os += "\t</AssociatedStations>\n";
     os += "</Origin>\n";
     return os;
 }
