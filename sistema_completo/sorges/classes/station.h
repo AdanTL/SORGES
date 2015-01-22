@@ -39,8 +39,9 @@ class Station{
 
     /**To String**/
     std::string stationToString() const;
-    std::string toStringXml()const;
+    std::string toStringXml(const std::string& tab = "")const;
     static std::set<Station> stationsFromQDomElement(const QDomElement &xml);
+    static std::string stationsToStringXml(const std::set<Station> &xml, const std::string& tab="");
     void fromQDomNode(const QDomNode& stationNode);
 
     /**OPERATORS**/

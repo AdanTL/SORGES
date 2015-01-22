@@ -116,7 +116,7 @@ std::ostream& operator << (std::ostream& os, const Origin& origin){
        << "</StationsNumber>\n";
     for(std::set<Station>::iterator it=origin.stations.begin();
                                     it!=origin.stations.end(); ++it)
-        os << *it << "\n" ;
+        os << *it ;
     os << "\t</AssociatedStations>\n";
     os << "</Origin>\n";
     return os;
@@ -151,7 +151,7 @@ std::string Origin::originToString() const{
 
     convert << "Origin ID: " << this->originID << "\n";
     convert << "Timestamp: " << this->originDate.toString().toStdString()
-                             << this->originTime.toString().toStdString()<<"\n";
+                             << this->originDate.toString().toStdString()<<"\n";
     convert << "Latitude: "<< this->latitude
             << "\nLongitude: " << this->longitude << "\n";
     if (this->magnitude != 0) convert << "Magnitude: " << this->magnitude << "\n";
@@ -176,8 +176,7 @@ std::string Origin::toStringXml ()const{
     os += "\t<StationsAssocied>\n";
     os += "\t\t<NumberStations>"+ QString::number(stations.size()).toStdString() + "</NumberStations>\n";
     for(std::set<Station>::iterator it=stations.begin(); it!=stations.end(); ++it){
-            os += (*it).toStringXml();
-            os += "\n" ;
+            os += (*it).toStringXml("\t\t");
     }
     os += "\t</StationsAssocied>\n";
     os += "</Origin>\n";

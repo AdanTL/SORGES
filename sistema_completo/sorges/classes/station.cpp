@@ -127,18 +127,26 @@ std::string Station::stationToString() const{
     return convert.str();
 }
 
-std::string Station::toStringXml() const{
+std::string Station::toStringXml(const std::string& tab) const{
     std::string os;
-    os += "\t\t<Station>\n";
-    os += "\t\t\t<StationID>" + getStationID() + "</StationID>\n";
-    os += "\t\t\t<StationNetworkID>" + getNetworkID() + "</StationNetworkID>\n";
-    os += "\t\t\t<StationLatitude>" + QString::number((double)getLatitude()).toStdString() + "</StationLatitude>\n";
-    os += "\t\t\t<StationLongitude>" +  QString::number((double)getLongitude()).toStdString() + "</StationLongitude>\n";
-    os += "\t\t\t<StationColourCode>" +  QString::number(getColor()).toStdString() + "</StationColourCode>\n";
-    os += "\t\t</Station>";
+    os += tab + "<Station>\n";
+    os += tab + "\t<StationID>" + getStationID() + "</StationID>\n";
+    os += tab + "\t<StationNetworkID>" + getNetworkID() + "</StationNetworkID>\n";
+    os += tab + "\t<StationLatitude>" + QString::number((double)getLatitude()).toStdString() + "</StationLatitude>\n";
+    os += tab + "\t<StationLongitude>" +  QString::number((double)getLongitude()).toStdString() + "</StationLongitude>\n";
+    os += tab + "\t<StationColourCode>" +  QString::number(getColor()).toStdString() + "</StationColourCode>\n";
+    os += tab + "</Station>\n";
    return os;
 }
 
+std::string Station::stationsToStringXml(const std::set<Station> &xml, const std::string& tab){
+    std::string stringXml;
+    for(std::set<Station>::iterator it=xml.begin();
+                                    it!=xml.end(); ++it)
+        stringXml += (*it).toStringXml(tab);
+    return stringXml;
+
+}
 
 void Station::fromQDomNode(const QDomNode& stationNode){
     stationID = stationNode.firstChildElement("StationID").text().toStdString();
