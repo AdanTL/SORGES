@@ -287,15 +287,14 @@ void MapWidget::paintOrigin(const Origin &origin){
     //if there is a current origin, we erase it
     clearOrigin();
 
-    this->currentOrigin = origin;
+    //check if is the first origin in the event process
+    //
+    if (this->currentOrigin.getOriginID() ==""){
+        this->firstOrigin = origin;
+    }
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//OJO CON ESTO SOLO PARA PRUEBA DEL JUEVES
-    //para que se vea el primer circulo bien
-this->currentOrigin.setOriginTime (QTime::currentTime ().addSecs (-3));
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //anyways, the currentOrigin will be the new one
+    this->currentOrigin = origin;
 
     long double coordX, coordY;
     long double radius = calculateRadius();
@@ -316,7 +315,7 @@ this->currentOrigin.setOriginTime (QTime::currentTime ().addSecs (-3));
     circleItem->setData(0,"circle");
 
     //Epicenter mark (to be on top of the first circle)
-    QRect rect2(0,0,2*RADIUS_EPICENTER,2*RADIUS_EPICENTER);
+    QRect rect2(0,0,3*RADIUS_EPICENTER,3*RADIUS_EPICENTER);
     rect2.moveCenter(center);
     QGraphicsItem *epicenterItem = mapScene.addEllipse(rect2,
                                                        QPen(),
@@ -327,12 +326,16 @@ this->currentOrigin.setOriginTime (QTime::currentTime ().addSecs (-3));
     epicenterItem->setData(0,"epicenter");
     epicenterItem->setFlag (QGraphicsItem::ItemIsSelectable, true);
 
-    //Set the timer (each 5 seconds) for the concentric circles
-    circlesTimer->start(5000);
+    //Set the timer (each second) for the concentric circles
+    circlesTimer->start(1000);
 
     //only the last origin (event) will have related stations
+    //update only its stations and restart the logical process of the event
+    //by setting "firstOrigin" to default object
+    //thus the following origin in the system will be the first of the next event
     if (!currentOrigin.getStations().empty()){
         updateEventStations();
+        this->firstOrigin = Origin();
     }
 
 }
@@ -352,7 +355,9 @@ long double MapWidget::calculateRadius()
     QDate dateinfo = QDate::currentDate();
 
     // Getting the system time and the origin time diference (only h/m/s).
-    difMseconds = currentOrigin.getOriginDate().daysTo(dateinfo)*24*3600000;
+    //DIFERENCE MADE RESPECT TO THE FIRST ORIGIN DATETIME OF THE EVENT SECUENCE
+    //IN ORDER TO KEEP THE EXPANSION RANGE BETWEEN ORIGINS OF THE SAME EVENT
+    difMseconds = firstOrigin.getOriginDate().daysTo(dateinfo)*24*3600000;
     difMseconds += currentOrigin.getOriginTime().msecsTo(timeinfo);
     // getting the radius in meters.
     radius = (difMseconds/1000) * PROPAGATION_SPEED;

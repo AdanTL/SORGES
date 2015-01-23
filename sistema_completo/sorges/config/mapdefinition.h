@@ -46,7 +46,7 @@
 
     /**EPICENTER**/
         /*RGB red value for the epicenter mark*/
-        #define R_EPICENTER 255
+        #define R_EPICENTER 0
         /*RGB green value for the epicenter mark*/
         #define G_EPICENTER 0
         /*RGB blue value for the epicenter mark*/
@@ -56,11 +56,11 @@
 
     /**EXPANSION CIRCLES**/
         /*RGB red value for the first circle*/
-        #define R_EPICENTER_FIRST_CIRCLE 50
+        #define R_EPICENTER_FIRST_CIRCLE 250
         /*RGB green value for the first circle*/
-        #define G_EPICENTER_FIRST_CIRCLE 50
+        #define G_EPICENTER_FIRST_CIRCLE 0
         /*RGB blue value for the first circle*/
-        #define B_EPICENTER_FIRST_CIRCLE 128
+        #define B_EPICENTER_FIRST_CIRCLE 0
         /*Color transparency for the first circle*/
         #define T_EPICENTER_FIRST_CIRCLE 128
 

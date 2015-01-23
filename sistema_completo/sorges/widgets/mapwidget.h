@@ -36,6 +36,7 @@ private:
     QGraphicsScene mapScene;
     std::set<Station> stations;
     Origin currentOrigin;
+    Origin firstOrigin;
     QTimer *circlesTimer;
     
     /**PRIVATE FUNCTIONS**/		
