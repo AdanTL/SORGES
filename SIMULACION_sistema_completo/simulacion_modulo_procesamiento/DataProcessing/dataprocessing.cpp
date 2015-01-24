@@ -119,10 +119,12 @@ QString DataProcessing::getBlockOrigin(const QDateTime& firstdatetime, const QDa
             mySecuence = ANIMATIONBLOCK(blockString,it2->second.msecsTo(it->second));
             animationBlock.push_back(mySecuence);
         }
-        it2 = blocks.end();
-        --it2;
-        if(it2->second.msecsTo(lastDate) < duration){
-            duration = it2->second.msecsTo(lastDate);
+        if(blocks.size() > 0){
+            it2 = blocks.end();
+            --it2;
+            if(it2->second.msecsTo(lastDate) < duration){
+                duration = it2->second.msecsTo(lastDate);
+            }
         }
         secuence = animationBlock;
         return animationBlock;
