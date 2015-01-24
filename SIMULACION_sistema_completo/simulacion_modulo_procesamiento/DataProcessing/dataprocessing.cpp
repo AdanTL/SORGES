@@ -96,17 +96,35 @@ QString DataProcessing::getBlockOrigin(const QDateTime& firstdatetime, const QDa
 
     }
 
-    std::set<DATABLOCK> DataProcessing::getDateTimeBlocks(QString& block){
+    QList<ANIMATIONBLOCK> DataProcessing::getSecuence(const std::set<DATEBLOCK>& blocks){
+        QString blockString;
+        QDateTime prueba, prueba2;
+        prueba.msecsTo(prueba2);
+        QList<ANIMATIONBLOCK> animationBlock;
+        ANIMATIONBLOCK mySecuence;
+        for(std::set<DATEBLOCK>::iterator it = blocks.begin(); it != blocks.end(); ++it){
+            blockString.clear();
+            for(int i=0; i<it->first.size(); i++){
+                blockString += "\n" + it->first.at(i);
+            }
+            mySecuence = ANIMATIONBLOCK(blockString,blocks.begin()->second.msecsTo(it->second));
+            animationBlock.push_back(mySecuence);
+        }
+        return animationBlock;
+    }
+
+
+    std::set<DATEBLOCK> DataProcessing::getDateTimeBlocks(const QString &block){
         QRegExp rxDateBlock("\\d+-\\d+-\\d+ \\d+:\\d+:\\d+.\\d");
-        std::set<DATABLOCK> dataBlocks;
+        std::set<DATEBLOCK> dataBlocks;
         QStringList blocks = block.split("\n");
         for(int i = 0; i<blocks.size(); i++){
             if (blocks.size() > 0){
                 if(rxDateBlock.indexIn(blocks[i]) != -1){
-                    DATABLOCK myPair(QStringList()<<blocks[i],QDateTime::fromString(rxDateBlock.cap(0),"yyyy-MM-dd hh:mm:ss.z"));
-                    std::set<DATABLOCK>::iterator it = dataBlocks.find(myPair);
+                    DATEBLOCK myPair(QStringList()<<blocks[i],QDateTime::fromString(rxDateBlock.cap(0),"yyyy-MM-dd hh:mm:ss.z"));
+                    std::set<DATEBLOCK>::iterator it = dataBlocks.find(myPair);
                     if (it != dataBlocks.end()){
-                        DATABLOCK temp(*it);
+                        DATEBLOCK temp(*it);
                         temp.first = temp.first << myPair.first;
                         dataBlocks.erase(it);
                         dataBlocks.insert(temp);
@@ -120,6 +138,6 @@ QString DataProcessing::getBlockOrigin(const QDateTime& firstdatetime, const QDa
 
     }
 
-    bool operator < (const DATABLOCK& block1, const DATABLOCK& block2){
+    bool operator < (const DATEBLOCK& block1, const DATEBLOCK& block2){
         return block1.second < block2.second;
     }

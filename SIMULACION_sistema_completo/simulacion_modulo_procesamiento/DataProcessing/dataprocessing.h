@@ -7,6 +7,7 @@
 #include <QFile>
 #include <QStringList>
 #include <QPair>
+#include <QList>
 
 
 // ADD into Configure file .h or Qsetting object.
@@ -15,8 +16,8 @@
 #define FILE_LOG_ORIGIN ":/testFiles/scalertes_origenes.log"
 #define FILE_LOG_PICKS ":/testFiles/scalertes_picks.log"
 #define FILE_XML_ORIGIN ":/testFiles/gfz2014dibx.last.xml"
-
-#define DATABLOCK QPair<QStringList,QDateTime>
+#define DATEBLOCK QPair<QStringList,QDateTime>
+#define ANIMATIONBLOCK QPair<QString,int>
 
 
 class DataProcessing
@@ -27,7 +28,8 @@ public:
     QString getBlockOrigin(const QDateTime& firstdatetime, const QDateTime& lastdatetime);
     int getPositionBegin(const QDateTime& firstdatetime, const QString& namefile);
     int getPositionEnd(const QDateTime& lastdatetime, const QString& namefile);
-    std::set<DATABLOCK> getDateTimeBlocks(QString& block);
+    std::set<DATEBLOCK> getDateTimeBlocks(const QString& block);
+    QList<ANIMATIONBLOCK> getSecuence(const std::set<DATEBLOCK>&blocks);
 
 };
 
