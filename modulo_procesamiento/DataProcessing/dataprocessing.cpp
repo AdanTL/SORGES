@@ -248,7 +248,6 @@ void DataProcessing::ProcessColorStationsFromFile(const QString &namefile){
                 found = true;
     }while(found == false && overflowed == false);
 
-    if(found){
         // Look for the Station Alert line, and take the values.
         QRegExp rxLineAlert(lastTime +"\tEstaci\\S+ \\S+\tNivel de Alerta:\\d");
         rxLineAlert.lastIndexIn(fileContent);
@@ -266,7 +265,6 @@ void DataProcessing::ProcessColorStationsFromFile(const QString &namefile){
                 stations.insert(st);
             }
         }
-    }
 
 }
 
