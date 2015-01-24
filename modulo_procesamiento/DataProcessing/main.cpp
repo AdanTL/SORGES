@@ -12,12 +12,13 @@ int main(int argc, char *argv[])
     processing.ProcessStationsFromFile(":/testFiles/station.txt");
 
 
-    processing.ProcessOriginFromFileXml(":/testFiles/gfz2015bjph.last.xml");
+    //processing.ProcessOriginFromFileXml(":/testFiles/gfz2015bjph.last.xml");
 
     // Those instruction will be concurrent called.
-    //processing.ProcessAnyFile(":/testFiles/scalertes_picks.log");
+    processing.ProcessColorStationsFromFile(":/testFiles/scalertes_picks.log");
     //processing.ProcessAnyFile(":/testFiles/scalertes_origenes.log");
     //processing.ProcessAnyFile(":/testFiles/gfz2015bjph.last.xml");
+    processing.ProcessOriginFromFileXml(":/testFiles/gfz2015bjph.last.xml");
 
     //std::set<Station> stations(processing.getStations());
     std::cout << processing.getOrigin().toStdString() << "\n";

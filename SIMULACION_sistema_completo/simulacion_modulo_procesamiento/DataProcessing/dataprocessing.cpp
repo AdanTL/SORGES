@@ -2,6 +2,7 @@
 #include <QDateTime>
 #include <iostream>
 #include <QString>
+#include <QObject>
 
 DataProcessing::DataProcessing()
 {
@@ -110,6 +111,8 @@ QString DataProcessing::getBlockOrigin(const QDateTime& firstdatetime, const QDa
             mySecuence = ANIMATIONBLOCK(blockString,blocks.begin()->second.msecsTo(it->second));
             animationBlock.push_back(mySecuence);
         }
+
+        secuence = animationBlock;
         return animationBlock;
     }
 
@@ -140,4 +143,12 @@ QString DataProcessing::getBlockOrigin(const QDateTime& firstdatetime, const QDa
 
     bool operator < (const DATEBLOCK& block1, const DATEBLOCK& block2){
         return block1.second < block2.second;
+    }
+
+    void DataProcessing::writeSecuence(const QString& block){
+        QFile file("C:/Users/People/Desktop/test.txt");
+        file.open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Text);
+        QTextStream out(&file);
+        out << endl << block;
+        file.close();
     }
