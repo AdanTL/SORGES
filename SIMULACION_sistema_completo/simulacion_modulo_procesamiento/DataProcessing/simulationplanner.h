@@ -15,18 +15,22 @@ public:
     SimulationPlanner(QString event, QDir eventDir,QList<QPair<QString,int> > picks,
                       QList<QPair<QString,int> > origins,QObject *parent = 0);
 
-signals:
-
 public slots:
-    void prueba();
+    void sendPick();
+    void sendOrigin();
+    void sendEvent();
 
 private:
     QString requiredEventName;
     QDir requiredEventDir;
     QList<QPair<QString,int> > picksBlocks;
     QList<QPair<QString,int> > originsBlocks;
-    int cont;
-    QTimer* timer;
+
+    QTimer* eventTimer;
+    QTimer* picksTimer;
+    QTimer* originsTimer;
+    int picksCounter;
+    int originsCounter;
 
 };
 

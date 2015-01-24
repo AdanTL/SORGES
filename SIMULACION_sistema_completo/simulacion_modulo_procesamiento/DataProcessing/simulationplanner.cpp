@@ -13,25 +13,55 @@ SimulationPlanner::SimulationPlanner(QString event, QDir eventDir,
     requiredEventDir(eventDir),
     picksBlocks(picks),
     originsBlocks(origins),
-    cont(0),
-    timer(new QTimer(this))
+    eventTimer(new QTimer(this)),
+    picksTimer(new QTimer(this)),
+    originsTimer(new QTimer(this)),
+    picksCounter(0),
+    originsCounter(0)
 {
-    int waitTime=5000;
-    connect (timer,SIGNAL(timeout()),this,SLOT(prueba()));
-    timer->start(waitTime);
+    //to start the simulation with a bit of delay in order to set everything
+    int waitTime=3000;
+
+    connect (eventTimer,SIGNAL(timeout()),this,SLOT(sendEvent()));
+    connect (originsTimer,SIGNAL(timeout()),this,SLOT(sendOrigin()));
+    connect (picksTimer,SIGNAL(timeout()),this,SLOT(sendPick()));
+
+    picksTimer->start(waitTime);
+    originsTimer->start(waitTime);
+    //eventTimer->start(/*como sabemos el tiempo de duración?*/);
 }
 
-void SimulationPlanner::prueba(){
-    QFile file("C:/Users/People/Desktop/test.txt");
+
+void SimulationPlanner::sendPick(){
+    QFile file("/home/felipe/Escritorio/testPicks.log");
     file.open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Text);
     QTextStream out(&file);
-    out << endl << picksBlocks[cont].first;
+    out << endl << picksBlocks[picksCounter].first;
     file.close();
-    std::cout<<"imprimiendo "<<QTime::currentTime().toString("hh:mm:ss.z").toStdString ()
-             <<" "<<picksBlocks[cont].second<<std::endl;
-    cont++;
-    if (cont == picksBlocks.size ())
-        timer->stop ();
+    std::cout<<"imprimiendo pick"<<QTime::currentTime().toString("hh:mm:ss.z").toStdString ()
+             <<" "<<picksBlocks[picksCounter].second<<std::endl;
+    picksCounter++;
+    if (picksCounter == picksBlocks.size())
+        picksTimer->stop ();
     else
-        timer->start(picksBlocks[cont].second);
+        picksTimer->start(picksBlocks[picksCounter].second);
+}
+
+void SimulationPlanner::sendOrigin(){
+    QFile file("/home/felipe/Escritorio/testOrigins.log");
+    file.open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Text);
+    QTextStream out(&file);
+    out << endl << originsBlocks[originsCounter].first;
+    file.close();
+    std::cout<<"imprimiendo origin"<<QTime::currentTime().toString("hh:mm:ss.z").toStdString ()
+             <<" "<<originsBlocks[originsCounter].second<<std::endl;
+    originsCounter++;
+    if (originsCounter == originsBlocks.size())
+        originsTimer->stop ();
+    else
+        originsTimer->start(originsBlocks[picksCounter].second);
+}
+
+void SimulationPlanner::sendEvent (){
+
 }
