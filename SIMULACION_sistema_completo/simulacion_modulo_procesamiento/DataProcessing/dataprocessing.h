@@ -24,7 +24,7 @@ public:
     QString getBlockPick(const QDateTime firstdatetime, const QDateTime lastdatetime);
     QString getBlockOrigin(const QDateTime firstdatetime, const QDateTime lastdatetime);
     int getPositionPickBegin(const QDateTime firstdatetime, const QString& namefile);
-    int getPositionPickEnd(const QDateTime lastdatetime, const QString& namefile);
+    int getPositionEnd(const QDateTime lastdatetime, const QString& namefile);
 
 };
 

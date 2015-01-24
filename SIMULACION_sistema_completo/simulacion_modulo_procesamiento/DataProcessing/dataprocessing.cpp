@@ -123,10 +123,10 @@ DataProcessing::DataProcessing()
 
 
 
-    int DataProcessing::getPositionPickEnd(const QDateTime lastdatetime, const QString& namefile){
+    int DataProcessing::getPositionEnd(const QDateTime lastdatetime, const QString& namefile){
         QRegExp rxDateBlock("\n\\d+-\\d+-\\d+ \\d+:\\d+:\\d+.\\d");
         bool found=false, found2=false, overflow = false;
-        int pos = -1, pos2 = 0;
+        int pos = -1;
         QString fileContent;
         QFile file(namefile);
 
@@ -136,39 +136,37 @@ DataProcessing::DataProcessing()
         }
         pos = file.size();
         do{
-               pos -= 500;
-               if(pos < 0){
-                   overflow = true;
-                   pos = 0;
-               }
-               file.seek(pos);
-               fileContent = file.read(500);
-
-               if(rxDateBlock.indexIn(fileContent) != -1)
-                {
-                   if(QDateTime::fromString(rxDateBlock.cap(0).remove("\n"),"yyyy-MM-dd hh:mm:ss.z")
-                           <= lastdatetime){
-                        found = true;
-                           while ((pos2 = rxDateBlock.indexIn(fileContent, pos2)) != -1 && !found2) {
-                               std::cout << rxDateBlock.cap().toStdString() << std::endl;
-                               if(QDateTime::fromString(rxDateBlock.cap(0).remove("\n"),"yyyy-MM-dd hh:mm:ss.z")
-                                       > lastdatetime){
-
-                                   pos += fileContent.mid(rxDateBlock.pos()).size();
-                                   file.seek(pos);
-                                   std::cout << "---" <<  QString(file.read(500)).toStdString() << std::endl;
-                                   found2 = true;
-                               }
-                               pos2 += rxDateBlock.matchedLength();
-                           }
+            pos -= 500;
+            if(pos < 0){
+                overflow = true;
+                pos = 0;
+            }
+            file.seek(pos);
+            fileContent = file.read(500);
+            if(rxDateBlock.indexIn(fileContent) != -1 )
+            {
+                if(QDateTime::fromString(rxDateBlock.cap(0).remove("\n"),"yyyy-MM-dd hh:mm:ss.z")
+                <= lastdatetime){
+                    found = true;
+                    for(int pos2=0; pos2 <= 500 && !found2; pos2++){
+                        file.seek(pos + pos2);
+                        fileContent = file.read(22);
+                        if(rxDateBlock.indexIn(fileContent) != -1){
+                            if(QDateTime::fromString(rxDateBlock.cap(0).remove("\n"),"yyyy-MM-dd hh:mm:ss.z")
+                            > lastdatetime){
+                                pos += pos2;
+                                found2 = true;
+                            }
                         }
-                   }
-           }while(found == false && overflow == false);
-           // if is overflowed return.
-           if(found == false){
-               pos = -1;
-           }
-           return pos;
+                    }
+                }
+            }
+        }while(found == false && overflow == false);
+        // if is overflowed return.
+        if(found == false){
+            pos = 0;
+        }
+        return pos;
 
     }
 
