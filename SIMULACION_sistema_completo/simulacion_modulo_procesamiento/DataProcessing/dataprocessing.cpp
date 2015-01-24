@@ -45,85 +45,33 @@ DataProcessing::DataProcessing()
 */
 
 
-    int DataProcessing::getPositionPickBegin(const QDateTime firstdatetime, const QString& namefile){
-
-        QRegExp rxBeginDateTime("\n\\d+-\\d+-\\d+ \\d+:\\d+:\\d+.\\d");
-        //QRegExp rxExitDateTime("\\d+-\\d+-\\d+ \\d+:\\d+:\\d+.\\d");
+    int DataProcessing::getPositionBegin(const QDateTime& firstdatetime, const QString& namefile){
+        QRegExp rxDateBlock("\\d+-\\d+-\\d+ \\d+:\\d+:\\d+.\\d");
         QString fileContent;
         QFile file(namefile);
         bool found = false;
-        bool foundRemove = false;
-        bool overflow = false;
-        int pos=file.size();
+        int pos = 0;
 
         if(!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-            std::cerr << "Problem to find the file: " << namefile.toStdString() << std::endl;
             return -1;
         }
 
-        // Get Fragment with the same Date and Time (it contents some rubbish data, but it is not important).
-
-        do{
-            pos -= 1171;
-            //it is not a empty file.
-            if(pos < 0){
-                overflow = true;
-                pos = 0;
+        while(!file.atEnd() && !found){
+            pos = file.pos();
+            fileContent = file.readLine();
+            if(rxDateBlock.indexIn(fileContent) != -1 ){
+                if(QDateTime::fromString(rxDateBlock.cap(0).remove("\n"),"yyyy-MM-dd hh:mm:ss.z")
+                >= firstdatetime)
+                    found = true;
             }
-            file.seek(pos);
-            fileContent = file.readAll();
-
-            if(rxBeginDateTime.indexIn(fileContent) != -1){
-                if(QDateTime::fromString(rxBeginDateTime.cap(0).remove("\n"),
-                                         "yyyy-MM-dd hh:mm:ss.z") < firstdatetime){
-                found = true;
-
-                std::cout << rxBeginDateTime.cap(0).toStdString() <<std::endl;
-                std::cout << "-------------------------------------------"<<std::endl;
-                std::cout << fileContent.toStdString() <<std::endl;
-                std::cout << "-------------------------------------------"<<std::endl;
-                }
-            }
-        }while(found == false && overflow == false);
-
-        // if is overflowed return.
-        if(found == false){
-            //cerr
-            return -1;
         }
-
-        do{
-
-            if(rxBeginDateTime.indexIn(fileContent) != -1){
-
-                if(QDateTime::fromString(rxBeginDateTime.cap(0).remove("\n"),
-                                         "yyyy-MM-dd hh:mm:ss.z") < firstdatetime){
-                     fileContent = fileContent.remove(0,
-                                                      fileContent
-                                                      .indexOf(rxBeginDateTime.cap(0))
-                                                      +rxBeginDateTime.cap(0).size());
-                                                      //using size() and not size()-1 cos
-                                                      //the regexp includes a \n
-                }
-                else{
-                    foundRemove = true;
-                    fileContent = fileContent.remove(0, fileContent.indexOf(rxBeginDateTime.cap(0)));
-                }
-            }
-        }while(foundRemove == false);
-
-
-
-        std::cout << "-------------------------------------------"<<std::endl;
-        std::cout << "-------------------------------------------"<<std::endl;
-        std::cout << fileContent.toStdString() <<std::endl;
-
         return pos;
+
 }
 
 
 
-    int DataProcessing::getPositionEnd(const QDateTime lastdatetime, const QString& namefile){
+    int DataProcessing::getPositionEnd(const QDateTime &lastdatetime, const QString& namefile){
         QRegExp rxDateBlock("\n\\d+-\\d+-\\d+ \\d+:\\d+:\\d+.\\d");
         bool found=false, found2=false, overflow = false;
         int pos = -1;
