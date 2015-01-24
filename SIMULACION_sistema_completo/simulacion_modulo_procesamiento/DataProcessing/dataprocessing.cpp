@@ -103,13 +103,19 @@ QString DataProcessing::getBlockOrigin(const QDateTime& firstdatetime, const QDa
         QDateTime prueba, prueba2;
         prueba.msecsTo(prueba2);
         QList<ANIMATIONBLOCK> animationBlock;
+        std::set<DATEBLOCK>::iterator it2;
         ANIMATIONBLOCK mySecuence;
         for(std::set<DATEBLOCK>::iterator it = blocks.begin(); it != blocks.end(); ++it){
             blockString.clear();
             for(int i=0; i<it->first.size(); i++){
                 blockString += "\n" + it->first.at(i);
             }
-            mySecuence = ANIMATIONBLOCK(blockString,blocks.begin()->second.msecsTo(it->second));
+
+            it2 = it;
+            if(it != blocks.begin())
+                --it2;
+
+            mySecuence = ANIMATIONBLOCK(blockString,it2->second.msecsTo(it->second));
             animationBlock.push_back(mySecuence);
         }
 

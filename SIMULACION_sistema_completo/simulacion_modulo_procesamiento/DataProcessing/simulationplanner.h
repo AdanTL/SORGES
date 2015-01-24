@@ -23,14 +23,13 @@ public slots:
 private:
     QString requiredEventName;
     QDir requiredEventDir;
-    QTimer* eventTimer;
-
     QList<QPair<QString,int> > picksBlocks;
-    QTimer* picksTimer;
-    int picksCounter;
-
     QList<QPair<QString,int> > originsBlocks;
+
+    QTimer* eventTimer;
+    QTimer* picksTimer;
     QTimer* originsTimer;
+    int picksCounter;
     int originsCounter;
 
 };

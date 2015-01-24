@@ -23,8 +23,8 @@ SimulationPlanner::SimulationPlanner(QString event, QDir eventDir,
     int waitTime=3000;
 
     connect (eventTimer,SIGNAL(timeout()),this,SLOT(sendEvent()));
-    connect (originsTimer,SIGNAL(timeout(),this,SLOT(sendOrigin()));
-    connect (picksTimer,SIGNAL(timeout(),this,SLOT(sendPick()));
+    connect (originsTimer,SIGNAL(timeout()),this,SLOT(sendOrigin()));
+    connect (picksTimer,SIGNAL(timeout()),this,SLOT(sendPick()));
 
     picksTimer->start(waitTime);
     originsTimer->start(waitTime);
