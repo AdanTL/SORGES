@@ -64,6 +64,10 @@ private:
     QDateTime getDateTimeFromEvent(QDir eventFiles,QString eventName);
     QDateTime getDateTimeFirstPick(QDir eventFiles,QString eventName);
     QDateTime getLastDateTimeFromEvent(QDir eventFiles,QString eventName);
+    /*QString getBlockPick(const QDateTime& firstdatetime, const QDateTime& lastdatetime);
+    QString getBlockOrigin(const QDateTime& firstdatetime, const QDateTime& lastdatetime);
+    int getPositionBegin(const QDateTime& firstdatetime, const QString& namefile);
+    int getPositionEnd(const QDateTime& lastdatetime, const QString& namefile);*/
     /**************SIMULATION***********************/
 };
 

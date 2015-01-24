@@ -470,6 +470,10 @@ void DataProcessing::dumpStationXml(){
 ////////////////////////////////////////////////////////////////////////////////
 
 void DataProcessing::initSimulation(QDateTime simulationDateTime){
+
+    /*First, search for the closest event to the required DateTime*/
+    /*Path from /home/$USERNAME/.seiscomp3/log/events*/
+
     QDir eventsDir(QDir::homePath()+"/.seiscomp3/log/events");
 
     if (! eventsDir.exists ()){
@@ -487,56 +491,173 @@ void DataProcessing::initSimulation(QDateTime simulationDateTime){
         QString day = QString::number(simulationDateTime.date().day());
         if (simulationDateTime.date().day()<10) day = "0"+day;
 
-        QDir eventsForDateTime(eventsDir.absolutePath ()+"/"+year+"/"+month+"/"+day);
-        if (! eventsForDateTime.exists ()){
-            std::cerr<<"NOT FOUND directory path ~/.seiscomp3/log/events..."<<std::endl;
-            std::cerr<<"No events stored for the requested date"<<std::endl;
-            exit(-1);
-        }
+        /*Events organized in hierarchy yyyy/MM/dd/eventName */
 
         QString requiredEvent("");
+        QDateTime requiredEventDateTime;
         double timeDiff = std::numeric_limits<double>::max();
 
-        foreach(QString eventName,eventsForDateTime.entryList()){
-            if (eventName.toStdString() != "."
-                                            && eventName.toStdString() != "..")
-            {
-                QDir eventFiles(eventsForDateTime.absolutePath()+"/"+eventName);
-                QDateTime eventDateTime = getDateTimeFromEvent(eventFiles,eventName);
+        QDir eventsForDateTime(eventsDir.absolutePath ()+"/"+year+"/"+month+"/"+day);
+        if (eventsForDateTime.exists()){
+std::cout<<"la misma fecha existe"<<std::endl;
+            /*Searching all the events in the same day month and year*/
+            foreach(QString eventName,eventsForDateTime.entryList()){
+                //avoiding unix directories elements . and ..
+                if (eventName.toStdString() != "."
+                                                && eventName.toStdString() != "..")
+                {
+                    QDir eventFiles(eventsForDateTime.absolutePath()+"/"+eventName);
+                    QDateTime eventDateTime = getDateTimeFromEvent(eventFiles,eventName);
 
-                double range = abs(eventDateTime.msecsTo(simulationDateTime));
-                if (range<timeDiff){
-                    timeDiff = range;
-                    requiredEvent = eventName;
+                    double range = abs(eventDateTime.msecsTo(simulationDateTime));
+std::cout<<"rangos comparando fecha pedida: "<<range<<std::endl;
+                    if (range<timeDiff){
+std::cout<<"y este es menor que la diff: "<<timeDiff<<std::endl;
+                        timeDiff = range;
+                        requiredEvent = eventName;
+std::cout<<"el evento es: "<<eventName.toStdString ()<<std::endl;
+                        requiredEventDateTime  = eventDateTime;
+                    }
                 }
             }
         }
 
+        else {
+            std::cout<<"No events stored for the requested date"<<std::endl;
+            std::cout<<"Searching previous and next day"<<std::endl;
+        }
+
+        /*In case of less difference with the nex ot previous days events*/
+        QDateTime prevDayDateTime;
+        prevDayDateTime.setDate(simulationDateTime.date().addDays(-1));
+        prevDayDateTime.setTime(QTime(23,59,59));
+        QDateTime nextDayDateTime;
+        nextDayDateTime.setDate(simulationDateTime.date().addDays(1));
+        nextDayDateTime.setTime(QTime(0,0,0));
+
+        double timeDiffPrevDay = abs(simulationDateTime.msecsTo(prevDayDateTime));
+        double timeDiffNextDay = abs(simulationDateTime.msecsTo(nextDayDateTime));
+
+        if (timeDiffPrevDay < timeDiffNextDay){
+std::cout<<"a buscar en el dia anterior:"<<std::endl;
+            /*Searching in the prev day*/
+            QString prevDayYear = QString::number(prevDayDateTime.date().year());
+
+            QString prevDayMonth = QString::number(prevDayDateTime.date().month());
+            if (prevDayDateTime.date().month()<10) prevDayMonth = "0"+prevDayMonth;
+
+            QString prevDay = QString::number(prevDayDateTime.date().day());
+            if (prevDayDateTime.date().day()<10) prevDay = "0"+prevDay;
+
+            QDir eventsForPrevDayDateTime(eventsDir.absolutePath()
+                                          +"/"+prevDayYear+"/"+prevDayMonth+"/"+prevDay);
+            if (eventsForPrevDayDateTime.exists()){
+std::cout<<"hay directorio del dia anterior:"<<std::endl;
+                /*Searching all the events in the same day month and year*/
+                foreach(QString eventName,eventsForPrevDayDateTime.entryList()){
+                    //avoiding unix directories elements . and ..
+                    if (eventName.toStdString() != "."
+                                                    && eventName.toStdString() != "..")
+                    {
+                        QDir eventFiles(eventsForPrevDayDateTime.absolutePath()+"/"+eventName);
+                        QDateTime eventDateTime = getDateTimeFromEvent(eventFiles,eventName);
+
+                        double range = abs(eventDateTime.msecsTo(simulationDateTime));
+std::cout<<"rangos comparando fecha pedida: "<<range<<std::endl;
+                        if (range<timeDiff){
+                            timeDiff = range;
+std::cout<<"y este es menor que la diff: "<<timeDiff<<std::endl;
+                            requiredEvent = eventName;
+std::cout<<"el evento es: "<<eventName.toStdString ()<<std::endl;
+                            requiredEventDateTime  = eventDateTime;
+                        }
+                    }
+                }
+            }
+        }
+        else {
+std::cout<<"a buscar en el dia siguiente:"<<std::endl;
+            /*Searching in the next day*/
+            QString nextDayYear = QString::number(nextDayDateTime.date().year());
+
+            QString nextDayMonth = QString::number(nextDayDateTime.date().month());
+            if (nextDayDateTime.date().month()<10) nextDayMonth = "0"+nextDayMonth;
+
+            QString nextDay = QString::number(nextDayDateTime.date().day());
+            if (nextDayDateTime.date().day()<10) nextDay = "0"+nextDay;
+
+            QDir eventsForNextDayDateTime(eventsDir.absolutePath()
+                                          +"/"+nextDayYear+"/"+nextDayMonth+"/"+nextDay);
+            if (eventsForNextDayDateTime.exists()){
+std::cout<<"hay directorio del dia siguiente:"<<std::endl;
+                /*Searching all the events in the same day month and year*/
+                foreach(QString eventName,eventsForNextDayDateTime.entryList()){
+                    //avoiding unix directories elements . and ..
+                    if (eventName.toStdString() != "."
+                                                    && eventName.toStdString() != "..")
+                    {
+                        QDir eventFiles(eventsForNextDayDateTime.absolutePath()+"/"+eventName);
+                        QDateTime eventDateTime = getDateTimeFromEvent(eventFiles,eventName);
+
+                        double range = abs(eventDateTime.msecsTo(simulationDateTime));
+std::cout<<"rangos comparando fecha pedida: "<<range<<std::endl;
+                        if (range<timeDiff){
+std::cout<<"y este es menor que la diff: "<<timeDiff<<std::endl;
+                            timeDiff = range;
+                            requiredEvent = eventName;
+std::cout<<"el evento es: "<<eventName.toStdString ()<<std::endl;
+                            requiredEventDateTime  = eventDateTime;
+                        }
+                    }
+                }
+            }
+        }
+
+        /*Event found on required, previous or next day or not found in them*/
         if (requiredEvent == ""){
-            std::cerr<<"NO EVENT FOUND CLOSE TO THE REQUESTED TIMESTAMP"<<std::endl;
+            std::cerr<<"NO EVENT FOUND CLOSE TO THE REQUESTED TIMESTAMP OR NEXT/PREVIOUS DAY"<<std::endl;
             exit(-1);
         }
         else{
             std::cout<<"Starting simulation of EVENT "
                        +requiredEvent.toStdString()<<std::endl;
+            std::cout<<"Timestamp of the event: "
+                       +requiredEventDateTime.toString("yyyy-MM-dd hh:mm:ss.z")
+                       .toStdString ()<<std::endl;
         }
 
-        QDir requiredEventDir(eventsForDateTime.absolutePath()+"/"+requiredEvent);
+        QString requiredYear = QString::number(requiredEventDateTime.date().year());
+
+        QString requiredMonth = QString::number(requiredEventDateTime.date().month());
+        if (requiredEventDateTime.date().month()<10) requiredMonth = "0"+requiredMonth;
+
+        QString requiredDay = QString::number(requiredEventDateTime.date().day());
+        if (requiredEventDateTime.date().day()<10) requiredDay = "0"+requiredDay;
+
+        QDir requiredEventDir(eventsDir.absolutePath ()
+                              +"/"+requiredYear
+                              +"/"+requiredMonth
+                              +"/"+requiredDay
+                              +"/"+requiredEvent);
+
         QDateTime firstDateTime = getDateTimeFirstPick(requiredEventDir,requiredEvent);
         QDateTime lastDateTime = getLastDateTimeFromEvent(requiredEventDir,requiredEvent);
+        //in order to avoid losing data due to miliseconds accuracy in logs end lines
+        lastDateTime.addMSecs(500);
 
-        std::cout<<"Timestamp of the event: "
-                   +getDateTimeFromEvent(requiredEventDir,requiredEvent)
-                   .toString("yyyy-MM-dd hh:mm:ss.z").toStdString ()<<std::endl;
         std::cout<<"First pick of the simulation at "
                    +firstDateTime.toString("yyyy-MM-dd hh:mm:ss.z")
+                   .toStdString()<<std::endl;
+
+        std::cout<<"End of gathering simulation data at "
+                   +lastDateTime.toString("yyyy-MM-dd hh:mm:ss.z")
                    .toStdString()<<std::endl;
 
         /*requiredEvent sería el nombre del evento que hay que coger
          *requiredEventDir el directorio donde va a estar su xml
          *firstDateTime la fecha y hora del primer pick para leer los 2 logs
          *lastDateTime la fecha y hora ULTIMA de la que habría que leer logs
-         * (habría que añadir unos milisegundos para asegurarnos de no perder datos)
+         * (hay que añadir unos milisegundos para asegurarnos de no perder datos)
          */
         /*AHORA HAY QUE VER CÓMO MANDAMOS ESTO A VUESTRAS FUNCIONES PARA ENLAZARLO*/
 
@@ -638,3 +759,94 @@ QDateTime DataProcessing::getLastDateTimeFromEvent(QDir eventFiles,QString event
 
     return modificationTime;
 }
+
+
+/*
+QString DataProcessing::getBlockPick(const QDateTime& firstdatetime, const QDateTime& lastdatetime){
+    int posBegin, posEnd;
+    QString blockPick;
+    posBegin = getPositionBegin(firstdatetime,":/testFiles/scalertes_picks.log");
+    posEnd = getPositionEnd(lastdatetime, ":/testFiles/scalertes_picks.log");
+    QFile file(":/testFiles/scalertes_picks.log");
+    if(!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        std::cerr << "Problem to find the file: " << std::endl;
+
+    }
+    if(posBegin < posEnd){
+        file.seek(posBegin);
+        blockPick = file.read(posEnd - posBegin);
+    }
+    return blockPick;
+
+}
+
+QString DataProcessing::getBlockOrigin(const QDateTime& firstdatetime, const QDateTime& lastdatetime){
+    int posBegin, posEnd;
+    QString blockOrigin;
+    posBegin = getPositionBegin(firstdatetime,":/testFiles/scalertes_origenes.log");
+    posEnd = getPositionEnd(lastdatetime, ":/testFiles/scalertes_origenes.log");
+    QFile file(":/testFiles/scalertes_origenes.log");
+    if(!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        std::cerr << "Problem to find the file: " << std::endl;
+
+    }
+    if(posBegin < posEnd){
+        file.seek(posBegin);
+        blockOrigin = file.read(posEnd - posBegin);
+    }
+    return blockOrigin;
+
+}
+
+
+
+int DataProcessing::getPositionBegin(const QDateTime& firstdatetime, const QString& namefile){
+    QRegExp rxDateBlock("\\d+-\\d+-\\d+ \\d+:\\d+:\\d+.\\d");
+    QString fileContent;
+    QFile file(namefile);
+    bool found = false;
+    int pos = 0;
+    if(!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        return -1;
+    }
+
+    while(!file.atEnd() && !found){
+        pos = file.pos();
+        fileContent = file.readLine();
+        if(rxDateBlock.indexIn(fileContent) != -1 ){
+            if(QDateTime::fromString(rxDateBlock.cap(0).remove("\n"),"yyyy-MM-dd hh:mm:ss.z")
+            >= firstdatetime)
+                found = true;
+        }
+    }
+    return pos;
+
+}
+
+
+
+int DataProcessing::getPositionEnd(const QDateTime &lastdatetime, const QString& namefile){
+    QRegExp rxDateBlock("\\d+-\\d+-\\d+ \\d+:\\d+:\\d+.\\d");
+    QString fileContent;
+    QFile file(namefile);
+    bool found = false;
+    int pos = 0;
+
+    if(!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        return -1;
+    }
+    while(!file.atEnd() && !found){
+        pos = file.pos();
+        fileContent = file.readLine();
+        if(rxDateBlock.indexIn(fileContent) != -1 ){
+            if(QDateTime::fromString(rxDateBlock.cap(0),"yyyy-MM-dd hh:mm:ss.z")
+            > lastdatetime){
+                file.seek(pos);
+                std::cout << QString(file.readLine()).toStdString() << std::endl;
+                found = true;
+            }
+        }
+    }
+    return pos;
+
+}*/
