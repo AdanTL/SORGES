@@ -17,10 +17,12 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp \
-    dataprocessing.cpp
+    dataprocessing.cpp \
+    simulationplanner.cpp
 
 HEADERS += \
-    dataprocessing.h
+    dataprocessing.h \
+    simulationplanner.h
 
 DISTFILES +=
 

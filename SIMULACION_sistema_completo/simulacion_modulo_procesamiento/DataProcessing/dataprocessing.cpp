@@ -8,6 +8,7 @@ DataProcessing::DataProcessing()
 {
 }
 
+
 QString DataProcessing::getBlockPick(const QDateTime& firstdatetime, const QDateTime& lastdatetime){
     int posBegin, posEnd;
     QString blockPick;
@@ -145,10 +146,10 @@ QString DataProcessing::getBlockOrigin(const QDateTime& firstdatetime, const QDa
         return block1.second < block2.second;
     }
 
-    void DataProcessing::writeSecuence(const QString& block){
+    /*void DataProcessing::writeSecuence(const QString& block){
         QFile file("C:/Users/People/Desktop/test.txt");
         file.open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Text);
         QTextStream out(&file);
         out << endl << block;
         file.close();
-    }
+    }*/

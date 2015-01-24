@@ -10,6 +10,7 @@
 #include <QList>
 #include <QTimer>
 #include <QTextStream>
+#include "simulationplanner.h"
 
 // ADD into Configure file .h or Qsetting object.
 #define FILE_INICIAL_STATIONS ":/testFiles/station.txt"
@@ -24,9 +25,9 @@
 class DataProcessing
 {
 signals:
-    void writeNextSecuence(const QList<ANIMATIONBLOCK>& secuence, int i=0);
+    //void writeNextSecuence(const QList<ANIMATIONBLOCK>& secuence, int i=0);
 public slots:
-    void writeSecuence(const QString &block);
+    //void writeSecuence(const QString &block);
 public:
     DataProcessing();
     QString getBlockPick(const QDateTime& firstdatetime, const QDateTime& lastdatetime);
@@ -35,10 +36,15 @@ public:
     int getPositionEnd(const QDateTime& lastdatetime, const QString& namefile);
     std::set<DATEBLOCK> getDateTimeBlocks(const QString& block);
     QList<ANIMATIONBLOCK> getSecuence(const std::set<DATEBLOCK>&blocks);
+
+
 private:
     QList<ANIMATIONBLOCK> secuence;
     int n=-1;
-    QTimer *printSecuence;
+    //QTimer *printSecuence;
+
+    //clase planificadora de simulacion
+    //SimulationPlanner simulator;
 
 };
 
