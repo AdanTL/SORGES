@@ -74,12 +74,14 @@ DataProcessing::DataProcessing()
             fileContent = file.readAll();
 
             if(rxBeginDateTime.indexIn(fileContent) != -1){
-                if(QDateTime::fromString(rxBeginDateTime.cap(0).remove("\n"), "yyyy-MM-dd hh:mm:ss.z") < firstdatetime){
+                if(QDateTime::fromString(rxBeginDateTime.cap(0).remove("\n"),
+                                         "yyyy-MM-dd hh:mm:ss.z") < firstdatetime){
                 found = true;
 
                 std::cout << rxBeginDateTime.cap(0).toStdString() <<std::endl;
                 std::cout << "-------------------------------------------"<<std::endl;
                 std::cout << fileContent.toStdString() <<std::endl;
+                std::cout << "-------------------------------------------"<<std::endl;
                 }
             }
         }while(found == false && overflow == false);
@@ -91,15 +93,24 @@ DataProcessing::DataProcessing()
         }
 
         do{
-             if(rxBeginDateTime.indexIn(fileContent) != -1){
-                 if(QDateTime::fromString(rxBeginDateTime.cap(0).remove("\n"), "yyyy-MM-dd hh:mm:ss.z") > firstdatetime){
-                     std::cout << "-------------------------------------------"<<std::endl;
-                     foundRemove = true;
-                     fileContent.remove(0, fileContent.indexOf(rxBeginDateTime.cap(0),0));
 
-                 }
-               }
-           }while(foundRemove == false);
+            if(rxBeginDateTime.indexIn(fileContent) != -1){
+
+                if(QDateTime::fromString(rxBeginDateTime.cap(0).remove("\n"),
+                                         "yyyy-MM-dd hh:mm:ss.z") < firstdatetime){
+                     fileContent = fileContent.remove(0,
+                                                      fileContent
+                                                      .indexOf(rxBeginDateTime.cap(0))
+                                                      +rxBeginDateTime.cap(0).size());
+                                                      //using size() and not size()-1 cos
+                                                      //the regexp includes a \n
+                }
+                else{
+                    foundRemove = true;
+                    fileContent = fileContent.remove(0, fileContent.indexOf(rxBeginDateTime.cap(0)));
+                }
+            }
+        }while(foundRemove == false);
 
 
 
