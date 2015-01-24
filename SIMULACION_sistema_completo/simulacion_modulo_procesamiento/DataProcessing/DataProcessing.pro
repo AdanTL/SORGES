@@ -17,14 +17,10 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp \
-    dataprocessing.cpp \
-    origin.cpp \
-    station.cpp
+    dataprocessing.cpp
 
 HEADERS += \
-    dataprocessing.h \
-    origin.h \
-    station.h
+    dataprocessing.h
 
 DISTFILES +=
 

@@ -6,9 +6,7 @@
 #include <set>
 #include <QFile>
 #include <QStringList>
-#include <QtXml/QDomDocument>
-#include "origin.h"
-#include "station.h"
+
 
 // ADD into Configure file .h or Qsetting object.
 #define FILE_INICIAL_STATIONS ":/testFiles/station.txt"
@@ -23,29 +21,11 @@ class DataProcessing
 {
 public:
     DataProcessing();
-    void ProcessAnyFile(const QString &namefile);
-    void ProcessStationsFromFile(const QString &namefile);
-    Origin getOrigin(){return origen;}
-    std::set<Station> getStations(){return stations;}
-    void getBlock(const QDateTime firstdatetime, const QDateTime lastdatetime, QString& blockpick, QString& blockorigin);
+    QString getBlockPick(const QDateTime firstdatetime, const QDateTime lastdatetime);
+    QString getBlockOrigin(const QDateTime firstdatetime, const QDateTime lastdatetime);
+    int getPositionPickBegin(const QDateTime firstdatetime, const QString& namefile);
+    int getPositionPickEnd(const QDateTime lastdatetime, const QString& namefile);
 
-//private:
-    Origin origen;
-    std::set<Station> stations;
-
-    void ProcessOriginFromFileLog(const QString &namefile);
-    void ProcessColorStationsFromFile(const QString &namefile);
-    void ProcessOriginFromFileXml(const QString &namefile);
-
-    QString FindParameterOriginID(const QString &originString);
-    QString FindParameterOriginDate(const QString &originString);
-    QString FindParameterOriginTime(const QString &originString);
-    QString FindParameterOriginLatitude(const QString &originString);
-    QString FindParameterOriginLongitude(const QString &originString);
-    //QString FindParameterOriginMagnitude(const QString &originString);
-    std::vector<QStringList> FindParameterOriginStations(const QString &originString);
-
-    std::vector<QStringList> FindParameterStations(const QString &stationsString);
 };
 
 #endif // DATAPROCESSING_H
