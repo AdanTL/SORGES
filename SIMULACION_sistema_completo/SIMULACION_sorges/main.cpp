@@ -47,7 +47,11 @@ int main(int argc, char *argv[])
 
     QApplication a(argc, argv);
 
-    DataProcessing dataProcessor;
+    bool simulationMode=false;
+    if (startMode=="simulation")
+        simulationMode = true;
+
+    DataProcessing dataProcessor(simulationMode);
     MapWidget mapW;
     OriginDataWidget originDataW;
     StationsDataWidget stationsDataW;
@@ -88,6 +92,7 @@ int main(int argc, char *argv[])
     else if (startMode == "simulation"){
         QDateTime datetime =QDateTime::fromString(QString(argv[2])+" "+QString(argv[3]),
                                                   "yyyy-MM-dd hh:mm:ss");
+        dataProcessor.init();
         dataProcessor.initSimulation(datetime);
     }
 

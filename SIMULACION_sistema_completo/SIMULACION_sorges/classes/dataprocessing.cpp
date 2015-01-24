@@ -3,45 +3,98 @@
 #include <QXmlStreamReader>
 #include "dataprocessing.h"
 
-DataProcessing::DataProcessing(QObject* parent):
+DataProcessing::DataProcessing(bool simulationMode, QObject* parent):
     QObject(parent),
+    simulationMode(simulationMode),
     watcher(this),
-    config(new QSettings(":/sorges.conf",QSettings::NativeFormat)),
+    config(new QSettings(QDir::currentPath()+"/config/sorges.conf",QSettings::NativeFormat)),
     lastDateTime(QDateTime::currentDateTime())
     {
     //SETTINGS CONFIGURATION
     //cargar de resources mientras compilamos (ver lista de inicializacion)
     //new QSettings(":/sorges.conf",QSettings::NativeFormat)
     //una vez se entregue el producto compilado, probar esto añadiendolo a lista inicialización
-    //new QSettings(QDir::currentPath().toStdString()+"/config/sorges.conf",QSettings::NativeFormat)
+    //new QSettings(QDir::currentPath()+"/config/sorges.conf",QSettings::NativeFormat)
 
-    if (!watcher.addPath(config->value("filepaths/stations").toString()))
-        std::cerr << "Problem to find the file: "
-                  << config->value("filepaths/stations").toString().toStdString()
-                  << std::endl;
+    /**watching different files depending on the execution mode*/
+    if (simulationMode){
 
-    if (!watcher.addPath(config->value("filepaths/picks").toString()))
-        std::cerr << "Problem to find the file: "
-                  << config->value("filepaths/picks").toString().toStdString()
-                  << std::endl;
+        std::string stationsFile = QDir::currentPath().toStdString()
+                               +"/simulationFiles/stations_alertes.txt";
+        config->setValue("simulationpaths/stations",QVariant(stationsFile.c_str()));
 
-    if (!watcher.addPath(config->value("filepaths/origins").toString()))
-        std::cerr << "Problem to find the file: "
-                  << config->value("filepaths/origins").toString().toStdString()
-                  << std::endl;
+        if (!watcher.addPath(config->value("simulationpaths/stations").toString()))
+            std::cerr << "Problem to find the file: "
+                      << config->value("simulationpaths/stations").toString().toStdString()
+                      << std::endl;
 
-    if (!watcher.addPath(config->value("filepaths/events").toString()))
-        std::cerr << "Problem to find the file: "
-                  << config->value("filepaths/events").toString().toStdString()
-                  << std::endl;
+        std::string picksFile = QDir::currentPath().toStdString()
+                               +"/simulationFiles/scalertes_picks.log";
+        config->setValue("simulationpaths/picks",QVariant(picksFile.c_str()));
 
+        if (!watcher.addPath(config->value("simulationpaths/picks").toString()))
+            std::cerr << "Problem to find the file: "
+                      << config->value("simulationpaths/picks").toString().toStdString()
+                      << std::endl;
+
+        std::string originsFile = QDir::currentPath().toStdString()
+                               +"/simulationFiles/scalertes_origenes.log";
+        config->setValue("simulationpaths/origins",QVariant(originsFile.c_str()));
+
+        if (!watcher.addPath(config->value("simulationpaths/origins").toString()))
+            std::cerr << "Problem to find the file: "
+                      << config->value("simulationpaths/origins").toString().toStdString()
+                      << std::endl;
+
+        std::string eventFile = QDir::currentPath().toStdString()
+                               +"/simulationFiles/event.last.xml";
+        config->setValue("simulationpaths/event",QVariant(eventFile.c_str()));
+
+        if (!watcher.addPath(config->value("simulationpaths/event").toString()))
+            std::cerr << "Problem to find the file: "
+                      << config->value("simulationpaths/event").toString().toStdString()
+                      << std::endl;
+
+    }
+
+    else{ //realtime
+
+        if (!watcher.addPath(config->value("filepaths/stations")
+                                            .toString().replace("$HOME",QDir::homePath())))
+            std::cerr << "Problem to find the file: "
+                      << config->value("filepaths/stations").toString().toStdString()
+                      << std::endl;
+
+        if (!watcher.addPath(config->value("filepaths/picks")
+                                            .toString().replace("$HOME",QDir::homePath())))
+            std::cerr << "Problem to find the file: "
+                      << config->value("filepaths/picks").toString().toStdString()
+                      << std::endl;
+
+        if (!watcher.addPath(config->value("filepaths/origins")
+                                            .toString().replace("$HOME",QDir::homePath())))
+            std::cerr << "Problem to find the file: "
+                      << config->value("filepaths/origins").toString().toStdString()
+                      << std::endl;
+        /*AQUI OJO, QUE AHORA SE SABE EL DIRECTORIO Y NO ES UN FICHERO SOLO*/
+        /*
+        if (!watcher.addPath(config->value("filepaths/events")
+                                            .toString().replace("$HOME",QDir::homePath())))
+            std::cerr << "Problem to find the file: "
+                      << config->value("filepaths/events").toString().toStdString()
+                      << std::endl;*/
+    }
+
+    /**slot connection for receiving file changes signals**/
+    /**independent of the the mode**/
     connect(&watcher,SIGNAL(fileChanged(QString)),this,SLOT(fileChangedSlot(QString)));
 
 }
 
 void DataProcessing::init(){
     //List of stations loaded at the start of the system with dataProcessor.init()
-    processStationsFromFile(config->value("filepaths/stations").toString());
+    processStationsFromFile(config->value("filepaths/stations")
+                            .toString().replace("$HOME",QDir::homePath()));
     if (!this->stations.empty())
         emit stationsLoaded(this->stations);
 }
@@ -51,13 +104,15 @@ void DataProcessing::fileChangedSlot(QString path)
     //keep the watch on the file
     watcher.addPath(path);
 
-    if (path == config->value(("filepaths/stations"))) {
+    if (path ==
+             config->value(("filepaths/stations")).toString().replace("$HOME",QDir::homePath())) {
         processStationsFromFile(path);
         if (!this->stations.empty())
             emit stationsLoaded(this->stations);
     }
 
-    else if (path == config->value(("filepaths/picks"))){
+    else if (path ==
+                  config->value(("filepaths/picks")).toString().replace("$HOME",QDir::homePath())){
         std::set<Station> changedStation = processColorStationsFromFile(path);
         if (!changedStation.empty()){
             emit stationColorReceived(changedStation);
@@ -65,21 +120,21 @@ void DataProcessing::fileChangedSlot(QString path)
         }
     }
 
-    else if (path == config->value(("filepaths/origins"))){
+    else if (path == config->value(("filepaths/origins")).toString().replace("$HOME",QDir::homePath())){
         processOriginFromFileLog(path);
         if(this->origin.getOriginID().length() > 0){
             emit originReceived(this->origin);
             dumpOriginXml();
         }
     }
-
-    else if (path == config->value(("filepaths/events"))){
+    /*
+    else if (path == config->value(("filepaths/events")).toString().replace("$HOME",QDir::homePath())){
         processOriginFromFileXml(path);
         if(this->origin.getOriginID().length() > 0){
             emit eventReceived(this->origin);
             dumpOriginXml();
         }
-    }
+    }*/
 
     else std::cerr<<"Unrecognized file: "<<path.toStdString()<<std::endl;
 
@@ -225,32 +280,31 @@ std::set<Station> DataProcessing::processColorStationsFromFile(const QString &na
                             found = true;
                 }while(found == false && overflowed == false);
 
-                if(found){
-                    // Look for the Station Alert line, and take the values.
-                    QRegExp rxLineAlert(lastTime
-                                        +"\tEstaci\\S+ \\S+\tNivel de Alerta:\\d");
-                    rxLineAlert.lastIndexIn(fileContent);
-                    if(rxLineAlert.lastIndexIn(fileContent) != -1){
-                        QRegExp rxStationRm("\n\\d\\d\\d\\d-\\d+-\\d+ \\d+:\\d+:\\d+.\\d\tEstaci\\S+ ");
-                        QRegExp rxColourRm("Nivel de Alerta:");
-                        QStringList parameters = rxLineAlert.cap()
-                                                 .remove(rxStationRm)
-                                                 .remove(rxColourRm).split("\t");
-                        // Look for a station with the same ID and extract it
-                        std::set<Station>::iterator it = stations
-                                                        .find(Station(parameters.at(0)
-                                                                      .toStdString()));
-                        if(it != stations.end()){
-                            Station st(*it);
-                            // Change color and update this value.
-                            st.setColor(parameters.at(1).toInt());
-                            stations.erase(it);
-                            stations.insert(st);
+                // Look for the Station Alert line, and take the values.
+                QRegExp rxLineAlert(lastTime
+                                    +"\tEstaci\\S+ \\S+\tNivel de Alerta:\\d");
+                rxLineAlert.lastIndexIn(fileContent);
+                if(rxLineAlert.lastIndexIn(fileContent) != -1){
+                    QRegExp rxStationRm("\n\\d\\d\\d\\d-\\d+-\\d+ \\d+:\\d+:\\d+.\\d\tEstaci\\S+ ");
+                    QRegExp rxColourRm("Nivel de Alerta:");
+                    QStringList parameters = rxLineAlert.cap()
+                                             .remove(rxStationRm)
+                                             .remove(rxColourRm).split("\t");
+                    // Look for a station with the same ID and extract it
+                    std::set<Station>::iterator it = stations
+                                                    .find(Station(parameters.at(0)
+                                                                  .toStdString()));
+                    if(it != stations.end()){
+                        Station st(*it);
+                        // Change color and update this value.
+                        st.setColor(parameters.at(1).toInt());
+                        stations.erase(it);
+                        stations.insert(st);
 
-                            stationChanged.insert(st);
-                        }
+                        stationChanged.insert(st);
                     }
                 }
+
             }
         }
     }
@@ -472,9 +526,13 @@ void DataProcessing::dumpStationXml(){
 void DataProcessing::initSimulation(QDateTime simulationDateTime){
 
     /*First, search for the closest event to the required DateTime*/
-    /*Path from /home/$USERNAME/.seiscomp3/log/events*/
-
-    QDir eventsDir(QDir::homePath()+"/.seiscomp3/log/events");
+    /*Path from /home/USERNAME/.seiscomp3/log/events*/
+    //QDir eventsDir(QDir::homePath()+"/.seiscomp3/log/events");
+    QString path = config->value("filepaths/events").toString();
+    if (path.startsWith("$HOME")){
+        path.replace("$HOME",QDir::homePath());
+    }
+    QDir eventsDir(path);
 
     if (! eventsDir.exists ()){
         std::cerr<<"NOT FOUND directory path ~/.seiscomp3/log/events"<<std::endl;
@@ -499,7 +557,6 @@ void DataProcessing::initSimulation(QDateTime simulationDateTime){
 
         QDir eventsForDateTime(eventsDir.absolutePath ()+"/"+year+"/"+month+"/"+day);
         if (eventsForDateTime.exists()){
-std::cout<<"la misma fecha existe"<<std::endl;
             /*Searching all the events in the same day month and year*/
             foreach(QString eventName,eventsForDateTime.entryList()){
                 //avoiding unix directories elements . and ..
@@ -510,12 +567,9 @@ std::cout<<"la misma fecha existe"<<std::endl;
                     QDateTime eventDateTime = getDateTimeFromEvent(eventFiles,eventName);
 
                     double range = abs(eventDateTime.msecsTo(simulationDateTime));
-std::cout<<"rangos comparando fecha pedida: "<<range<<std::endl;
                     if (range<timeDiff){
-std::cout<<"y este es menor que la diff: "<<timeDiff<<std::endl;
                         timeDiff = range;
                         requiredEvent = eventName;
-std::cout<<"el evento es: "<<eventName.toStdString ()<<std::endl;
                         requiredEventDateTime  = eventDateTime;
                     }
                 }
@@ -539,7 +593,6 @@ std::cout<<"el evento es: "<<eventName.toStdString ()<<std::endl;
         double timeDiffNextDay = abs(simulationDateTime.msecsTo(nextDayDateTime));
 
         if (timeDiffPrevDay < timeDiffNextDay){
-std::cout<<"a buscar en el dia anterior:"<<std::endl;
             /*Searching in the prev day*/
             QString prevDayYear = QString::number(prevDayDateTime.date().year());
 
@@ -552,7 +605,6 @@ std::cout<<"a buscar en el dia anterior:"<<std::endl;
             QDir eventsForPrevDayDateTime(eventsDir.absolutePath()
                                           +"/"+prevDayYear+"/"+prevDayMonth+"/"+prevDay);
             if (eventsForPrevDayDateTime.exists()){
-std::cout<<"hay directorio del dia anterior:"<<std::endl;
                 /*Searching all the events in the same day month and year*/
                 foreach(QString eventName,eventsForPrevDayDateTime.entryList()){
                     //avoiding unix directories elements . and ..
@@ -563,12 +615,9 @@ std::cout<<"hay directorio del dia anterior:"<<std::endl;
                         QDateTime eventDateTime = getDateTimeFromEvent(eventFiles,eventName);
 
                         double range = abs(eventDateTime.msecsTo(simulationDateTime));
-std::cout<<"rangos comparando fecha pedida: "<<range<<std::endl;
                         if (range<timeDiff){
                             timeDiff = range;
-std::cout<<"y este es menor que la diff: "<<timeDiff<<std::endl;
                             requiredEvent = eventName;
-std::cout<<"el evento es: "<<eventName.toStdString ()<<std::endl;
                             requiredEventDateTime  = eventDateTime;
                         }
                     }
@@ -576,7 +625,6 @@ std::cout<<"el evento es: "<<eventName.toStdString ()<<std::endl;
             }
         }
         else {
-std::cout<<"a buscar en el dia siguiente:"<<std::endl;
             /*Searching in the next day*/
             QString nextDayYear = QString::number(nextDayDateTime.date().year());
 
@@ -589,7 +637,6 @@ std::cout<<"a buscar en el dia siguiente:"<<std::endl;
             QDir eventsForNextDayDateTime(eventsDir.absolutePath()
                                           +"/"+nextDayYear+"/"+nextDayMonth+"/"+nextDay);
             if (eventsForNextDayDateTime.exists()){
-std::cout<<"hay directorio del dia siguiente:"<<std::endl;
                 /*Searching all the events in the same day month and year*/
                 foreach(QString eventName,eventsForNextDayDateTime.entryList()){
                     //avoiding unix directories elements . and ..
@@ -600,12 +647,9 @@ std::cout<<"hay directorio del dia siguiente:"<<std::endl;
                         QDateTime eventDateTime = getDateTimeFromEvent(eventFiles,eventName);
 
                         double range = abs(eventDateTime.msecsTo(simulationDateTime));
-std::cout<<"rangos comparando fecha pedida: "<<range<<std::endl;
                         if (range<timeDiff){
-std::cout<<"y este es menor que la diff: "<<timeDiff<<std::endl;
                             timeDiff = range;
                             requiredEvent = eventName;
-std::cout<<"el evento es: "<<eventName.toStdString ()<<std::endl;
                             requiredEventDateTime  = eventDateTime;
                         }
                     }
@@ -761,9 +805,8 @@ QDateTime DataProcessing::getLastDateTimeFromEvent(QDir eventFiles,QString event
 }
 
 
-/*
 QString DataProcessing::getBlockPick(const QDateTime& firstdatetime, const QDateTime& lastdatetime){
-    int posBegin, posEnd;
+    int posBegin =0, posEnd=0;
     QString blockPick;
     posBegin = getPositionBegin(firstdatetime,":/testFiles/scalertes_picks.log");
     posEnd = getPositionEnd(lastdatetime, ":/testFiles/scalertes_picks.log");
@@ -849,4 +892,4 @@ int DataProcessing::getPositionEnd(const QDateTime &lastdatetime, const QString&
     }
     return pos;
 
-}*/
+}
