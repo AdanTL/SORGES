@@ -1,11 +1,13 @@
 #include <QApplication>
 #include <iostream>
+#include <stdlib.h>
 #include <iomanip>
 #include <ctime>
 #include <sstream>
 #include <string>
 #include <set>
 #include <map>
+#include <QDateTime>
 #include "classes/station.h"
 #include "classes/origin.h"
 #include "classes/dataprocessing.h"
@@ -13,8 +15,36 @@
 #include "widgets/origindatawidget.h"
 #include "widgets/stationsdatawidget.h"
 
+std::string checkArguments(int argc, char *argv[]){
+
+    if (argc == 1 || (argc == 2 && QString(argv[1]) == "realtime")){
+        return "realtime";
+    }
+    else if (argc == 4 && QString(argv[1]) == "simulation"){
+        QDateTime datetime =
+                QDateTime::fromString(QString(argv[2])+" "+QString(argv[3]),
+                                      "yyyy-MM-dd hh:mm:ss");
+
+        if (!datetime.isValid ()){
+            std::cout<<"wrong parameters.\nCorrect use:\nsorges\nsorges realtime\n";
+            std::cout<<"sorges simulation yyyy-MM-dd hh:mm:ss"<<std::endl;
+            exit(-1);
+        }
+        else
+            return "simulation";
+    }
+    else {
+        std::cout<<"wrong parameters.\nCorrect use:\nsorges\nsorges realtime\n";
+        std::cout<<"sorges simulation yyyy-MM-dd hh:mm:ss"<<std::endl;
+        exit(-1);
+    }
+
+}
+
 int main(int argc, char *argv[])
 {
+    std::string startMode = checkArguments (argc,argv);
+
     QApplication a(argc, argv);
 
     DataProcessing dataProcessor;
@@ -52,7 +82,14 @@ int main(int argc, char *argv[])
     originDataW.show();
     stationsDataW.show();
 
-    dataProcessor.init();
+    if (startMode == "realtime"){
+        dataProcessor.init();
+    }
+    else if (startMode == "simulation"){
+        QDateTime datetime =QDateTime::fromString(QString(argv[2])+" "+QString(argv[3]),
+                                                  "yyyy-MM-dd hh:mm:ss");
+        dataProcessor.initSimulation(datetime);
+    }
 
     return a.exec();
 }

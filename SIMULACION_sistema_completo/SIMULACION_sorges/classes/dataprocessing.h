@@ -2,10 +2,12 @@
 #define DATAPROCESSING_H
 
 #include <QObject>
+#include <QDateTime>
 #include <QRegExp>
 #include <iostream>
 #include <set>
 #include <QFile>
+#include <QDir>
 #include <QStringList>
 #include <QFileSystemWatcher>
 #include <QSettings>
@@ -30,6 +32,9 @@ signals:
 
 public slots:
     void init();
+    /**************SIMULATION***********************/
+    void initSimulation(QDateTime simulationDateTime);
+    /**************SIMULATION***********************/
 
 private slots:
     void fileChangedSlot(QString path);
@@ -55,6 +60,9 @@ private:
     QString findParameterOriginLatitude(const QString &originString);
     QString findParameterOriginLongitude(const QString &originString);
 
+    /**************SIMULATION***********************/
+    QDateTime getDateTimeFromEvent(QDir eventFiles,QString eventName);
+    /**************SIMULATION***********************/
 };
 
 #endif // DATAPROCESSING_H

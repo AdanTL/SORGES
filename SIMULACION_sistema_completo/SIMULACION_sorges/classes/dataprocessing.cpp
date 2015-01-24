@@ -459,3 +459,79 @@ void DataProcessing::dumpStationXml(){
     file.close();
 
 }
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+/// SIMULATION METHODS
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+void DataProcessing::initSimulation(QDateTime simulationDateTime){
+    QDir eventsDir(QDir::homePath()+"/.seiscomp3/log/events");
+
+    if (! eventsDir.exists ()){
+        std::cerr<<"NOT FOUND directory path ~/.seiscomp3/log/events"<<std::endl;
+        std::cerr<<"EVENT FILES CANNOT BE FOUND"<<std::endl;
+        exit(-1);
+    }
+    else{
+
+        QString year = QString::number(simulationDateTime.date().year());
+
+        QString month = QString::number(simulationDateTime.date().month());
+        if (simulationDateTime.date().month()<10) month = "0"+month;
+
+        QString day = QString::number(simulationDateTime.date().day());
+        if (simulationDateTime.date().day()<10) day = "0"+day;
+
+        QDir eventsForDateTime(eventsDir.absolutePath ()+"/"+year+"/"+month+"/"+day);
+        if (! eventsForDateTime.exists ()){
+            std::cerr<<"NOT FOUND directory path ~/.seiscomp3/log/events..."<<std::endl;
+            std::cerr<<"No events stored for the requested date"<<std::endl;
+            exit(-1);
+        }
+
+        QString requiredEvent("");
+        double timeRange = std::numeric_limits<double>::max();
+
+        foreach(QString eventFolder,eventsForDateTime.entryList()){
+            if (eventFolder.toStdString() != "."
+                                            && eventFolder.toStdString() != "..")
+            {
+                QDir eventFiles(eventsForDateTime.absolutePath()+"/"+eventFolder);
+                QDateTime eventDateTime = getDateTimeFromEvent(eventFiles,eventFolder);
+std::cout<<eventDateTime.toString().toStdString ()<<std::endl;
+            }
+        }
+
+
+    }
+}
+
+QDateTime DataProcessing::getDateTimeFromEvent(QDir eventFiles,QString eventName){
+
+    QString namefile = eventFiles.absoluteFilePath(eventName+".last.xml");
+    QDomDocument xml(namefile);
+    QFile file(namefile);
+    if (!file.open(QIODevice::ReadOnly)){
+        std::cerr << "Problem to find the file: "+eventName.toStdString()+".last.xml"<<std::endl;
+        std::cerr << "No event information can be reached, simulation aborted"<<std::endl;
+        exit(-1);
+    }
+    if (!xml.setContent(&file)) {
+        std::cerr << "Problem to read the content: "+eventName.toStdString()+".last.xml"<<std::endl;
+        std::cerr << "No event information can be reached, simulation aborted"<<std::endl;
+        file.close();
+        exit(-1);
+    }
+    file.close();
+
+    QDomNodeList eventTagList = xml.elementsByTagName("event");
+    QDomNode eventTag = eventTagList.item(0);
+    QString eventTime = eventTag.firstChildElement("preferredOriginID").text();
+std::cout<<eventTime.toStdString()<<std::endl;
+    return QDateTime();
+}

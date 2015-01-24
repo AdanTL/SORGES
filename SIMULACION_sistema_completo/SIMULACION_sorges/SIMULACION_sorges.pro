@@ -8,7 +8,7 @@ QT       += xml
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = sorges
+TARGET = SIMULACIONsorges
 TEMPLATE = app
 
 SOURCES += main.cpp\
