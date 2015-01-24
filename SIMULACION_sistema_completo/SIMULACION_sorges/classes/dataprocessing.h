@@ -62,6 +62,8 @@ private:
 
     /**************SIMULATION***********************/
     QDateTime getDateTimeFromEvent(QDir eventFiles,QString eventName);
+    QDateTime getDateTimeFirstPick(QDir eventFiles,QString eventName);
+    QDateTime getLastDateTimeFromEvent(QDir eventFiles,QString eventName);
     /**************SIMULATION***********************/
 };
 

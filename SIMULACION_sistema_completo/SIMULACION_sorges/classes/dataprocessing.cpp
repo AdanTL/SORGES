@@ -495,18 +495,50 @@ void DataProcessing::initSimulation(QDateTime simulationDateTime){
         }
 
         QString requiredEvent("");
-        double timeRange = std::numeric_limits<double>::max();
+        double timeDiff = std::numeric_limits<double>::max();
 
-        foreach(QString eventFolder,eventsForDateTime.entryList()){
-            if (eventFolder.toStdString() != "."
-                                            && eventFolder.toStdString() != "..")
+        foreach(QString eventName,eventsForDateTime.entryList()){
+            if (eventName.toStdString() != "."
+                                            && eventName.toStdString() != "..")
             {
-                QDir eventFiles(eventsForDateTime.absolutePath()+"/"+eventFolder);
-                QDateTime eventDateTime = getDateTimeFromEvent(eventFiles,eventFolder);
-std::cout<<eventDateTime.toString().toStdString ()<<std::endl;
+                QDir eventFiles(eventsForDateTime.absolutePath()+"/"+eventName);
+                QDateTime eventDateTime = getDateTimeFromEvent(eventFiles,eventName);
+
+                double range = abs(eventDateTime.msecsTo(simulationDateTime));
+                if (range<timeDiff){
+                    timeDiff = range;
+                    requiredEvent = eventName;
+                }
             }
         }
 
+        if (requiredEvent == ""){
+            std::cerr<<"NO EVENT FOUND CLOSE TO THE REQUESTED TIMESTAMP"<<std::endl;
+            exit(-1);
+        }
+        else{
+            std::cout<<"Starting simulation of EVENT "
+                       +requiredEvent.toStdString()<<std::endl;
+        }
+
+        QDir requiredEventDir(eventsForDateTime.absolutePath()+"/"+requiredEvent);
+        QDateTime firstDateTime = getDateTimeFirstPick(requiredEventDir,requiredEvent);
+        QDateTime lastDateTime = getLastDateTimeFromEvent(requiredEventDir,requiredEvent);
+
+        std::cout<<"Timestamp of the event: "
+                   +getDateTimeFromEvent(requiredEventDir,requiredEvent)
+                   .toString("yyyy-MM-dd hh:mm:ss.z").toStdString ()<<std::endl;
+        std::cout<<"First pick of the simulation at "
+                   +firstDateTime.toString("yyyy-MM-dd hh:mm:ss.z")
+                   .toStdString()<<std::endl;
+
+        /*requiredEvent sería el nombre del evento que hay que coger
+         *requiredEventDir el directorio donde va a estar su xml
+         *firstDateTime la fecha y hora del primer pick para leer los 2 logs
+         *lastDateTime la fecha y hora ULTIMA de la que habría que leer logs
+         * (habría que añadir unos milisegundos para asegurarnos de no perder datos)
+         */
+        /*AHORA HAY QUE VER CÓMO MANDAMOS ESTO A VUESTRAS FUNCIONES PARA ENLAZARLO*/
 
     }
 }
@@ -531,7 +563,78 @@ QDateTime DataProcessing::getDateTimeFromEvent(QDir eventFiles,QString eventName
 
     QDomNodeList eventTagList = xml.elementsByTagName("event");
     QDomNode eventTag = eventTagList.item(0);
-    QString eventTime = eventTag.firstChildElement("preferredOriginID").text();
-std::cout<<eventTime.toStdString()<<std::endl;
-    return QDateTime();
+    QString originID = eventTag.firstChildElement("preferredOriginID").text();
+
+    QString eventTimeString = originID.remove("Origin#");
+    QStringList components = eventTimeString.split(".");
+    QDateTime eventTime = QDateTime::fromString(components.at(0),"yyyyMMddhhmmss");
+    eventTime.addMSecs(components.at(1).at(0).digitValue());
+
+    return eventTime;
+}
+
+QDateTime DataProcessing::getDateTimeFirstPick(QDir eventFiles,QString eventName){
+
+    QString namefile = eventFiles.absoluteFilePath(eventName+".last.xml");
+    QDomDocument xml(namefile);
+    QFile file(namefile);
+    if (!file.open(QIODevice::ReadOnly)){
+        std::cerr << "Problem to find the file: "+eventName.toStdString()+".last.xml"<<std::endl;
+        std::cerr << "No event information can be reached, simulation aborted"<<std::endl;
+        exit(-1);
+    }
+    if (!xml.setContent(&file)) {
+        std::cerr << "Problem to read the content: "+eventName.toStdString()+".last.xml"<<std::endl;
+        std::cerr << "No event information can be reached, simulation aborted"<<std::endl;
+        file.close();
+        exit(-1);
+    }
+    file.close();
+
+    QDomNodeList eventParameters = xml.elementsByTagName("EventParameters");
+    QDomNode eventParameterTag = eventParameters.item(0);
+    QString pickFirstTimeString = eventParameterTag.firstChildElement("pick")
+                                           .firstChildElement("time")
+                                           .firstChildElement("value").text();
+    pickFirstTimeString.replace(QChar('T'),QChar(' '));
+    pickFirstTimeString.remove(QChar('Z'));
+    QStringList components = pickFirstTimeString.split(".");
+    QDateTime pickFirstTime = QDateTime::fromString(components.at(0),
+                                                    "yyyy-MM-dd hh:mm:ss");
+    pickFirstTime.addMSecs(components.at(1).at(0).digitValue());
+
+    return pickFirstTime;
+}
+
+QDateTime DataProcessing::getLastDateTimeFromEvent(QDir eventFiles,QString eventName){
+
+    QString namefile = eventFiles.absoluteFilePath(eventName+".last.xml");
+    QDomDocument xml(namefile);
+    QFile file(namefile);
+    if (!file.open(QIODevice::ReadOnly)){
+        std::cerr << "Problem to find the file: "+eventName.toStdString()+".last.xml"<<std::endl;
+        std::cerr << "No event information can be reached, simulation aborted"<<std::endl;
+        exit(-1);
+    }
+    if (!xml.setContent(&file)) {
+        std::cerr << "Problem to read the content: "+eventName.toStdString()+".last.xml"<<std::endl;
+        std::cerr << "No event information can be reached, simulation aborted"<<std::endl;
+        file.close();
+        exit(-1);
+    }
+    file.close();
+
+    QDomNodeList eventTagList = xml.elementsByTagName("event");
+    QDomNode eventTag = eventTagList.item(0);
+    QString modificationTimeString = eventTag.firstChildElement("creationInfo")
+                                       .firstChildElement("modificationTime").text();
+
+    modificationTimeString.replace(QChar('T'),QChar(' '));
+    modificationTimeString.remove(QChar('Z'));
+    QStringList components = modificationTimeString.split(".");
+    QDateTime modificationTime = QDateTime::fromString(components.at(0),
+                                                    "yyyy-MM-dd hh:mm:ss");
+    modificationTime.addMSecs(components.at(1).at(0).digitValue());
+
+    return modificationTime;
 }
