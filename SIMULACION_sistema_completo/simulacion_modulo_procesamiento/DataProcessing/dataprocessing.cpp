@@ -10,6 +10,8 @@ DataProcessing::DataProcessing()
 
 
 QString DataProcessing::getBlockPick(const QDateTime& firstdatetime, const QDateTime& lastdatetime){
+    duration = firstdatetime.msecsTo(lastdatetime);
+    lastDate = lastdatetime;
     int posBegin, posEnd;
     QString blockPick;
     posBegin = getPositionBegin(firstdatetime,":/testFiles/scalertes_picks.log");
@@ -28,6 +30,8 @@ QString DataProcessing::getBlockPick(const QDateTime& firstdatetime, const QDate
 }
 
 QString DataProcessing::getBlockOrigin(const QDateTime& firstdatetime, const QDateTime& lastdatetime){
+        duration = firstdatetime.msecsTo(lastdatetime);
+        lastDate = lastdatetime;
         int posBegin, posEnd;
         QString blockOrigin;
         posBegin = getPositionBegin(firstdatetime,":/testFiles/scalertes_origenes.log");
@@ -89,7 +93,6 @@ QString DataProcessing::getBlockOrigin(const QDateTime& firstdatetime, const QDa
                 if(QDateTime::fromString(rxDateBlock.cap(0),"yyyy-MM-dd hh:mm:ss.z")
                 > lastdatetime){
                     file.seek(pos);
-                    std::cout << QString(file.readLine()).toStdString() << std::endl;
                     found = true;
                 }
             }
@@ -100,8 +103,6 @@ QString DataProcessing::getBlockOrigin(const QDateTime& firstdatetime, const QDa
 
     QList<ANIMATIONBLOCK> DataProcessing::getSecuence(const std::set<DATEBLOCK>& blocks){
         QString blockString;
-        QDateTime prueba, prueba2;
-        prueba.msecsTo(prueba2);
         QList<ANIMATIONBLOCK> animationBlock;
         std::set<DATEBLOCK>::iterator it2;
         ANIMATIONBLOCK mySecuence;
@@ -118,7 +119,11 @@ QString DataProcessing::getBlockOrigin(const QDateTime& firstdatetime, const QDa
             mySecuence = ANIMATIONBLOCK(blockString,it2->second.msecsTo(it->second));
             animationBlock.push_back(mySecuence);
         }
-
+        it2 = blocks.end();
+        --it2;
+        if(it2->second.msecsTo(lastDate) < duration){
+            duration = it2->second.msecsTo(lastDate);
+        }
         secuence = animationBlock;
         return animationBlock;
     }

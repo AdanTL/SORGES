@@ -12,12 +12,10 @@ int main(int argc, char *argv[])
     QFile file(":/testFiles/origin.txt");
     file.open(QIODevice::ReadOnly);
     QString block = file.readAll();
+    QString blockOrigin = processing.getBlockOrigin(QDateTime::fromString("2015-01-20 11:30:34.1","yyyy-MM-dd hh:mm:ss.z"), QDateTime::fromString("2015-01-20 11:30:40.6","yyyy-MM-dd hh:mm:ss.z"));
     std::set<DATEBLOCK> blockDateTime = processing.getDateTimeBlocks(block);
     QList<ANIMATIONBLOCK> blockSecuence = processing.getSecuence(blockDateTime);
-    /*for(int i=0; i< blockSecuence.size(); i++){
-        timerWriter.start(blockSecuence[i].second);
-        processing.writeSecuence(blockSecuence[i].first);
-    }*/
+    std::cout << processing.getLastDate().toString("yyyy-MM-dd hh:mm:ss.z").toStdString() << " " << processing.getDurationToXml() << std::endl;
     SimulationPlanner planner("prueba",QDir(QDir::home ()),blockSecuence,blockSecuence);
     a.exec ();
 }

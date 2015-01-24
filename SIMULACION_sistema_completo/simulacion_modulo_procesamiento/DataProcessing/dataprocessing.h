@@ -10,6 +10,7 @@
 #include <QList>
 #include <QTimer>
 #include <QTextStream>
+#include <QDateTime>
 #include "simulationplanner.h"
 
 // ADD into Configure file .h or Qsetting object.
@@ -36,15 +37,15 @@ public:
     int getPositionEnd(const QDateTime& lastdatetime, const QString& namefile);
     std::set<DATEBLOCK> getDateTimeBlocks(const QString& block);
     QList<ANIMATIONBLOCK> getSecuence(const std::set<DATEBLOCK>&blocks);
-
+    qint64 getDurationToXml(){return duration;}
+    QDateTime getLastDate(){return lastDate;}
 
 private:
     QList<ANIMATIONBLOCK> secuence;
     int n=-1;
-    //QTimer *printSecuence;
+    qint64 duration = 100000;
+    QDateTime lastDate;
 
-    //clase planificadora de simulacion
-    //SimulationPlanner simulator;
 
 };
 
