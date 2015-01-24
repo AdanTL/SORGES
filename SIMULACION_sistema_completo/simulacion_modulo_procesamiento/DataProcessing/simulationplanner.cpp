@@ -22,7 +22,7 @@ SimulationPlanner::SimulationPlanner(QString event, QDir eventDir,
 }
 
 void SimulationPlanner::prueba(){
-    QFile file("/home/felipe/Escritorio/test.txt");
+    QFile file("C:/Users/People/Desktop/test.txt");
     file.open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Text);
     QTextStream out(&file);
     out << endl << picksBlocks[cont].first;
