@@ -1,4 +1,4 @@
-﻿#include "dataprocessing.h"
+#include "dataprocessing.h"
 #include <QDateTime>
 #include <iostream>
 #include <QString>
@@ -51,8 +51,6 @@ QString DataProcessing::getBlockOrigin(const QDateTime& firstdatetime, const QDa
         QFile file(namefile);
         bool found = false;
         int pos = 0;
-
-        std::cout << file.size() << std::endl;
         if(!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
             return -1;
         }
@@ -82,18 +80,18 @@ QString DataProcessing::getBlockOrigin(const QDateTime& firstdatetime, const QDa
         if(!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
             return -1;
         }
-        std::cout << file.size() << std::endl;
         while(!file.atEnd() && !found){
             pos = file.pos();
             fileContent = file.readLine();
             if(rxDateBlock.indexIn(fileContent) != -1 ){
                 if(QDateTime::fromString(rxDateBlock.cap(0),"yyyy-MM-dd hh:mm:ss.z")
-                > lastdatetime){
+                >= lastdatetime){
                     file.seek(pos);
+                    std::cout << QString(file.readLine()).toStdString() << std::endl;
                     found = true;
                 }
             }
         }
-        return file.pos();
+        return pos;
 
     }
