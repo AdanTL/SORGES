@@ -51,6 +51,7 @@ int main(int argc, char *argv[])
     mapW.show();
     originDataW.show();
     stationsDataW.show();
+    mapW.testing();
 
     dataProcessor.init();
 

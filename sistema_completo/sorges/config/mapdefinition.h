@@ -55,22 +55,27 @@
         #define T_EPICENTER 255
 
     /**EXPANSION CIRCLES**/
-        /*RGB red value for the first circle*/
-        #define R_EPICENTER_FIRST_CIRCLE 250
-        /*RGB green value for the first circle*/
-        #define G_EPICENTER_FIRST_CIRCLE 0
-        /*RGB blue value for the first circle*/
-        #define B_EPICENTER_FIRST_CIRCLE 0
-        /*Color transparency for the first circle*/
-        #define T_EPICENTER_FIRST_CIRCLE 128
+    /*Expansion gradient beetwen 0 and 30 km*/
+    #define EPICENTER_GRADIENT_0_30KM 255,0,0,140
+    /*Expansion gradient beetwen 30 and 60 km*/
+    #define EPICENTER_GRADIENT_30_60KM 255,128,0,140
+    /*Expansion gradient beetwen 60 and 120 km*/
+    #define EPICENTER_GRADIENT_60_120KM 255,255,0,140
+    /*Expansion gradient beetwen 120 and more km*/
+    #define EPICENTER_GRADIENT_120KM 111,255,0,140
+
 
 /****/
 
 /**SIZES**/
 
     /**EPICENTER**/
-        /*Epicenter mark radius*/
-        #define RADIUS_EPICENTER 2
+    /*Epicenter mark radius*/
+    #define RADIUS_EPICENTER 2
+    /*Epicenter degradient radius*/
+    #define RADIUS_120KM_PIXEL 123.019
+
+
 
     /**STATIONS**/
         /*X-axis lenght for the station triangle*/
