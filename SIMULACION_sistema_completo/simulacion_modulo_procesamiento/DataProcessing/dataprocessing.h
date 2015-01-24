@@ -3,7 +3,7 @@
 
 #include <QRegExp>
 #include <iostream>
-#include <QSet>
+#include <set>
 #include <QFile>
 #include <QStringList>
 #include <QPair>
@@ -27,7 +27,7 @@ public:
     QString getBlockOrigin(const QDateTime& firstdatetime, const QDateTime& lastdatetime);
     int getPositionBegin(const QDateTime& firstdatetime, const QString& namefile);
     int getPositionEnd(const QDateTime& lastdatetime, const QString& namefile);
-    QSet<DATABLOCK> getDateTimeBlocks(QString& block);
+    std::set<DATABLOCK> getDateTimeBlocks(QString& block);
 
 };
 

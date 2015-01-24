@@ -96,16 +96,15 @@ QString DataProcessing::getBlockOrigin(const QDateTime& firstdatetime, const QDa
 
     }
 
-    QSet<DATABLOCK> DataProcessing::getDateTimeBlocks(QString& block){
+    std::set<DATABLOCK> DataProcessing::getDateTimeBlocks(QString& block){
         QRegExp rxDateBlock("\\d+-\\d+-\\d+ \\d+:\\d+:\\d+.\\d");
-        QSet<DATABLOCK> dataBlocks;
+        std::set<DATABLOCK> dataBlocks;
         QStringList blocks = block.split("\n");
         for(int i = 0; i<blocks.size(); i++){
             if (blocks.size() > 0){
                 if(rxDateBlock.indexIn(blocks[i]) != -1){
-                    std::cerr << "\n----------\n" << rxDateBlock.cap(0).toStdString() << std::endl;
                     DATABLOCK myPair(QStringList()<<blocks[i],QDateTime::fromString(rxDateBlock.cap(0),"yyyy-MM-dd hh:mm:ss.z"));
-                    QSet<DATABLOCK>::Iterator it = dataBlocks.find(myPair);
+                    std::set<DATABLOCK>::iterator it = dataBlocks.find(myPair);
                     if (it != dataBlocks.end()){
                         DATABLOCK temp(*it);
                         temp.first = temp.first << myPair.first;
