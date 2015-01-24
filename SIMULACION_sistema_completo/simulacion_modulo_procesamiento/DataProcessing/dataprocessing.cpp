@@ -85,7 +85,7 @@ QString DataProcessing::getBlockOrigin(const QDateTime& firstdatetime, const QDa
             fileContent = file.readLine();
             if(rxDateBlock.indexIn(fileContent) != -1 ){
                 if(QDateTime::fromString(rxDateBlock.cap(0),"yyyy-MM-dd hh:mm:ss.z")
-                >= lastdatetime){
+                > lastdatetime){
                     file.seek(pos);
                     std::cout << QString(file.readLine()).toStdString() << std::endl;
                     found = true;
@@ -94,4 +94,33 @@ QString DataProcessing::getBlockOrigin(const QDateTime& firstdatetime, const QDa
         }
         return pos;
 
+    }
+
+    QSet<DATABLOCK> DataProcessing::getDateTimeBlocks(QString& block){
+        QRegExp rxDateBlock("\\d+-\\d+-\\d+ \\d+:\\d+:\\d+.\\d");
+        QSet<DATABLOCK> dataBlocks;
+        QStringList blocks = block.split("\n");
+        for(int i = 0; i<blocks.size(); i++){
+            if (blocks.size() > 0){
+                if(rxDateBlock.indexIn(blocks[i]) != -1){
+                    std::cerr << "\n----------\n" << rxDateBlock.cap(0).toStdString() << std::endl;
+                    DATABLOCK myPair(QStringList()<<blocks[i],QDateTime::fromString(rxDateBlock.cap(0),"yyyy-MM-dd hh:mm:ss.z"));
+                    QSet<DATABLOCK>::Iterator it = dataBlocks.find(myPair);
+                    if (it != dataBlocks.end()){
+                        DATABLOCK temp(*it);
+                        temp.first = temp.first << myPair.first;
+                        dataBlocks.erase(it);
+                        dataBlocks.insert(temp);
+
+                    }else
+                        dataBlocks.insert(myPair);
+                }
+            }
+        }
+        return dataBlocks;
+
+    }
+
+    bool operator < (const DATABLOCK& block1, const DATABLOCK& block2){
+        return block1.second < block2.second;
     }

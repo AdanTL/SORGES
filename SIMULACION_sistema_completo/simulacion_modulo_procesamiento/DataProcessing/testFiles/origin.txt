@@ -1,116 +1,116 @@
-<Origin>
-        <OriginID>Origin#20140217024356.05775.14181</OriginID>
-        <OriginDate>2014-02-17</OriginDate>
-        <OriginTime>02:39:54.952</OriginTime>
-        <OriginMagnitude>3.70284</OriginMagnitude>
-        <OriginLatitude>36.4364</OriginLatitude>
-        <OriginLongitude>-10.3222</OriginLongitude>
-        <StationsAssocied>
-                <NumberStations>15</NumberStations>
-                <Station>
-                        <StationID>CEU</StationID>
-                        <StationNetworkID>WM</StationNetworkID>
-                        <StationLatitude>35.8946</StationLatitude>
-                        <StationLongitude>-5.2809</StationLongitude>
-                        <StationColourCode>-1</StationColourCode>
-                </Station>
-                <Station>
-                        <StationID>EADA</StationID>
-                        <StationNetworkID>ES</StationNetworkID>
-                        <StationLatitude>38.1673</StationLatitude>
-                        <StationLongitude>-4.5771</StationLongitude>
-                        <StationColourCode>-1</StationColourCode>
-                </Station>
-                <Station>
-                        <StationID>EBAD</StationID>
-                        <StationNetworkID>ES</StationNetworkID>
-                        <StationLatitude>38.7556</StationLatitude>
-                        <StationLongitude>-7.0133</StationLongitude>
-                        <StationColourCode>-1</StationColourCode>
-                </Station>
-                <Station>
-                        <StationID>ECAB</StationID>
-                        <StationNetworkID>ES</StationNetworkID>
-                        <StationLatitude>38.0753</StationLatitude>
-                        <StationLongitude>-5.4186</StationLongitude>
-                        <StationColourCode>-1</StationColourCode>
-                </Station>
-                <Station>
-                        <StationID>ECEU</StationID>
-                        <StationNetworkID>ES</StationNetworkID>
-                        <StationLatitude>35.8978</StationLatitude>
-                        <StationLongitude>-5.3768</StationLongitude>
-                        <StationColourCode>-1</StationColourCode>
-                </Station>
-                <Station>
-                        <StationID>EGRO</StationID>
-                        <StationNetworkID>ES</StationNetworkID>
-                        <StationLatitude>37.5342</StationLatitude>
-                        <StationLongitude>-7.4831</StationLongitude>
-                        <StationColourCode>-1</StationColourCode>
-                </Station>
-                <Station>
-                        <StationID>EMIJ</StationID>
-                        <StationNetworkID>ES</StationNetworkID>
-                        <StationLatitude>36.5645</StationLatitude>
-                        <StationLongitude>-4.7727</StationLongitude>
-                        <StationColourCode>-1</StationColourCode>
-                </Station>
-                <Station>
-                        <StationID>EMIN</StationID>
-                        <StationNetworkID>ES</StationNetworkID>
-                        <StationLatitude>37.7675</StationLatitude>
-                        <StationLongitude>-6.6724</StationLongitude>
-                        <StationColourCode>-1</StationColourCode>
-                </Station>
-                <Station>
-                        <StationID>EVO</StationID>
-                        <StationNetworkID>WM</StationNetworkID>
-                        <StationLatitude>38.532</StationLatitude>
-                        <StationLongitude>-8.013</StationLongitude>
-                        <StationColourCode>-1</StationColourCode>
-                </Station>
-                <Station>
-                        <StationID>IFR</StationID>
-                        <StationNetworkID>WM</StationNetworkID>
-                        <StationLatitude>33.5148</StationLatitude>
-                        <StationLongitude>-5.1261</StationLongitude>
-                        <StationColourCode>-1</StationColourCode>
-                </Station>
-                <Station>
-                        <StationID>PBDV</StationID>
-                        <StationNetworkID>PM</StationNetworkID>
-                        <StationLatitude>37.243</StationLatitude>
-                        <StationLongitude>-7.9312</StationLongitude>
-                        <StationColourCode>-1</StationColourCode>
-                </Station>
-                <Station>
-                        <StationID>PCVE</StationID>
-                        <StationNetworkID>PM</StationNetworkID>
-                        <StationLatitude>37.6328</StationLatitude>
-                        <StationLongitude>-8.039</StationLongitude>
-                        <StationColourCode>-1</StationColourCode>
-                </Station>
-                <Station>
-                        <StationID>PFVI</StationID>
-                        <StationNetworkID>PM</StationNetworkID>
-                        <StationLatitude>37.1328</StationLatitude>
-                        <StationLongitude>-8.8268</StationLongitude>
-                        <StationColourCode>-1</StationColourCode>
-                </Station>
-                <Station>
-                        <StationID>PNCL</StationID>
-                        <StationNetworkID>PM</StationNetworkID>
-                        <StationLatitude>38.1118</StationLatitude>
-                        <StationLongitude>-8.529</StationLongitude>
-                        <StationColourCode>-1</StationColourCode>
-                </Station>
-                <Station>
-                        <StationID>PVAQ</StationID>
-                        <StationNetworkID>PM</StationNetworkID>
-                        <StationLatitude>37.4037</StationLatitude>
-                        <StationLongitude>-7.7173</StationLongitude>
-                        <StationColourCode>-1</StationColourCode>
-                </Station>
-        </StationsAssocied>
-</Origin>
+2015-01-20 11:30:34.1	NUEVO ORIGEN - count_origin= 1
+2015-01-20 11:30:34.1	Origen asociado: Origin#20150120113033.557767.496
+2015-01-20 11:30:34.1	Autor: scautoloc@sysop
+2015-01-20 11:30:34.1	    CreationTime= 2015-01-20 11:30:33.5
+2015-01-20 11:30:34.1	    Associated Phase Count= 9
+2015-01-20 11:30:34.1	    Associated Station Count= 9
+2015-01-20 11:30:34.6	count_origin= 1
+
+2015-01-20 11:30:34.6	Target: Cadiz(36.32;-6.18)
+
+2015-01-20 11:30:34.6	magnitud->origen->publicID()Origin#20150120113033.557767.496(36.32;-6.18)
+
+2015-01-20 11:30:34.6	origen->publicID()Origin#20150120113033.557767.496(36.32;-6.18)
+
+2015-01-20 11:30:34.6	origen->latitud = 36.5468(36.32;-6.18)
+
+2015-01-20 11:30:34.6	origen->longitug = -10.0922(36.32;-6.18)
+
+2015-01-20 11:30:34.6	origen->profundidad= 10(36.32;-6.18)
+2015-01-20 11:30:34.6	PGV: 0.00279598
+2015-01-20 11:30:34.6	ESTAMOS EN ALERTA REGIONAL: ITmax = 4
+2015-01-20 11:30:34.6	LeadTime: -19.3957
+
+2015-01-20 11:30:34.6	Target: Faro(37.03;-7.9167)
+
+2015-01-20 11:30:34.6	magnitud->origen->publicID()Origin#20150120113033.557767.496(37.03;-7.9167)
+
+2015-01-20 11:30:34.6	origen->publicID()Origin#20150120113033.557767.496(37.03;-7.9167)
+
+2015-01-20 11:30:34.6	origen->latitud = 36.5468(37.03;-7.9167)
+
+2015-01-20 11:30:34.6	origen->longitug = -10.0922(37.03;-7.9167)
+
+2015-01-20 11:30:34.6	origen->profundidad= 10(37.03;-7.9167)
+2015-01-20 11:30:34.6	PGV: 0.00485371
+2015-01-20 11:30:34.6	ESTAMOS EN ALERTA REGIONAL: ITmax = 4
+2015-01-20 11:30:34.6	LeadTime: -63.4053
+
+2015-01-20 11:30:34.6	Target: Huelva(37.16;-6.57)
+
+2015-01-20 11:30:34.6	magnitud->origen->publicID()Origin#20150120113033.557767.496(37.16;-6.57)
+
+2015-01-20 11:30:34.6	origen->publicID()Origin#20150120113033.557767.496(37.16;-6.57)
+
+2015-01-20 11:30:34.6	origen->latitud = 36.5468(37.16;-6.57)
+
+2015-01-20 11:30:34.6	origen->longitug = -10.0922(37.16;-6.57)
+
+2015-01-20 11:30:34.6	origen->profundidad= 10(37.16;-6.57)
+2015-01-20 11:30:34.6	PGV: 0.00305658
+2015-01-20 11:30:34.6	ESTAMOS EN ALERTA REGIONAL: ITmax = 4
+2015-01-20 11:30:34.6	LeadTime: -28.2619
+
+2015-01-20 11:30:34.6	Target: Lisboa(38.71;-9.13)
+
+2015-01-20 11:30:34.6	magnitud->origen->publicID()Origin#20150120113033.557767.496(38.71;-9.13)
+
+2015-01-20 11:30:34.6	origen->publicID()Origin#20150120113033.557767.496(38.71;-9.13)
+
+2015-01-20 11:30:34.6	origen->latitud = 36.5468(38.71;-9.13)
+
+2015-01-20 11:30:34.6	origen->longitug = -10.0922(38.71;-9.13)
+
+2015-01-20 11:30:34.6	origen->profundidad= 10(38.71;-9.13)
+2015-01-20 11:30:34.6	PGV: 0.00383551
+2015-01-20 11:30:34.6	ESTAMOS EN ALERTA REGIONAL: ITmax = 4
+2015-01-20 11:30:34.6	LeadTime: -47.5549
+
+2015-01-20 11:30:34.6	Target: Portimao(37.13;-8.53)
+
+2015-01-20 11:30:34.6	magnitud->origen->publicID()Origin#20150120113033.557767.496(37.13;-8.53)
+
+2015-01-20 11:30:34.6	origen->publicID()Origin#20150120113033.557767.496(37.13;-8.53)
+
+2015-01-20 11:30:34.6	origen->latitud = 36.5468(37.13;-8.53)
+
+2015-01-20 11:30:34.6	origen->longitug = -10.0922(37.13;-8.53)
+
+2015-01-20 11:30:34.6	origen->profundidad= 10(37.13;-8.53)
+2015-01-20 11:30:34.6	PGV: 0.00634128
+2015-01-20 11:30:34.6	ESTAMOS EN ALERTA REGIONAL: ITmax = 4
+2015-01-20 11:30:34.6	LeadTime: -77.3845
+
+2015-01-20 11:30:34.6	Target: Sevilla(37.23;-5.59)
+
+2015-01-20 11:30:34.6	magnitud->origen->publicID()Origin#20150120113033.557767.496(37.23;-5.59)
+
+2015-01-20 11:30:34.6	origen->publicID()Origin#20150120113033.557767.496(37.23;-5.59)
+
+2015-01-20 11:30:34.6	origen->latitud = 36.5468(37.23;-5.59)
+
+2015-01-20 11:30:34.6	origen->longitug = -10.0922(37.23;-5.59)
+
+2015-01-20 11:30:34.6	origen->profundidad= 10(37.23;-5.59)
+2015-01-20 11:30:34.6	PGV: 0.00241066
+2015-01-20 11:30:34.6	ESTAMOS EN ALERTA REGIONAL: ITmax = 4
+2015-01-20 11:30:34.6	LeadTime: -2.75985
+
+
+2015-01-20 11:30:39.7	NUEVO ORIGEN - count_origin= 2
+2015-01-20 11:30:39.7	Origen asociado: Origin#20150120113039.50005.508
+2015-01-20 11:30:39.7	Autor: scautoloc@sysop
+2015-01-20 11:30:39.7	    CreationTime= 2015-01-20 11:30:39.5
+2015-01-20 11:30:39.7	    Associated Phase Count= 10
+2015-01-20 11:30:39.7	    Associated Station Count= 10
+2015-01-20 11:30:40.5	count_origin= 2
+
+2015-01-20 11:30:40.5	Target: Cadiz(36.32;-6.18)
+
+2015-01-20 11:30:40.5	magnitud->origen->publicID()Origin#20150120113039.50005.508(36.32;-6.18)
+
+2015-01-20 11:30:40.5	origen->publicID()Origin#20150120113039.50005.508(36.32;-6.18)
+
+2015-01-20 11:30:40.5	origen->latitud = 36.5497(36.32;-6.18)
+
+2015-01-20 11:30:40.5	origen->longitug = -10.0792(36.32;-6.18)

@@ -7,9 +7,9 @@ int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
     DataProcessing processing;
-    QDateTime firstDate = QDateTime::fromString("2015-01-20 11:30:34.1" ,"yyyy-MM-dd hh:mm:ss.z");
-    QDateTime lastDate = QDateTime::fromString("2015-01-20 11:30:35.0" ,"yyyy-MM-dd hh:mm:ss.z");
-
-    std::cerr << processing.getBlockOrigin(firstDate,lastDate).toStdString() << std::endl;
+    QFile file(":/testFiles/origin.txt");
+    file.open(QIODevice::ReadOnly);
+    QString block = file.readAll();
+    processing.getDateTimeBlocks(block);
     return a.exec();
 }
