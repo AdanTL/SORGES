@@ -125,7 +125,7 @@ void SimulationPlanner::sendOrigin(QString originBlock){
 
     //last origin sends event instead of let a timer do that (avoid delay)
     if(originsCounter == originsBlocks.size()-1){
-        sendEvent ();
+        QTimer::singleShot (150,this,SLOT(sendEvent ()));
     }
 }
 
@@ -150,7 +150,7 @@ void SimulationPlanner::sendEvent (){
         std::cerr << "Problem to find the event file"<<std::endl;
     }
     QTextStream out(&file);
-    out << endl << xmlContent;
+    out << xmlContent;
     file.close();
 }
 
