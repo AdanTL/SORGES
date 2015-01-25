@@ -306,13 +306,20 @@ void MapWidget::paintOrigin(const Origin &origin){
     //First circle
     QRect rect(0,0,2*radius,2*radius);
     rect.moveCenter(center);
+    QRadialGradient radialColor(center,RADIUS_120KM_PIXEL,center);
+
+    // Define the colour interpolation in 120 km (0 = 0km, and 1 = 120km).
+    radialColor.setColorAt(0,QColor(EPICENTER_GRADIENT_0_30KM));
+    radialColor.setColorAt(0.1428,QColor(EPICENTER_GRADIENT_0_30KM));
+    radialColor.setColorAt(0.2856,QColor(EPICENTER_GRADIENT_30_60KM));
+    radialColor.setColorAt(0.5714,QColor(EPICENTER_GRADIENT_60_120KM));
+    radialColor.setColorAt(1,QColor(EPICENTER_GRADIENT_120KM));
+
+
     QGraphicsItem *circleItem = mapScene.addEllipse(rect,
                                                     QPen(),
-                                                    QBrush(QColor(R_EPICENTER_FIRST_CIRCLE,
-                                                                  G_EPICENTER_FIRST_CIRCLE,
-                                                                  B_EPICENTER_FIRST_CIRCLE,
-                                                                  T_EPICENTER_FIRST_CIRCLE)));
-    circleItem->setData(0,"circle");
+                                                    QBrush(radialColor));
+     circleItem->setData(0,"circle");
 
     //Epicenter mark (to be on top of the first circle)
     QRect rect2(0,0,3*RADIUS_EPICENTER,3*RADIUS_EPICENTER);
