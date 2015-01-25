@@ -115,6 +115,9 @@ std::ostream& operator << (std::ostream& os, const Origin& origin){
     os << "\t<OriginTime>"
        << origin.getOriginTime().toString("hh:mm:ss.z").toStdString().c_str()
        << "</OriginTime>\n";
+    os << "\t<OriginSystemDateTime>"
+       << origin.getSystemDateTime().toString("yyyy-MM-dd hh:mm:ss.z").toStdString().c_str()
+       << "</OriginSystemDateTime>\n";
     os << "\t<OriginMagnitude>" << origin.getMagnitude()
        << "</OriginMagnitude>\n";
     os << "\t<OriginLatitude>" << (double)origin.getLatitude()
@@ -180,11 +183,14 @@ std::string Origin::toStringXml ()const{
     os +=  "\t<OriginID>" + getOriginID()+ "</OriginID>\n";
     os += "\t<OriginDate>" + getOriginDate().toString("yyyy-MM-dd").toStdString() + "</OriginDate>\n";
     os += "\t<OriginTime>" + getOriginTime().toString("hh:mm:ss.z").toStdString() + "</OriginTime>\n";
+    os += "\t<OriginSystemDateTime>"
+            + getSystemDateTime().toString("yyyy-MM-ddThh:mm:ss.z").toStdString()
+            + "</OriginSystemDateTime>\n";
     os += "\t<OriginMagnitude>" +  QString::number((double)getMagnitude()).toStdString() +  "</OriginMagnitude>\n";
     os += "\t<OriginLatitude>" +  QString::number((double)getLatitude()).toStdString() + "</OriginLatitude>\n";
     os += "\t<OriginLongitude>" + QString::number((double)getLongitude()).toStdString() +  "</OriginLongitude>\n";
     os += "\t<AssociatedStations>\n";
-    os += "\t\t<StationsNumber>"+ QString::number(stations.size()).toStdString() + "</NumberStations>\n";
+    os += "\t\t<StationsNumber>"+ QString::number(stations.size()).toStdString() + "</StationsNumber>\n";
     for(std::set<Station>::iterator it=stations.begin(); it!=stations.end(); ++it){
             os += (*it).toStringXml("\t\t");
     }
