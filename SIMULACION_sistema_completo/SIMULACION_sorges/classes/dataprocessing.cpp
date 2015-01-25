@@ -2,6 +2,7 @@
 #include <QDir>
 #include <QXmlStreamReader>
 #include "dataprocessing.h"
+#include "simulationplanner.h"
 
 DataProcessing::DataProcessing(bool simulationMode, QObject* parent):
     QObject(parent),
@@ -687,7 +688,7 @@ void DataProcessing::initSimulation(QDateTime simulationDateTime){
         QDateTime firstDateTime = getDateTimeFirstPick(requiredEventDir,requiredEvent);
         QDateTime lastDateTime = getLastDateTimeFromEvent(requiredEventDir,requiredEvent);
         //in order to avoid losing data due to miliseconds accuracy in logs end lines
-        lastDateTime.addMSecs(500);
+        lastDateTime = lastDateTime.addMSecs(500);
 
         std::cout<<"First pick of the simulation at "
                    +firstDateTime.toString("yyyy-MM-dd hh:mm:ss.z")
@@ -697,13 +698,29 @@ void DataProcessing::initSimulation(QDateTime simulationDateTime){
                    +lastDateTime.toString("yyyy-MM-dd hh:mm:ss.z")
                    .toStdString()<<std::endl;
 
-        /*requiredEvent sería el nombre del evento que hay que coger
-         *requiredEventDir el directorio donde va a estar su xml
-         *firstDateTime la fecha y hora del primer pick para leer los 2 logs
-         *lastDateTime la fecha y hora ULTIMA de la que habría que leer logs
-         * (hay que añadir unos milisegundos para asegurarnos de no perder datos)
-         */
-        /*AHORA HAY QUE VER CÓMO MANDAMOS ESTO A VUESTRAS FUNCIONES PARA ENLAZARLO*/
+        simulationFirstDateTime = firstDateTime;
+        simulationLastDateTime = lastDateTime;
+        simulationDuration = abs(firstDateTime.msecsTo(lastDateTime));
+
+        /*Getting the string blocks from the logs in the datetimes range*/
+        QString picksString = getBlockPick (firstDateTime,lastDateTime);
+        QString originsString = getBlockOrigin (firstDateTime,lastDateTime);
+std::cout<<"pasado lo de strings"<<std::endl;
+
+        /*Split them in blocks with the same datetime*/
+        std::set<QPair<QStringList, QDateTime> > picksByDate = getDateTimeBlocks(picksString);
+        std::set<QPair<QStringList, QDateTime> > originsByDate = getDateTimeBlocks(originsString);
+std::cout<<"pasado lo de dates blocks"<<std::endl;
+
+        /*And now, once sorted the blocks, so as to plan the simulation we get
+         * the blocks together with the difference of miliseconds between them in the logs*/
+        QList<QPair<QString, int> > picksBlocks = getSecuence(picksByDate);
+        QList<QPair<QString, int> > originsBlocks = getSecuence(originsByDate);
+std::cout<<"pasado lo blocks finales"<<std::endl;
+
+        /*And let the planner take over of the simulation*/
+        simulationPlanner = new SimulationPlanner(requiredEvent,requiredEventDir,
+                                                  picksBlocks,originsBlocks,simulationDuration);
 
     }
 }
@@ -733,8 +750,7 @@ QDateTime DataProcessing::getDateTimeFromEvent(QDir eventFiles,QString eventName
     QString eventTimeString = originID.remove("Origin#");
     QStringList components = eventTimeString.split(".");
     QDateTime eventTime = QDateTime::fromString(components.at(0),"yyyyMMddhhmmss");
-    eventTime.addMSecs(components.at(1).at(0).digitValue());
-
+    eventTime = eventTime.addMSecs(components.at(1).at(0).digitValue()*100);
     return eventTime;
 }
 
@@ -766,7 +782,7 @@ QDateTime DataProcessing::getDateTimeFirstPick(QDir eventFiles,QString eventName
     QStringList components = pickFirstTimeString.split(".");
     QDateTime pickFirstTime = QDateTime::fromString(components.at(0),
                                                     "yyyy-MM-dd hh:mm:ss");
-    pickFirstTime.addMSecs(components.at(1).at(0).digitValue());
+    pickFirstTime = pickFirstTime.addMSecs(components.at(1).at(0).digitValue()*100);
 
     return pickFirstTime;
 }
@@ -799,21 +815,25 @@ QDateTime DataProcessing::getLastDateTimeFromEvent(QDir eventFiles,QString event
     QStringList components = modificationTimeString.split(".");
     QDateTime modificationTime = QDateTime::fromString(components.at(0),
                                                     "yyyy-MM-dd hh:mm:ss");
-    modificationTime.addMSecs(components.at(1).at(0).digitValue());
+    modificationTime = modificationTime.addMSecs(components.at(1).at(0).digitValue()*100);
 
     return modificationTime;
 }
 
-
 QString DataProcessing::getBlockPick(const QDateTime& firstdatetime, const QDateTime& lastdatetime){
-    int posBegin =0, posEnd=0;
+    int posBegin, posEnd;
     QString blockPick;
-    posBegin = getPositionBegin(firstdatetime,":/testFiles/scalertes_picks.log");
-    posEnd = getPositionEnd(lastdatetime, ":/testFiles/scalertes_picks.log");
-    QFile file(":/testFiles/scalertes_picks.log");
+    posBegin = getPositionBegin(firstdatetime,
+                                config->value("filepaths/picks").toString()
+                                .replace("$HOME",QDir::homePath()));
+    posEnd = getPositionEnd(lastdatetime,
+                            config->value("filepaths/picks").toString()
+                            .replace("$HOME",QDir::homePath()));
+    QFile file(config->value("filepaths/picks").toString().replace("$HOME",QDir::homePath()));
     if(!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        std::cerr << "Problem to find the file: " << std::endl;
-
+        std::cerr << "Problem to find the file: "
+                  <<config->value("filepaths/picks").toString().toStdString()
+                  << std::endl;
     }
     if(posBegin < posEnd){
         file.seek(posBegin);
@@ -826,12 +846,17 @@ QString DataProcessing::getBlockPick(const QDateTime& firstdatetime, const QDate
 QString DataProcessing::getBlockOrigin(const QDateTime& firstdatetime, const QDateTime& lastdatetime){
     int posBegin, posEnd;
     QString blockOrigin;
-    posBegin = getPositionBegin(firstdatetime,":/testFiles/scalertes_origenes.log");
-    posEnd = getPositionEnd(lastdatetime, ":/testFiles/scalertes_origenes.log");
-    QFile file(":/testFiles/scalertes_origenes.log");
+    posBegin = getPositionBegin(firstdatetime,
+                                config->value("filepaths/origins").toString()
+                                .replace("$HOME",QDir::homePath()));
+    posEnd = getPositionEnd(lastdatetime,
+                            config->value("filepaths/origins").toString()
+                            .replace("$HOME",QDir::homePath()));
+    QFile file(config->value("filepaths/origins").toString().replace("$HOME",QDir::homePath()));
     if(!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        std::cerr << "Problem to find the file: " << std::endl;
-
+        std::cerr << "Problem to find the file: "
+                  <<config->value("filepaths/origins").toString().toStdString()
+                  << std::endl;
     }
     if(posBegin < posEnd){
         file.seek(posBegin);
@@ -858,7 +883,7 @@ int DataProcessing::getPositionBegin(const QDateTime& firstdatetime, const QStri
         fileContent = file.readLine();
         if(rxDateBlock.indexIn(fileContent) != -1 ){
             if(QDateTime::fromString(rxDateBlock.cap(0).remove("\n"),"yyyy-MM-dd hh:mm:ss.z")
-            >= firstdatetime)
+               >= firstdatetime)
                 found = true;
         }
     }
@@ -885,11 +910,71 @@ int DataProcessing::getPositionEnd(const QDateTime &lastdatetime, const QString&
             if(QDateTime::fromString(rxDateBlock.cap(0),"yyyy-MM-dd hh:mm:ss.z")
             > lastdatetime){
                 file.seek(pos);
-                std::cout << QString(file.readLine()).toStdString() << std::endl;
                 found = true;
             }
         }
     }
     return pos;
 
+}
+
+
+std::set<QPair<QStringList, QDateTime> > DataProcessing::getDateTimeBlocks(const QString &block){
+    QRegExp rxDateBlock("\\d+-\\d+-\\d+ \\d+:\\d+:\\d+.\\d");
+    std::set<QPair<QStringList,QDateTime> > dataBlocks;
+    QStringList blocks = block.split("\n");
+
+    for(int i = 0; i<blocks.size(); i++){
+        if (blocks.size() > 0){
+            if(rxDateBlock.indexIn(blocks[i]) != -1){
+                QPair<QStringList,QDateTime>
+                        myPair(QStringList()<<blocks[i],
+                                              QDateTime::fromString(rxDateBlock.cap(0),
+                                                                    "yyyy-MM-dd hh:mm:ss.z"));
+
+                std::set<QPair<QStringList,QDateTime> >::iterator it = dataBlocks.find(myPair);
+                if (it != dataBlocks.end()){
+                    QPair<QStringList,QDateTime>  temp(*it);
+                    temp.first = temp.first << myPair.first;
+                    dataBlocks.erase(it);
+                    dataBlocks.insert(temp);
+
+                }else
+                    dataBlocks.insert(myPair);
+            }
+        }
+    }
+    return dataBlocks;
+
+}
+
+
+bool operator < (const QPair<QStringList,QDateTime> & block1, const QPair<QStringList,QDateTime> & block2){
+    return block1.second < block2.second;
+}
+
+
+QList<QPair<QString, int> >
+DataProcessing::getSecuence(const std::set<QPair<QStringList,QDateTime> >& blocks){
+    QString blockString;
+    QList<QPair<QString,int> > animationBlock;
+    std::set<QPair<QStringList,QDateTime> >::iterator it2;
+    QPair<QString,int> mySecuence;
+    for(std::set<QPair<QStringList,QDateTime> >::iterator it = blocks.begin(); it != blocks.end(); ++it){
+        blockString.clear();
+        for(int i=0; i<it->first.size(); i++){
+            blockString += "\n" + it->first.at(i);
+        }
+
+        it2 = it;
+        if(it != blocks.begin())
+            --it2;
+
+        mySecuence = QPair<QString,int>(blockString,it2->second.msecsTo(it->second));
+        animationBlock.push_back(mySecuence);
+    }
+    it2 = blocks.end();
+    --it2;
+
+    return animationBlock;
 }

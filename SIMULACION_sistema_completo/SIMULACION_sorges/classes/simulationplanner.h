@@ -12,8 +12,9 @@ class SimulationPlanner : public QObject
 {
     Q_OBJECT
 public:
-    SimulationPlanner(QString event, QDir eventDir,QList<QPair<QString,int> > picks,
-                      QList<QPair<QString,int> > origins,QObject *parent = 0);
+    SimulationPlanner();
+    SimulationPlanner(QString event, QDir eventDir, QList<QPair<QString,int> > picks,
+                      QList<QPair<QString,int> > origins, int duration, QObject *parent = 0);
 
 public slots:
     void sendPick();
@@ -25,6 +26,7 @@ private:
     QDir requiredEventDir;
     QList<QPair<QString,int> > picksBlocks;
     QList<QPair<QString,int> > originsBlocks;
+    int simulationDuration;
     QTimer* eventTimer;
     QTimer* picksTimer;
     QTimer* originsTimer;
@@ -34,3 +36,4 @@ private:
 };
 
 #endif // SIMULATIONPLANNER_H
+

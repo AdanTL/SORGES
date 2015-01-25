@@ -17,7 +17,8 @@ SOURCES += main.cpp\
            widgets/stationsdatawidget.cpp \
            classes/origin.cpp \
            classes/station.cpp \
-           classes/dataprocessing.cpp
+           classes/dataprocessing.cpp \
+           classes/simulationplanner.cpp
 
 HEADERS  += widgets/mapwidget.h \
 			widgets/origindatawidget.h \
@@ -25,6 +26,7 @@ HEADERS  += widgets/mapwidget.h \
             classes/origin.h \
             classes/station.h \
             classes/dataprocessing.h \
+            classes/simulationplanner.h \
             config/mapdefinition.h
 
 FORMS    += ui/mapwidget.ui \

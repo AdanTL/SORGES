@@ -12,8 +12,11 @@
 #include <QFileSystemWatcher>
 #include <QSettings>
 #include <QtXml/QDomDocument>
+#include <QTextStream>
+#include <QPair>
 #include "origin.h"
 #include "station.h"
+#include "simulationplanner.h"
 
 class DataProcessing : public QObject
 {
@@ -51,6 +54,10 @@ private:
     QFileSystemWatcher watcher;
     QSettings *config;
     QDateTime lastDateTime;
+    QDateTime simulationLastDateTime;
+    QDateTime simulationFirstDateTime;
+    qint64 simulationDuration;
+    SimulationPlanner* simulationPlanner;
 
 
     std::vector<QStringList> findParameterStations(const QString &stationsString);
@@ -69,6 +76,8 @@ private:
     QString getBlockOrigin(const QDateTime& firstdatetime, const QDateTime& lastdatetime);
     int getPositionBegin(const QDateTime& firstdatetime, const QString& namefile);
     int getPositionEnd(const QDateTime& lastdatetime, const QString& namefile);
+    std::set<QPair<QStringList,QDateTime> > getDateTimeBlocks(const QString& block);
+    QList<QPair<QString,int> > getSecuence(const std::set<QPair<QStringList, QDateTime> > &blocks);
     /**************SIMULATION***********************/
 };
 
