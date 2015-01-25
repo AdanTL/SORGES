@@ -70,8 +70,10 @@ QString DataProcessing::getBlockOrigin(const QDateTime& firstdatetime, const QDa
                     found = true;
             }
         }
-        return pos;
-
+        if(found)
+            return pos;
+        else
+            return file.size();
 }
 
 
@@ -97,8 +99,10 @@ QString DataProcessing::getBlockOrigin(const QDateTime& firstdatetime, const QDa
                 }
             }
         }
-        return pos;
-
+        if(found)
+            return pos;
+        else
+            return file.size();
     }
 
     QList<ANIMATIONBLOCK> DataProcessing::getSecuence(const std::set<DATEBLOCK>& blocks){
