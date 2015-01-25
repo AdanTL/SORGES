@@ -150,7 +150,7 @@ void SimulationPlanner::sendEvent (){
         std::cerr << "Problem to find the event file"<<std::endl;
     }
     QTextStream out(&file);
-    out << endl << xmlContent;
+    out << xmlContent;
     file.close();
 }
 
