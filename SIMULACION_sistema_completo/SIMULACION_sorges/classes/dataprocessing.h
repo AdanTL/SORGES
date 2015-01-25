@@ -53,7 +53,7 @@ private:
     std::set<Station> stations;
     QFileSystemWatcher watcher;
     QSettings *config;
-    QDateTime lastDateTime;
+    QDateTime bootDateTime;
     QDateTime simulationLastDateTime;
     QDateTime simulationFirstDateTime;
     qint64 simulationDuration;
