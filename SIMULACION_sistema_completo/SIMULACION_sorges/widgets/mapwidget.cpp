@@ -350,7 +350,7 @@ void MapWidget::paintOrigin(const Origin &origin){
     epicenterItem->setFlag (QGraphicsItem::ItemIsSelectable, true);
 
     //Set the timer (each second) for the concentric circles
-    circlesTimer->start(100);
+    circlesTimer->start(1000);
 
     //only the last origin (event) will have related stations
     //update only its stations and restart the logical process of the event
