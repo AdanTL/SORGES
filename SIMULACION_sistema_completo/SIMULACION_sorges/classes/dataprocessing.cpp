@@ -105,39 +105,77 @@ void DataProcessing::fileChangedSlot(QString path)
     //keep the watch on the file
     watcher.addPath(path);
 
-    if (path ==
-             config->value(("filepaths/stations")).toString().replace("$HOME",QDir::homePath())) {
-        processStationsFromFile(path);
-        if (!this->stations.empty())
-            emit stationsLoaded(this->stations);
+    if (! simulationMode)
+    {
+        if (path ==
+                 config->value(("filepaths/stations")).toString().replace("$HOME",QDir::homePath())) {
+            processStationsFromFile(path);
+            if (!this->stations.empty())
+                emit stationsLoaded(this->stations);
+        }
+
+        else if (path ==
+                      config->value(("filepaths/picks")).toString().replace("$HOME",QDir::homePath())){
+            std::set<Station> changedStation = processColorStationsFromFile(path);
+            if (!changedStation.empty()){
+                emit stationColorReceived(changedStation);
+                dumpStationXml();
+            }
+        }
+
+        else if (path == config->value(("filepaths/origins")).toString().replace("$HOME",QDir::homePath())){
+            processOriginFromFileLog(path);
+            if(this->origin.getOriginID().length() > 0){
+                emit originReceived(this->origin);
+                dumpOriginXml();
+            }
+        }
+        /*
+        else if (path == config->value(("filepaths/events")).toString().replace("$HOME",QDir::homePath())){
+            processOriginFromFileXml(path);
+            if(this->origin.getOriginID().length() > 0){
+                emit eventReceived(this->origin);
+                dumpOriginXml();
+            }
+        }*/
+
+        else std::cerr<<"Unrecognized file: "<<path.toStdString()<<std::endl;
     }
 
-    else if (path ==
-                  config->value(("filepaths/picks")).toString().replace("$HOME",QDir::homePath())){
-        std::set<Station> changedStation = processColorStationsFromFile(path);
-        if (!changedStation.empty()){
-            emit stationColorReceived(changedStation);
-            dumpStationXml();
+    else
+    {
+        if (path == config->value(("simulationpaths/stations")).toString()){
+            processStationsFromFile(path);
+            if (!this->stations.empty())
+                emit stationsLoaded(this->stations);
         }
-    }
 
-    else if (path == config->value(("filepaths/origins")).toString().replace("$HOME",QDir::homePath())){
-        processOriginFromFileLog(path);
-        if(this->origin.getOriginID().length() > 0){
-            emit originReceived(this->origin);
-            dumpOriginXml();
+        else if (path == config->value(("simulationpaths/picks")).toString()){
+            std::set<Station> changedStation = processColorStationsFromFile(path);
+            if (!changedStation.empty()){
+                emit stationColorReceived(changedStation);
+                dumpStationXml();
+            }
         }
-    }
-    /*
-    else if (path == config->value(("filepaths/events")).toString().replace("$HOME",QDir::homePath())){
-        processOriginFromFileXml(path);
-        if(this->origin.getOriginID().length() > 0){
-            emit eventReceived(this->origin);
-            dumpOriginXml();
-        }
-    }*/
 
-    else std::cerr<<"Unrecognized file: "<<path.toStdString()<<std::endl;
+        else if (path == config->value(("simulationpaths/origins")).toString()){
+            processOriginFromFileLog(path);
+            if(this->origin.getOriginID().length() > 0){
+                emit originReceived(this->origin);
+                dumpOriginXml();
+            }
+        }
+
+        else if (path == config->value(("simulationpaths/event")).toString()){
+            processOriginFromFileXml(path);
+            if(this->origin.getOriginID().length() > 0){
+                emit eventReceived(this->origin);
+                dumpOriginXml();
+            }
+        }
+
+        else std::cerr<<"Unrecognized file: "<<path.toStdString()<<std::endl;
+    }
 
   }
 
