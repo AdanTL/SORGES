@@ -36,14 +36,12 @@ SimulationPlanner::SimulationPlanner(QString event, QDir eventDir,
     int waitTime=2000;
     std::cout<<"Starting planner in 2 seconds..."<<std::endl;
 
-    //connect (eventTimer,SIGNAL(timeout()),this,SLOT(sendEvent()));
     connect (blocksTimer,SIGNAL(timeout()),this,SLOT(dispatch()));
 
     connect (this,SIGNAL(pickTurn(QString)),this,SLOT(sendPick(QString)));
     connect (this,SIGNAL(originTurn(QString)),this,SLOT(sendOrigin(QString)));
 
     std::cout<<"Starting time triggers for data..."<<std::endl;
-    //eventTimer->start(simulationDuration);
     blocksTimer->start(waitTime);
 }
 
@@ -88,7 +86,6 @@ void SimulationPlanner::dispatch(){
 
 void SimulationPlanner::sendPick(QString pickBlock){
     std::cout<<"Sending: pick..."<<std::endl;
-    //std::cout<<QTime::currentTime ().toString("hh:mm:ss.zzz").toStdString ()<<std::endl;
     QFile file(config->value("simulationpaths/picks").toString());
     if(picksCounter==0){
         if(!file.open(QIODevice::WriteOnly | QIODevice::Text)){
@@ -107,7 +104,6 @@ void SimulationPlanner::sendPick(QString pickBlock){
 
 void SimulationPlanner::sendOrigin(QString originBlock){
     std::cout<<"Sending: origin..."<<std::endl;
-    //std::cout<<QTime::currentTime ().toString("hh:mm:ss.zzz").toStdString ()<<std::endl;
     QFile file(config->value("simulationpaths/origins").toString());
     if(originsCounter==0){
         if(!file.open(QIODevice::WriteOnly | QIODevice::Text)){
@@ -131,7 +127,6 @@ void SimulationPlanner::sendOrigin(QString originBlock){
 
 void SimulationPlanner::sendEvent (){
     std::cout<<"Sending: event..."<<requiredEventName.toStdString()<<std::endl;
-    //std::cout<<QTime::currentTime ().toString("hh:mm:ss.zzz").toStdString ()<<std::endl;
 
     eventTimer->stop();
 

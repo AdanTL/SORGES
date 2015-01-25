@@ -34,5 +34,4 @@ FORMS    += ui/mapwidget.ui \
 			ui/stationsdatawidget.ui
 
 RESOURCES += images/map.qrc \
-			 images/logo.qrc \
-			 config/configfile.qrc
+			 images/logo.qrc

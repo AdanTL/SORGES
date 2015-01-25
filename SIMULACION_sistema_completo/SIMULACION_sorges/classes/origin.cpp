@@ -151,7 +151,6 @@ std::set<Origin> Origin::originsFromQDomDocument(const QDomDocument& xml){
     for (int i = 0; i < origins.size(); i++) {
         Origin myOrigin;
         myOrigin.fromQDomNode(origins.item(i));
-        std::cout << myOrigin << std::endl;
         myOrigins.insert(myOrigin);
     }
     return myOrigins;

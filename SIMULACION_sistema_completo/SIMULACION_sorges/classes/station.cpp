@@ -131,10 +131,16 @@ std::string Station::toStringXml(const std::string& tab) const{
     std::string os;
     os += tab + "<Station>\n";
     os += tab + "\t<StationID>" + getStationID() + "</StationID>\n";
-    os += tab + "\t<StationNetworkID>" + getNetworkID() + "</StationNetworkID>\n";
-    os += tab + "\t<StationLatitude>" + QString::number((double)getLatitude()).toStdString() + "</StationLatitude>\n";
-    os += tab + "\t<StationLongitude>" +  QString::number((double)getLongitude()).toStdString() + "</StationLongitude>\n";
-    os += tab + "\t<StationOnSiteAlert>" +  QString::number(getColor()).toStdString() + "</StationOnSiteAlert>\n";
+    os += tab + "\t<StationNetworkID>"
+                + getNetworkID() + "</StationNetworkID>\n";
+    os += tab + "\t<StationLatitude>"
+                + QString::number((double)getLatitude()).toStdString()
+                + "</StationLatitude>\n";
+    os += tab + "\t<StationLongitude>"
+              + QString::number((double)getLongitude()).toStdString()
+              + "</StationLongitude>\n";
+    os += tab + "\t<StationOnSiteAlert>" +  QString::number(getColor()).toStdString()
+              + "</StationOnSiteAlert>\n";
     os += tab + "</Station>\n";
    return os;
 }

@@ -11,11 +11,6 @@ DataProcessing::DataProcessing(bool simulationMode, QObject* parent):
     config(new QSettings(QDir::currentPath()+"/config/sorges.conf",QSettings::NativeFormat)),
     bootDateTime(QDateTime::currentDateTime())
     {
-    //SETTINGS CONFIGURATION
-    //cargar de resources mientras compilamos (ver lista de inicializacion)
-    //new QSettings(":/sorges.conf",QSettings::NativeFormat)
-    //una vez se entregue el producto compilado, probar esto añadiendolo a lista inicialización
-    //new QSettings(QDir::currentPath()+"/config/sorges.conf",QSettings::NativeFormat)
 
     /**watching different files depending on the execution mode*/
     if (simulationMode){
@@ -77,7 +72,6 @@ DataProcessing::DataProcessing(bool simulationMode, QObject* parent):
             std::cerr << "Problem to find the file: "
                       << config->value("filepaths/origins").toString().toStdString()
                       << std::endl;
-        /*AQUI OJO, QUE AHORA SE SABE EL DIRECTORIO Y NO ES UN FICHERO SOLO*/
         /*
         if (!watcher.addPath(config->value("filepaths/events")
                                             .toString().replace("$HOME",QDir::homePath())))
@@ -85,6 +79,8 @@ DataProcessing::DataProcessing(bool simulationMode, QObject* parent):
                       << config->value("filepaths/events").toString().toStdString()
                       << std::endl;*/
     }
+
+
 
     /**slot connection for receiving file changes signals**/
     /**independent of the the mode**/
@@ -201,7 +197,6 @@ void DataProcessing::processStationsFromFile(const QString &namefile){
         StationId = stationsParameters.at(i).at(stationsParameters.at(i)
                                                 .size()-1).toStdString();
         std::string StationIdNetwork = "";
-                //stationsParameters.at(i).at(//N).toStdString();
         StationLatitude = stationsParameters.at(i).at(1).toDouble();
         StationLongitude = stationsParameters.at(i).at(0).toDouble();
         stations.insert(Station(StationId,StationIdNetwork,
@@ -255,7 +250,8 @@ void DataProcessing::processOriginFromFileLog(const QString &namefile){
                                      findParameterOriginTime(fileContent),"hh:mm:ss.z"));
                 origin.setLatitude(findParameterOriginLatitude(fileContent).toDouble());
                 origin.setLongitude(findParameterOriginLongitude(fileContent).toDouble());
-                origin.setSystemDateTime(QDateTime::fromString(findParameterOriginSystemDateTime(fileContent),"yyyy-MM-dd hh:mm:ss.z"));
+                origin.setSystemDateTime(QDateTime::fromString(
+                                         findParameterOriginSystemDateTime(fileContent),"yyyy-MM-dd hh:mm:ss.z"));
             }
         }
     }

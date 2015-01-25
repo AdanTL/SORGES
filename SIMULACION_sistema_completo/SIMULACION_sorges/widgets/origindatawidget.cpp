@@ -7,20 +7,12 @@ OriginDataWidget::OriginDataWidget(QWidget *parent) :
     ui(new Ui::OriginDataWidget)
 {
     ui->setupUi(this);
-    /*Test, borrar de aqui antes de entregar
-    std::set<Station> stations;
-    stations.insert(Station("#Sta1","netId1",10,10,1));
-    stations.insert(Station("#Sta2","netId2",20,20,2));
-    Origin origin("origin#111111",QDate(),QTime(),36,-8,1.5,stations);
-    showOriginData (origin);*/
 }
 
 OriginDataWidget::~OriginDataWidget()
 {
     delete ui;
 }
-
-
 
 std::string ldoubleToString(const long double& number){
     std::ostringstream convert;
@@ -46,7 +38,6 @@ void OriginDataWidget::showOriginData(const Origin& origin){
 
     std::set<Station> stations = origin.getStations();
     for(std::set<Station>::iterator it=stations.begin();it!=stations.end(); ++it){
-        //ui->textEdit_stations->setTextBackgroundColor((*it).getCurrentOnSiteAlert());
         ui->textEdit_stations->append((*it).stationToString().c_str());
     }
 

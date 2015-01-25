@@ -24,7 +24,6 @@ public slots:
     void paintOrigin(const Origin& origin);
     void paintStations(const std::set<Station>& stationsList);
     void changeStationsColors(const std::set<Station>& changedStations);
-void testing(); //slot de prueba de cambio de origen
 
 private slots:
     void paintCircles();

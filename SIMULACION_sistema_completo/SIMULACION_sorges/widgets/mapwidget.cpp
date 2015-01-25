@@ -28,7 +28,6 @@ MapWidget::MapWidget(QWidget *parent) :
     QGraphicsItem *mapItem = mapScene.addPixmap(mapPixmap);
     //and set the name of the item
     mapItem->setData (0,"map");
-    //mapItem->setFlag (QGraphicsItem::ItemIsSelectable, true);
 
     //and fit rectangle to image limits
     mapScene.setSceneRect(mapPixmap.rect());
@@ -42,24 +41,6 @@ MapWidget::MapWidget(QWidget *parent) :
     //showing item info when selected
     connect(&mapScene, SIGNAL(selectionChanged()),this,SLOT(showInformation()));
 
-	/******tests******/		
-    /***borrar de aqui antes de entrega de codigo**/
-
-    //QTimer::singleShot(3000, this, SLOT(testing()));
-    
-    //pintado ejemplo circulo
-    //paintCircles();
-
-    //prueba de precision de coordenadas-pixel
-    //testPixelPrecision();
-    
-    //prueba de colocación staciones en el mapa.		
-    //testStation();
-
-    //prueba de colocación origen en el mapa.
-    //testOrigen();
-    
-    /*****tests********/
 }
 
 MapWidget::~MapWidget()
@@ -467,27 +448,14 @@ void MapWidget::clearScreenTimeout(){
 }
 
 
-/***************************************tests**********************************/
+/***************************************brief tests**********************************/
 
 
 /*
- * slot de prueba para simular un cambio en la llegada de un nuevo origen
- * (llama con un nuevo objeto a paintOrigin, que ya se encarga de limpiar y pintar)
-*/
-void MapWidget::testing(){
-    Origin myOrigin("0x0001b",QDate().currentDate (),QTime().currentTime ().addSecs (-3),
-                    36.533517,
-                    -6.300797,
-                    3.54);
-    paintOrigin(myOrigin);
-}
-/*
- * Funcion privada para probar la precision de la conversion de coordenadas a
- * pixeles de la imagen
+ * Private function to test the pixel-coordinates conversion accuracy
  */
 void MapWidget::testPixelPrecision(){
-    //prueba coordenadas salida por consola
-    //esquinas
+
     std::cout << convertToDecimalDegrees(38,0,0)<< std::endl;
     std::cout << convertToDecimalDegrees(-14,0,0)<< std::endl;
     std::cout << convertToDecimalDegrees(34,0,0)<< std::endl;
@@ -499,8 +467,6 @@ void MapWidget::testPixelPrecision(){
     long double x,y;
     coordinatesToPixels(x,y,36.994336,-8.936);
     std::cout << x << ' ' << y << std::endl;
-    //pintado ejemplo coordenadas (linea desde cabo san vicente
-    //hasta esquina izquierda arriba)
     mapScene.addLine (x,y,0,0);
 
     //punta gibraltar 36° 6'34.01" (36.109447) -5°-20'-43.59" (-5.345442)
@@ -509,7 +475,6 @@ void MapWidget::testPixelPrecision(){
     long double x2,y2;
     coordinatesToPixels(x2,y2,36.109447,-5.345442);
     std::cout << x2 << ' ' << y2 << std::endl;
-    //pintado ejemplo coordenadas (linea desde gibraltar hasta derecha abajo
     mapScene.addLine (x2,y2,mapScene.width (),mapScene.height ());
 
     //Punta san felipe Cádiz 36°32'16.12"  -6°-18'-1.20"
@@ -518,7 +483,6 @@ void MapWidget::testPixelPrecision(){
     long double x3,y3;
     coordinatesToPixels(x3,y3,36,32,16.12,-6,-18,-1.20);
     std::cout << x3 << ' ' << y3 << std::endl;
-    //pintado ejemplo coordenadas (linea desde cadiz hasta izquierda abajo
     mapScene.addLine (x3,y3,0,mapScene.height ());
 
     //Costa de Lisboa (referencia Plaza del Comercio) 38°42'22.00" -9°-8'-10"
@@ -527,7 +491,6 @@ void MapWidget::testPixelPrecision(){
     long double x4,y4;
     coordinatesToPixels(x4,y4,38,42,22,-9,-8,-10);
     std::cout << x4 << ' ' << y4 << std::endl;
-    //pintado ejemplo coordenadas (linea desde el punto hasta derecha arriba
     mapScene.addLine (x4,y4,mapScene.width(),0);
 
     //Cabo de Peniche (por encima de Lisboa) 39°21'30.87" -9°-24'-24.36"
@@ -536,12 +499,11 @@ void MapWidget::testPixelPrecision(){
     long double x5,y5;
     coordinatesToPixels(x5,y5,39,21,30.87,-9,-24,-24.36);
     std::cout << x5 << ' ' << y5 << std::endl;
-    //pintado ejemplo coordenadas (linea desde mitad del eje x al punto
     mapScene.addLine (x5,y5,mapScene.width()/2,0);
 }
 
 /*
- * Funcion privada para probar la colocacion de un Origen en la imagen
+ * Private function just to test placing a origin in the map
  */
 void MapWidget::testOrigen(){
     std::set<Station> mystations;
@@ -554,18 +516,11 @@ void MapWidget::testOrigen(){
     mystations.insert(
                 Station("0x0003", "0x0003", 35.00204023875479, -8.2456402219765,3));
 
-    // getting time from system (best to test it)
+    // getting time from system
     //it simulates 9 seconds of delay:
     QTime timeinfo = QTime(QTime::currentTime().addMSecs(-999));
     QDate dateinfo = QDate::currentDate();
 
-    // getting time from string: [TESTED AND WORK]
-    //QTime timeinfo2 = QTime::fromString ("13:54:00.5","hh:mm:ss.z");
-    //QDate dateinfo2 = QDate::fromString ("2014-12-10","yyyy-MM-dd");
-    //std::cout << timeinfo2.hour() << "--" << timeinfo2.minute() 
-    //			<< "--" << timeinfo2.second() << std::endl;
-    //std::cout << dateinfo2.year() << "--" << dateinfo2.month() << "--" 
-    //			<< dateinfo2.day() << std::endl;
 
     //Punta san felipe Cádiz 36°32'16.12"  -6°-18'-1.20"
     Origin myOrigin("0x0001b",dateinfo,timeinfo, 
@@ -576,7 +531,7 @@ void MapWidget::testOrigen(){
 }
 
 /*
- * Funcion privada para probar la colocacion de estaciones en la imagen
+ * Private function just to test the situation of stations in the map
  */
 void MapWidget::testStation(){
     std::set<Station> mystations;

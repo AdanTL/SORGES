@@ -15,6 +15,12 @@
 #include "widgets/origindatawidget.h"
 #include "widgets/stationsdatawidget.h"
 
+
+/**Checking arguments when running the program
+ * sorges
+ * sorges realtime
+ * sorges simulation yyyy-MM-dd hh:mm:ss
+ */
 std::string checkArguments(int argc, char *argv[]){
 
     if (argc == 1 || (argc == 2 && QString(argv[1]) == "realtime")){

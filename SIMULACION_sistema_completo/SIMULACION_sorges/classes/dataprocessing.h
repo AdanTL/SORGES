@@ -35,9 +35,7 @@ signals:
 
 public slots:
     void init();
-    /**************SIMULATION***********************/
     void initSimulation(QDateTime simulationDateTime);
-    /**************SIMULATION***********************/
 
 private slots:
     void fileChangedSlot(QString path);
@@ -69,7 +67,6 @@ private:
     QString findParameterOriginLongitude(const QString &originString);
     QString findParameterOriginSystemDateTime(const QString &originString);
 
-    /**************SIMULATION***********************/
     QDateTime getDateTimeFromEvent(QDir eventFiles,QString eventName);
     QDateTime getDateTimeFirstPick(QDir eventFiles,QString eventName);
     QDateTime getLastDateTimeFromEvent(QDir eventFiles,QString eventName);
@@ -79,7 +76,7 @@ private:
     int getPositionEnd(const QDateTime& lastdatetime, const QString& namefile);
     std::set<QPair<QStringList,QDateTime> > getDateTimeBlocks(const QString& block);
     QList<QPair<QString,int> > getSecuence(const std::set<QPair<QStringList, QDateTime> > &blocks);
-    /**************SIMULATION***********************/
+
 };
 
 #endif // DATAPROCESSING_H
