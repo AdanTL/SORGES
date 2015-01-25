@@ -307,7 +307,11 @@ void MapWidget::paintOrigin(const Origin &origin){
         this->firstOrigin = origin;
         QDateTime dateTimeOrigin(origin.getOriginDate(),origin.getOriginTime());
         QDateTime currentDateTimeSystem = QDateTime::currentDateTime();
-        this->firstOrigin.setSystemDateTime( currentDateTimeSystem.addMSecs(-dateTimeOrigin.msecsTo(this->firstOrigin.getSystemDateTime())));
+        this->firstOrigin
+              .setSystemDateTime(currentDateTimeSystem.
+                                 addMSecs(-dateTimeOrigin
+                                          .msecsTo(this->firstOrigin
+                                                   .getSystemDateTime())));
     }
 
     this->currentOrigin.setSystemDateTime(firstOrigin.getSystemDateTime());
@@ -381,7 +385,6 @@ long double MapWidget::calculateRadius()
 
     // getting the radius in meters.
     radius = (difMseconds/1000) * PROPAGATION_SPEED;
-std::cout<<"\n\nRadio del circulo por tanto (en km)"<<radius<<"\n\n"<<std::endl;
 
     // Calculate the number of pixels to "Radius meters".
     //meanMetres is the medium between the referenced distances in metres of
@@ -447,8 +450,20 @@ void MapWidget::paintCircles(){
     }
     else {
         circlesTimer->stop();
+        //if the current origin/event stays on screem more than 5 minutes, delete it
+        QTimer::singleShot(300000,this,SLOT(clearScreenTimeout()));
     }
 
+}
+
+void MapWidget::clearScreenTimeout(){
+    if (firstOrigin.getOriginID() == ""){
+        clearOrigin ();
+        foreach(Station st,stations){
+            st.setColor(-1);
+            drawStation(st);
+        }
+    }
 }
 
 
