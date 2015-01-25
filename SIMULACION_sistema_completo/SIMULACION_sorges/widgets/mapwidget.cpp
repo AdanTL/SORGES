@@ -58,10 +58,6 @@ MapWidget::MapWidget(QWidget *parent) :
 
     //prueba de colocación origen en el mapa.
     //testOrigen();
-
-    QTime antigua(11,30,6);
-    QTime ahora = QTime::currentTime();
-    this->diferencia = abs(ahora.msecsTo(antigua));
     
     /*****tests********/
 }
@@ -291,14 +287,21 @@ void MapWidget::paintOrigin(const Origin &origin){
     //if there is a current origin, we erase it
     clearOrigin();
 
-    //check if is the first origin in the event process
-    //
-    if (this->currentOrigin.getOriginID() ==""){
-        this->firstOrigin = origin;
-    }
 
     //anyways, the currentOrigin will be the new one
     this->currentOrigin = origin;
+
+    //check if is the first origin in the event process
+    //
+    if (this->firstOrigin.getOriginID() ==""){
+        this->firstOrigin = origin;
+        QDateTime dateTimeOrigin(origin.getOriginDate(),origin.getOriginTime());
+        QDateTime currentDateTimeSystem = QDateTime::currentDateTime();
+        this->firstOrigin.setSystemDateTime( currentDateTimeSystem.addMSecs(-dateTimeOrigin.msecsTo(this->firstOrigin.getSystemDateTime())));
+    }
+    else{
+           this->currentOrigin.setSystemDateTime(firstOrigin.getSystemDateTime());
+    }
 
     long double coordX, coordY;
     long double radius = calculateRadius();
@@ -346,6 +349,7 @@ void MapWidget::paintOrigin(const Origin &origin){
     //thus the following origin in the system will be the first of the next event
     if (!currentOrigin.getStations().empty()){
         updateEventStations();
+
         this->firstOrigin = Origin();
     }
 
@@ -362,20 +366,10 @@ long double MapWidget::calculateRadius()
 {
     long double radius;
     long int difMseconds;
-    QTime timeinfo = QTime::currentTime();
-    timeinfo = timeinfo.addMSecs(-1*(this->diferencia));
-std::cout<<"\n\nTiempo tras restarle al actual el inicial de la simulacion"
-        <<timeinfo.toString ("hh:mm:ss.z").toStdString ()<<"\n\n"<<std::endl;
-    //QDate dateinfo = QDate::currentDate();
-    //QDate dateinfo(2015,1,20);
+    QDateTime timeinfo = QDateTime::currentDateTime();
 
-    // Getting the system time and the origin time diference (only h/m/s).
-    //DIFERENCE MADE RESPECT TO THE FIRST ORIGIN DATETIME OF THE EVENT SECUENCE
-    //IN ORDER TO KEEP THE EXPANSION RANGE BETWEEN ORIGINS OF THE SAME EVENT
-    //difMseconds = firstOrigin.getOriginDate().daysTo(dateinfo)*24*3600000;
-std::cout<<"\n\nHora de current time"<<currentOrigin.getOriginTime ().toString("hh:mm:ss.z").toStdString ()<<"\n\n"<<std::endl;
-    difMseconds = abs(currentOrigin.getOriginTime().msecsTo(timeinfo));
-std::cout<<"\n\nDiferencia en milisegundos para esa fecha con current origin del mapa"<<difMseconds<<"\n\n"<<std::endl;
+    difMseconds = currentOrigin.getSystemDateTime().msecsTo(timeinfo);
+
     // getting the radius in meters.
     radius = (difMseconds/1000) * PROPAGATION_SPEED;
 std::cout<<"\n\nRadio del circulo por tanto (en km)"<<radius<<"\n\n"<<std::endl;

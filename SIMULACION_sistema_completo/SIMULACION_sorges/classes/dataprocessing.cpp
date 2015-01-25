@@ -255,6 +255,7 @@ void DataProcessing::processOriginFromFileLog(const QString &namefile){
                                      findParameterOriginTime(fileContent),"hh:mm:ss.z"));
                 origin.setLatitude(findParameterOriginLatitude(fileContent).toDouble());
                 origin.setLongitude(findParameterOriginLongitude(fileContent).toDouble());
+                origin.setSystemDateTime(QDateTime::fromString(findParameterOriginSystemDateTime(fileContent),"yyyy-MM-dd hh:mm:ss.z"));
             }
         }
     }
@@ -514,6 +515,13 @@ QString DataProcessing::findParameterOriginLongitude(const QString &originString
     return QString();
 }
 
+QString DataProcessing::findParameterOriginSystemDateTime(const QString &originString){
+    QRegExp rx("\n\\d+-\\d+-\\d+ \\d+:\\d+:\\d+.\\d+");
+    std::cout << "ORIGINSTRING" << originString.toStdString() << std::endl;
+    if(rx.lastIndexIn(originString) != -1)
+        return rx.cap(0).remove("\n");
+    return QString();
+}
 
 void DataProcessing::dumpOriginXml(){
 

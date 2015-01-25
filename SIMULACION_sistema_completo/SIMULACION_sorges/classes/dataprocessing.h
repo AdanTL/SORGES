@@ -67,6 +67,7 @@ private:
     QString findParameterOriginTime(const QString &originString);
     QString findParameterOriginLatitude(const QString &originString);
     QString findParameterOriginLongitude(const QString &originString);
+    QString findParameterOriginSystemDateTime(const QString &originString);
 
     /**************SIMULATION***********************/
     QDateTime getDateTimeFromEvent(QDir eventFiles,QString eventName);
