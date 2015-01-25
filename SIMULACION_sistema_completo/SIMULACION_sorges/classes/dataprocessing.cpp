@@ -9,7 +9,7 @@ DataProcessing::DataProcessing(bool simulationMode, QObject* parent):
     simulationMode(simulationMode),
     watcher(this),
     config(new QSettings(QDir::currentPath()+"/config/sorges.conf",QSettings::NativeFormat)),
-    lastDateTime(QDateTime::currentDateTime())
+    bootDateTime(QDateTime::currentDateTime())
     {
     //SETTINGS CONFIGURATION
     //cargar de resources mientras compilamos (ver lista de inicializacion)
@@ -152,18 +152,18 @@ std::cout<<"FILECHANGEDSLOT "+path.toStdString ()<<std::endl;
         }
 
         else if (path == config->value(("simulationpaths/picks")).toString()){
-std::cout<<"FILECHANGEDSLOT picks"<<std::endl;
             std::set<Station> changedStation = processColorStationsFromFile(path);
             if (!changedStation.empty()){
+ std::cout<<"EMITE picks"<<std::endl;
                 emit stationColorReceived(changedStation);
                 dumpStationXml();
             }
         }
 
         else if (path == config->value(("simulationpaths/origins")).toString()){
-std::cout<<"FILECHANGEDSLOT picks"<<std::endl;
             processOriginFromFileLog(path);
             if(this->origin.getOriginID().length() > 0){
+std::cout<<"EMITE origin"<<std::endl;
                 emit originReceived(this->origin);
                 dumpOriginXml();
             }
@@ -249,7 +249,7 @@ void DataProcessing::processOriginFromFileLog(const QString &namefile){
         else {
             QDateTime dateTimeOrigin = QDateTime::fromString(findParameterOriginDate(fileContent)+" "
                              +findParameterOriginTime(fileContent),"yyyy-MM-dd hh:mm:ss.z");
-            if(dateTimeOrigin >= lastDateTime){
+            if(simulationMode || dateTimeOrigin >= bootDateTime){
                 //Look for parameters into log file.
                 origin.setOriginID(findParameterOriginID(fileContent).toStdString());
                 origin.setOriginDate(QDate::fromString(
@@ -302,8 +302,9 @@ std::set<Station> DataProcessing::processColorStationsFromFile(const QString &na
         else {
             lastTime = rxLastDateTime.cap(0);
             //avoid getting data from the past before app runs
-            if (QDateTime::fromString
-                    (lastTime,"\nyyyy-MM-dd hh:mm:ss.z") >= this->lastDateTime){
+            if (simulationMode ||
+                                QDateTime::fromString(lastTime,"\nyyyy-MM-dd hh:mm:ss.z")
+                                >= this->bootDateTime){
 
                 found = false;
                 overflowed = false;
