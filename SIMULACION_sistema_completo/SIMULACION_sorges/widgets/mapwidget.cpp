@@ -58,6 +58,10 @@ MapWidget::MapWidget(QWidget *parent) :
 
     //prueba de colocación origen en el mapa.
     //testOrigen();
+
+    QTime antigua(11,29,5,6);
+    QTime ahora = QTime::currentTime();
+    this->diferencia = abs(ahora.msecsTo(antigua));
     
     /*****tests********/
 }
@@ -359,15 +363,21 @@ long double MapWidget::calculateRadius()
     long double radius;
     long int difMseconds;
     QTime timeinfo = QTime::currentTime();
-    QDate dateinfo = QDate::currentDate();
+    timeinfo = timeinfo.addMSecs(-1*(this->diferencia));
+std::cout<<"\n\nTiempo tras restarle al actual el inicial de la simulacion"
+        <<timeinfo.toString ("hh:mm:ss.z").toStdString ()<<"\n\n"<<std::endl;
+    //QDate dateinfo = QDate::currentDate();
+    //QDate dateinfo(2015,1,20);
 
     // Getting the system time and the origin time diference (only h/m/s).
     //DIFERENCE MADE RESPECT TO THE FIRST ORIGIN DATETIME OF THE EVENT SECUENCE
     //IN ORDER TO KEEP THE EXPANSION RANGE BETWEEN ORIGINS OF THE SAME EVENT
-    difMseconds = firstOrigin.getOriginDate().daysTo(dateinfo)*24*3600000;
-    difMseconds += currentOrigin.getOriginTime().msecsTo(timeinfo);
+    //difMseconds = firstOrigin.getOriginDate().daysTo(dateinfo)*24*3600000;
+    difMseconds = abs(currentOrigin.getOriginTime().msecsTo(timeinfo));
+std::cout<<"\n\nDiferencia en milisegundos para esa fecha con current origin del mapa"<<difMseconds<<"\n\n"<<std::endl;
     // getting the radius in meters.
     radius = (difMseconds/1000) * PROPAGATION_SPEED;
+std::cout<<"\n\nRadio del circulo por tanto (en km)"<<radius<<"\n\n"<<std::endl;
 
     // Calculate the number of pixels to "Radius meters".
     //meanMetres is the medium between the referenced distances in metres of
@@ -421,7 +431,7 @@ void MapWidget::paintCircles(){
  * (llama con un nuevo objeto a paintOrigin, que ya se encarga de limpiar y pintar)
 */
 void MapWidget::testing(){
-    Origin myOrigin("0x0001b",QDate().currentDate (),QTime().currentTime ().addSecs (-5),
+    Origin myOrigin("0x0001b",QDate().currentDate (),QTime().currentTime ().addSecs (-3),
                     36.533517,
                     -6.300797,
                     3.54);

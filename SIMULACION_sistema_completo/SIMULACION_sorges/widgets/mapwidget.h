@@ -38,6 +38,7 @@ private:
     Origin currentOrigin;
     Origin firstOrigin;
     QTimer *circlesTimer;
+    int diferencia;
     
     /**PRIVATE FUNCTIONS**/		
 		

@@ -102,7 +102,6 @@ void DataProcessing::init(){
 
 void DataProcessing::fileChangedSlot(QString path)
   {
-std::cout<<"FILECHANGEDSLOT "+path.toStdString ()<<std::endl;
     //keep the watch on the file
     watcher.addPath(path);
 
@@ -154,7 +153,6 @@ std::cout<<"FILECHANGEDSLOT "+path.toStdString ()<<std::endl;
         else if (path == config->value(("simulationpaths/picks")).toString()){
             std::set<Station> changedStation = processColorStationsFromFile(path);
             if (!changedStation.empty()){
- std::cout<<"EMITE picks"<<std::endl;
                 emit stationColorReceived(changedStation);
                 dumpStationXml();
             }
@@ -163,7 +161,6 @@ std::cout<<"FILECHANGEDSLOT "+path.toStdString ()<<std::endl;
         else if (path == config->value(("simulationpaths/origins")).toString()){
             processOriginFromFileLog(path);
             if(this->origin.getOriginID().length() > 0){
-std::cout<<"EMITE origin"<<std::endl;
                 emit originReceived(this->origin);
                 dumpOriginXml();
             }
@@ -415,12 +412,14 @@ void DataProcessing::processOriginFromFileXml(const QString &namefile){
             if(element.hasAttribute("publicID")){
                 eventID = element.attribute("publicID");
             }
-            dateTime = event.firstChildElement("creationInfo")
-                                        .firstChildElement("creationTime").text();
-            if(rxDate.indexIn(dateTime) != -1)
-                originDate = QDate::fromString(rxDate.cap(0),"yyyy-MM-dd");
-            if(rxTime.indexIn(dateTime) != -1)
-                originTime = QTime::fromString(rxTime.cap(0),"hh:mm:ss.zzz");
+            dateTime = event.firstChildElement("preferredOriginID").text();
+            dateTime = dateTime.remove("Origin#");
+            QStringList components = dateTime.split(".");
+            QDateTime eventTime = QDateTime::fromString(components.at(0),"yyyyMMddhhmmss");
+            eventTime = eventTime.addMSecs(components.at(1).at(0).digitValue()*100);
+            originDate = eventTime.date ();
+            originTime = eventTime.time ();
+
             magnitudeID = event.firstChildElement("preferredMagnitudeID").text();
         }
     }

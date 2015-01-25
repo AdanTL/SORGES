@@ -88,7 +88,7 @@ void SimulationPlanner::dispatch(){
 
 void SimulationPlanner::sendPick(QString pickBlock){
     std::cout<<"Sending: pick..."<<std::endl;
-    std::cout<<QTime::currentTime ().toString("hh:mm:ss.zzz").toStdString ()<<std::endl;
+    //std::cout<<QTime::currentTime ().toString("hh:mm:ss.zzz").toStdString ()<<std::endl;
     QFile file(config->value("simulationpaths/picks").toString());
     if(picksCounter==0){
         if(!file.open(QIODevice::WriteOnly | QIODevice::Text)){
@@ -107,7 +107,7 @@ void SimulationPlanner::sendPick(QString pickBlock){
 
 void SimulationPlanner::sendOrigin(QString originBlock){
     std::cout<<"Sending: origin..."<<std::endl;
-    std::cout<<QTime::currentTime ().toString("hh:mm:ss.zzz").toStdString ()<<std::endl;
+    //std::cout<<QTime::currentTime ().toString("hh:mm:ss.zzz").toStdString ()<<std::endl;
     QFile file(config->value("simulationpaths/origins").toString());
     if(originsCounter==0){
         if(!file.open(QIODevice::WriteOnly | QIODevice::Text)){
@@ -131,7 +131,7 @@ void SimulationPlanner::sendOrigin(QString originBlock){
 
 void SimulationPlanner::sendEvent (){
     std::cout<<"Sending: event..."<<requiredEventName.toStdString()<<std::endl;
-    std::cout<<QTime::currentTime ().toString("hh:mm:ss.zzz").toStdString ()<<std::endl;
+    //std::cout<<QTime::currentTime ().toString("hh:mm:ss.zzz").toStdString ()<<std::endl;
 
     eventTimer->stop();
 
