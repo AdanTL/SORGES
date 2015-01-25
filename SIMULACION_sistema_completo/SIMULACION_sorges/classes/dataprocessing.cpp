@@ -743,18 +743,17 @@ void DataProcessing::initSimulation(QDateTime simulationDateTime){
         /*Getting the string blocks from the logs in the datetimes range*/
         QString picksString = getBlockPick (firstDateTime,lastDateTime);
         QString originsString = getBlockOrigin (firstDateTime,lastDateTime);
-std::cout<<"pasado lo de strings"<<std::endl;
+        std::cout<<"Reading data blocks.."<<std::endl;
 
         /*Split them in blocks with the same datetime*/
         std::set<QPair<QStringList, QDateTime> > picksByDate = getDateTimeBlocks(picksString);
         std::set<QPair<QStringList, QDateTime> > originsByDate = getDateTimeBlocks(originsString);
-std::cout<<"pasado lo de dates blocks"<<std::endl;
 
         /*And now, once sorted the blocks, so as to plan the simulation we get
          * the blocks together with the difference of miliseconds between them in the logs*/
         QList<QPair<QString, int> > picksBlocks = getSecuence(picksByDate);
         QList<QPair<QString, int> > originsBlocks = getSecuence(originsByDate);
-std::cout<<"pasado lo blocks finales"<<std::endl;
+        std::cout<<"Calculating time ranges"<<std::endl;
 
         /*And let the planner take over of the simulation*/
         simulationPlanner = new SimulationPlanner(requiredEvent,requiredEventDir,

@@ -25,17 +25,16 @@ SimulationPlanner::SimulationPlanner(QString event, QDir eventDir,
 {
     //to start the simulation with a bit of delay in order to set everything
     int waitTime=2000;
-std::cout<<"dentro de planner"<<std::endl;
+    std::cout<<"Starting planner in 2 seconds"<<std::endl;
 
     connect (eventTimer,SIGNAL(timeout()),this,SLOT(sendEvent()));
     connect (originsTimer,SIGNAL(timeout()),this,SLOT(sendOrigin()));
     connect (picksTimer,SIGNAL(timeout()),this,SLOT(sendPick()));
-std::cout<<"conectado"<<std::endl;
 
+    std::cout<<"Starting time triggers for data"<<std::endl;
     picksTimer->start(waitTime);
     originsTimer->start(waitTime);
-std::cout<<"timers start"<<std::endl;
-    //eventTimer->start(/*como sabemos el tiempo de duración?*/);
+    eventTimer->start(simulationDuration+waitTime);
 }
 
 
@@ -45,8 +44,6 @@ void SimulationPlanner::sendPick(){
     QTextStream out(&file);
     out << endl << picksBlocks[picksCounter].first;
     file.close();
-    std::cout<<"imprimiendo pick"<<QTime::currentTime().toString("hh:mm:ss.z").toStdString ()
-             <<" "<<picksBlocks[picksCounter].second<<std::endl;
     picksCounter++;
     if (picksCounter == picksBlocks.size())
         picksTimer->stop ();
@@ -60,8 +57,6 @@ void SimulationPlanner::sendOrigin(){
     QTextStream out(&file);
     out << endl << originsBlocks[originsCounter].first;
     file.close();
-    std::cout<<"imprimiendo origin"<<QTime::currentTime().toString("hh:mm:ss.z").toStdString ()
-             <<" "<<originsBlocks[originsCounter].second<<std::endl;
     originsCounter++;
     if (originsCounter == originsBlocks.size())
         originsTimer->stop ();
