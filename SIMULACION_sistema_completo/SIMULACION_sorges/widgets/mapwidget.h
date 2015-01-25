@@ -65,6 +65,7 @@ private:
 
     /*ORIGIN FUNCTIONS*/
     void clearOrigin();
+    void clearCirclesOrigin();
     void updateEventStations();
     
     /*TESTS*/

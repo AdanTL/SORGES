@@ -260,6 +260,16 @@ void MapWidget::clearOrigin()
     }
 }
 
+void MapWidget::clearCirclesOrigin()
+{
+    foreach(QGraphicsItem * item, mapScene.items()){
+        QString itemName = item->data(0).toString ();
+        if (itemName == "circle"){
+            mapScene.removeItem(item);
+        }
+    }
+}
+
 void MapWidget::updateEventStations()
 {
     std::set<Station> relatedStations = this->currentOrigin.getStations();
@@ -299,9 +309,8 @@ void MapWidget::paintOrigin(const Origin &origin){
         QDateTime currentDateTimeSystem = QDateTime::currentDateTime();
         this->firstOrigin.setSystemDateTime( currentDateTimeSystem.addMSecs(-dateTimeOrigin.msecsTo(this->firstOrigin.getSystemDateTime())));
     }
-    else{
-           this->currentOrigin.setSystemDateTime(firstOrigin.getSystemDateTime());
-    }
+
+    this->currentOrigin.setSystemDateTime(firstOrigin.getSystemDateTime());
 
     long double coordX, coordY;
     long double radius = calculateRadius();
@@ -341,7 +350,7 @@ void MapWidget::paintOrigin(const Origin &origin){
     epicenterItem->setFlag (QGraphicsItem::ItemIsSelectable, true);
 
     //Set the timer (each second) for the concentric circles
-    circlesTimer->start(1000);
+    circlesTimer->start(100);
 
     //only the last origin (event) will have related stations
     //update only its stations and restart the logical process of the event
@@ -407,9 +416,34 @@ void MapWidget::paintCircles(){
         //circle will be fit into a rectangle whose center is moved to epicenter
         QRect rect(0,0,2*radius,2*radius);
         rect.moveCenter(center);
+        clearOrigin();
+        QRadialGradient radialColor(center,RADIUS_120KM_PIXEL,center);
 
-        QGraphicsItem *circleItem = mapScene.addEllipse(rect);
+        // Define the colour interpolation in 120 km (0 = 0km, and 1 = 120km).
+        radialColor.setColorAt(0,QColor(EPICENTER_GRADIENT_0_30KM));
+        radialColor.setColorAt(0.1428,QColor(EPICENTER_GRADIENT_0_30KM));
+        radialColor.setColorAt(0.2856,QColor(EPICENTER_GRADIENT_30_60KM));
+        radialColor.setColorAt(0.5714,QColor(EPICENTER_GRADIENT_60_120KM));
+        radialColor.setColorAt(1,QColor(EPICENTER_GRADIENT_120KM));
+
+
+        QGraphicsItem *circleItem = mapScene.addEllipse(rect,
+                                                        QPen(),
+                                                        QBrush(radialColor));
         circleItem->setData(0,"circle");
+
+        //Epicenter mark (to be on top of the first circle)
+        QRect rect2(0,0,3*RADIUS_EPICENTER,3*RADIUS_EPICENTER);
+        rect2.moveCenter(center);
+        QGraphicsItem *epicenterItem = mapScene.addEllipse(rect2,
+                                                           QPen(),
+                                                           QBrush(QColor(R_EPICENTER,
+                                                                         G_EPICENTER,
+                                                                         B_EPICENTER,
+                                                                         T_EPICENTER)));
+        epicenterItem->setData(0,"epicenter");
+        epicenterItem->setFlag (QGraphicsItem::ItemIsSelectable, true);
+
     }
     else {
         circlesTimer->stop();

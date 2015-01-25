@@ -56,13 +56,13 @@
 
     /**EXPANSION CIRCLES**/
         /*Expansion gradient beetwen 0 and 30 km*/
-        #define EPICENTER_GRADIENT_0_30KM 255,0,0,255
+        #define EPICENTER_GRADIENT_0_30KM 255,0,0,190
         /*Expansion gradient beetwen 30 and 60 km*/
-        #define EPICENTER_GRADIENT_30_60KM 255,128,0,200
+        #define EPICENTER_GRADIENT_30_60KM 255,128,0,160
         /*Expansion gradient beetwen 60 and 120 km*/
-        #define EPICENTER_GRADIENT_60_120KM 255,255,0,180
+        #define EPICENTER_GRADIENT_60_120KM 255,255,0,120
         /*Expansion gradient beetwen 120 and more km*/
-        #define EPICENTER_GRADIENT_120KM 111,255,0,100
+        #define EPICENTER_GRADIENT_120KM 111,255,0,80
 
 /****/
 

@@ -517,7 +517,6 @@ QString DataProcessing::findParameterOriginLongitude(const QString &originString
 
 QString DataProcessing::findParameterOriginSystemDateTime(const QString &originString){
     QRegExp rx("\n\\d+-\\d+-\\d+ \\d+:\\d+:\\d+.\\d+");
-    std::cout << "ORIGINSTRING" << originString.toStdString() << std::endl;
     if(rx.lastIndexIn(originString) != -1)
         return rx.cap(0).remove("\n");
     return QString();
