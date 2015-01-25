@@ -11,7 +11,8 @@ Origin::Origin(const std::string& id, const QDate& date, const QTime& time,
    			   latitude(latitude),
    			   longitude(longitude),
    			   magnitude(magnitude),
-   			   stations(stations)
+               stations(stations),
+               systemDateTime(QDateTime::currentDateTime())
                {}
 
 
@@ -78,6 +79,15 @@ QDate Origin::getOriginDate() const
 void Origin::setOriginDate(const QDate &value)
 {
     originDate = value;
+}
+
+QDateTime Origin::getSystemDateTime() const
+{
+    return systemDateTime;
+}
+void Origin::setSystemDateTime(const QDateTime &value)
+{
+    systemDateTime = value;
 }
 
 

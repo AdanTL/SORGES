@@ -40,6 +40,9 @@ class Origin{
     std::set<Station> getStations() const;
     void setStations(const std::set<Station> &value);
 
+    QDateTime getSystemDateTime() const;
+    void setSystemDateTime(const QDateTime &value);
+
     /**To String**/
     std::string originToString() const;
     std::string toStringXml()const;
@@ -59,6 +62,8 @@ private:
     long double longitude;
     double magnitude;
     std::set<Station> stations;
+
+    QDateTime systemDateTime;
 
 };
 
