@@ -102,6 +102,7 @@ void DataProcessing::init(){
 
 void DataProcessing::fileChangedSlot(QString path)
   {
+std::cout<<"FILECHANGEDSLOT "+path.toStdString ()<<std::endl;
     //keep the watch on the file
     watcher.addPath(path);
 
@@ -151,6 +152,7 @@ void DataProcessing::fileChangedSlot(QString path)
         }
 
         else if (path == config->value(("simulationpaths/picks")).toString()){
+std::cout<<"FILECHANGEDSLOT picks"<<std::endl;
             std::set<Station> changedStation = processColorStationsFromFile(path);
             if (!changedStation.empty()){
                 emit stationColorReceived(changedStation);
@@ -159,6 +161,7 @@ void DataProcessing::fileChangedSlot(QString path)
         }
 
         else if (path == config->value(("simulationpaths/origins")).toString()){
+std::cout<<"FILECHANGEDSLOT picks"<<std::endl;
             processOriginFromFileLog(path);
             if(this->origin.getOriginID().length() > 0){
                 emit originReceived(this->origin);

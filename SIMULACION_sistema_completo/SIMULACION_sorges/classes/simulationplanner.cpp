@@ -125,7 +125,7 @@ void SimulationPlanner::sendOrigin(QString originBlock){
 
     //last origin sends event instead of let a timer do that (avoid delay)
     if(originsCounter == originsBlocks.size()-1){
-        sendEvent ();
+        QTimer::singleShot (150,this,SLOT(sendEvent ()));
     }
 }
 
