@@ -59,7 +59,7 @@ MapWidget::MapWidget(QWidget *parent) :
     //prueba de colocación origen en el mapa.
     //testOrigen();
 
-    QTime antigua(11,29,5,6);
+    QTime antigua(11,30,6);
     QTime ahora = QTime::currentTime();
     this->diferencia = abs(ahora.msecsTo(antigua));
     
@@ -373,6 +373,7 @@ std::cout<<"\n\nTiempo tras restarle al actual el inicial de la simulacion"
     //DIFERENCE MADE RESPECT TO THE FIRST ORIGIN DATETIME OF THE EVENT SECUENCE
     //IN ORDER TO KEEP THE EXPANSION RANGE BETWEEN ORIGINS OF THE SAME EVENT
     //difMseconds = firstOrigin.getOriginDate().daysTo(dateinfo)*24*3600000;
+std::cout<<"\n\nHora de current time"<<currentOrigin.getOriginTime ().toString("hh:mm:ss.z").toStdString ()<<"\n\n"<<std::endl;
     difMseconds = abs(currentOrigin.getOriginTime().msecsTo(timeinfo));
 std::cout<<"\n\nDiferencia en milisegundos para esa fecha con current origin del mapa"<<difMseconds<<"\n\n"<<std::endl;
     // getting the radius in meters.
