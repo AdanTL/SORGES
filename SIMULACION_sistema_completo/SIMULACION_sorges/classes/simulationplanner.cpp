@@ -29,7 +29,8 @@ SimulationPlanner::SimulationPlanner(QString event, QDir eventDir,
     blocksTimer(new QTimer(this)),
     blocksCounter(0),
     originsCounter(0),
-    picksCounter(0)
+    picksCounter(0),
+    config(new QSettings(QDir::currentPath()+"/config/sorges.conf",QSettings::NativeFormat))
 {
     //to start the simulation with a bit of delay in order to set everything
     int waitTime=2000;
@@ -44,20 +45,9 @@ SimulationPlanner::SimulationPlanner(QString event, QDir eventDir,
     std::cout<<"Starting time triggers for data..."<<std::endl;
     //eventTimer->start(simulationDuration);
     blocksTimer->start(waitTime);
-
-    std::cout<<"///////////"<<std::endl;
-    std::cout<<allBlocks.size ()<<std::endl;
-    std::cout<<picksBlocks.size ()<<std::endl;
-    std::cout<<originsBlocks.size ()<<std::endl;
-    std::cout<<"////////////"<<std::endl;
 }
 
 void SimulationPlanner::dispatch(){
-std::cout<<"-----------"<<std::endl;
-std::cout<<blocksCounter<<std::endl;
-std::cout<<picksCounter<<std::endl;
-std::cout<<originsCounter<<std::endl;
-std::cout<<"-----------"<<std::endl;
 
     QString generalBlock = allBlocks[blocksCounter].first;
     QString pickBlock;
@@ -86,15 +76,10 @@ std::cout<<"-----------"<<std::endl;
            emit originTurn (originBlock);
            originsCounter++;
         }
-        else std::cout<<"nada"<<std::endl;
+        else std::cout<<"unlinked block"<<std::endl;
     }
 
     blocksCounter++;
-    std::cout<<"==========="<<std::endl;
-    std::cout<<blocksCounter<<std::endl;
-    std::cout<<picksCounter<<std::endl;
-    std::cout<<originsCounter<<std::endl;
-    std::cout<<"============"<<std::endl;
     if (blocksCounter == allBlocks.size())
         blocksTimer->stop();
     else
@@ -103,8 +88,8 @@ std::cout<<"-----------"<<std::endl;
 
 void SimulationPlanner::sendPick(QString pickBlock){
     std::cout<<"Sending: pick..."<<std::endl;
-std::cout<<QTime::currentTime ().toString("hh:mm:ss.zzz").toStdString ()<<std::endl;
-    QFile file("/home/felipe/Escritorio/testPicks.log");
+    std::cout<<QTime::currentTime ().toString("hh:mm:ss.zzz").toStdString ()<<std::endl;
+    QFile file(config->value("simulationpaths/picks").toString());
     if(picksCounter==0){
         if(!file.open(QIODevice::WriteOnly | QIODevice::Text)){
             std::cerr << "Problem to find the picks file"<<std::endl;
@@ -122,8 +107,8 @@ std::cout<<QTime::currentTime ().toString("hh:mm:ss.zzz").toStdString ()<<std::e
 
 void SimulationPlanner::sendOrigin(QString originBlock){
     std::cout<<"Sending: origin..."<<std::endl;
-std::cout<<QTime::currentTime ().toString("hh:mm:ss.zzz").toStdString ()<<std::endl;
-    QFile file("/home/felipe/Escritorio/testOrigins.log");
+    std::cout<<QTime::currentTime ().toString("hh:mm:ss.zzz").toStdString ()<<std::endl;
+    QFile file(config->value("simulationpaths/origins").toString());
     if(originsCounter==0){
         if(!file.open(QIODevice::WriteOnly | QIODevice::Text)){
             std::cerr << "Problem to find the origins file"<<std::endl;
@@ -146,7 +131,7 @@ std::cout<<QTime::currentTime ().toString("hh:mm:ss.zzz").toStdString ()<<std::e
 
 void SimulationPlanner::sendEvent (){
     std::cout<<"Sending: event..."<<requiredEventName.toStdString()<<std::endl;
-std::cout<<QTime::currentTime ().toString("hh:mm:ss.zzz").toStdString ()<<std::endl;
+    std::cout<<QTime::currentTime ().toString("hh:mm:ss.zzz").toStdString ()<<std::endl;
 
     eventTimer->stop();
 
@@ -160,7 +145,7 @@ std::cout<<QTime::currentTime ().toString("hh:mm:ss.zzz").toStdString ()<<std::e
     QString xmlContent = eventFile.readAll();
     eventFile.close();
 
-    QFile file("/home/felipe/Escritorio/test.last.xml");
+    QFile file(config->value("simulationpaths/event").toString());
     if(!file.open(QIODevice::WriteOnly | QIODevice::Text)){
         std::cerr << "Problem to find the event file"<<std::endl;
     }

@@ -8,6 +8,7 @@
 #include <QString>
 #include <QDir>
 #include <QTimer>
+#include <QSettings>
 
 class SimulationPlanner : public QObject
 {
@@ -40,6 +41,7 @@ private:
     int blocksCounter;
     int originsCounter;
     int picksCounter;
+    QSettings *config;
 
     QDateTime getBlockTime(QString block);
 

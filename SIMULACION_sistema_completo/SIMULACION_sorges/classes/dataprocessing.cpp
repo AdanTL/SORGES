@@ -927,7 +927,10 @@ int DataProcessing::getPositionBegin(const QDateTime& firstdatetime, const QStri
                 found = true;
         }
     }
-    return pos;
+    if (found)
+        return pos;
+    else
+        return file.size ();
 
 }
 
@@ -954,7 +957,10 @@ int DataProcessing::getPositionEnd(const QDateTime &lastdatetime, const QString&
             }
         }
     }
-    return pos;
+    if (found)
+        return pos;
+    else
+        return file.size ();
 
 }
 
